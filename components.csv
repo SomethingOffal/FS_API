@@ -1,0 +1,271 @@
+id,volume,name,code,tier,size,type
+384,1,Booster amplifier,mc121,0,S,amplifier
+385,1,Booster amplifier,mc122,0,M,amplifier
+386,1,Booster amplifier,mc123,0,L,amplifier
+387,1,Radars amplifier,mc124,0,S,amplifier
+388,1,Radars amplifier,mc125,0,M,amplifier
+389,1,Radars amplifier,mc126,0,L,amplifier
+390,1,Cloaker amplifier,mc127,0,S,amplifier
+391,1,Cloaker amplifier,mc128,0,M,amplifier
+392,1,Cloaker amplifier,mc129,0,L,amplifier
+393,1,Drone amplifier,mc130,0,S,amplifier
+394,1,Drone amplifier,mc131,0,M,amplifier
+395,1,Drone amplifier,mc132,0,L,amplifier
+37,1,Cybernetic Side Hatch,com2,2,,structures
+60,1,Gyroscopic Intake Buffer Tank,com25,1,,structures
+131,1,Bi-polar Star Navigation System,com96,3,,mechanisms
+100,1,Dispersive Talkback Panel,com65,2,,electronics
+94,1,Bipolar Line Filter,com59,2,,electronics
+266,1,Large Frame,mc3,0,L,units
+269,1,Weapon Artillery element,mc6,0,L,elements
+272,1,Weapon Missile element,mc9,0,L,elements
+275,1,Weapon Laser element,mc12,0,L,elements
+276,1,Weapon Rail element,mc13,0,S,elements
+277,1,Weapon Rail element,mc14,0,M,elements
+278,1,Weapon Rail element,mc15,0,L,elements
+279,1,Weapon Nuclear element,mc16,0,S,elements
+280,1,Weapon Nuclear element,mc17,0,M,elements
+281,1,Weapon Nuclear element,mc18,0,L,elements
+284,1,Shield Artillery element,mc21,0,L,elements
+287,1,Shield Missile element,mc24,0,L,elements
+408,1,Improved amplifier 1,mc145,0,S,improvedAmplifier
+409,1,Improved amplifier 1,mc146,0,M,improvedAmplifier
+410,1,Improved amplifier 1,mc147,0,L,improvedAmplifier
+411,1,Improved amplifier 2,mc148,0,S,improvedAmplifier
+412,1,Improved amplifier 2,mc149,0,M,improvedAmplifier
+413,1,Improved amplifier 2,mc150,0,L,improvedAmplifier
+414,1,Improved amplifier 3,mc151,0,S,improvedAmplifier
+415,1,Improved amplifier 3,mc152,0,M,improvedAmplifier
+416,1,Improved amplifier 3,mc153,0,L,improvedAmplifier
+417,1,Improved amplifier 4,mc154,0,S,improvedAmplifier
+418,1,Improved amplifier 4,mc155,0,M,improvedAmplifier
+419,1,Improved amplifier 4,mc156,0,L,improvedAmplifier
+274,1,Weapon Laser element,mc11,0,M,elements
+38,1,Piezotronic Side Hatch,com3,3,,structures
+39,1,Aquadan Oxygen Tank,com4,1,,structures
+40,1,Molecular Oxygen Tank,com5,2,,structures
+41,1,Crystalline Oxygen tank,com6,3,,structures
+42,1,Matrix Shaping Coil,com7,1,,structures
+43,1,Submaterial Field Shaping Coil,com8,2,,structures
+44,1,Hyperplasmic Field Shaping Coil,com9,3,,structures
+46,1,Superplastic Wing,com11,2,,structures
+47,1,Cryogenic Wing,com12,3,,structures
+48,1,Hard-Mineral Stringer,com13,1,,structures
+49,1,Hyperplasmic Stringer,com14,2,,structures
+95,1,Energetic Line Filter,com60,3,,electronics
+96,1,Programming Transformer,com61,1,,electronics
+97,1,Analogue Transformer,com62,2,,electronics
+98,1,Magnetic Transformer,com63,3,,electronics
+99,1,Subtransfer Talkback Panel,com64,1,,electronics
+101,1,Temporal Talkback Panel,com66,3,,electronics
+102,1,Electrogenic Transmitter,com67,1,,electronics
+103,1,Dispersive Transmitter,com68,2,,electronics
+104,1,Octogenic Transmitter,com69,3,,electronics
+105,1,Bipolar Additional Electronics,com70,1,,electronics
+108,1,Pneumatic Pressure Panel,com73,1,,electronics
+50,1,Superplastic Stringer,com15,3,,structures
+51,1,Cryogenic Reactor,com16,1,,structures
+52,1,Pneumatic Reactor,com17,2,,structures
+53,1,Tachyon Reactor,com18,3,,structures
+54,1,Cryomeric Spar,com19,1,,structures
+55,1,Erhenium Spar,com20,2,,structures
+56,1,Matrix Spar,com21,3,,structures
+57,1,Reticular Radiator,com22,1,,structures
+58,1,Cybernetic Radiator,com23,2,,structures
+59,1,Hinged Radiator,com24,3,,structures
+61,1,Mesostructural Intake Buffer Tank,com26,2,,structures
+62,1,Pseudo-vacuum Intake Buffer Tank,com27,3,,structures
+63,1,Pneumatic Fuse,com28,1,,structures
+64,1,Pseudo-vacuum Fuse,com29,2,,structures
+65,1,Molecular Fuse,com30,3,,structures
+66,1,Colloidal Fuselage,com31,1,,structures
+67,1,Octogenic Fuselage,com32,2,,structures
+68,1,Microcarboxylic Fuselage,com33,3,,structures
+69,1,Octogenic Accelerator,com34,1,,structures
+70,1,Crystalline Accelerator,com35,2,,structures
+71,1,Gyroscopic Accelerator,com36,3,,structures
+120,1,Electrogenic Life Supporting System,com85,1,,mechanisms
+121,1,Cybernetic Life Supporting System,com86,2,,mechanisms
+122,1,Analogue Life Supporting System,com87,3,,mechanisms
+123,1,Energetic Fuel System,com88,1,,mechanisms
+124,1,Polarazing Fuel System,com89,2,,mechanisms
+125,1,Antimatter Fuel System,com90,3,,mechanisms
+126,1,Vortex Air Supply System,com91,1,,mechanisms
+127,1,Cybernetic Air Supply System,com92,2,,mechanisms
+128,1,Molecular Air supply System,com93,3,,mechanisms
+129,1,Cybernetic Star Navigation System,com94,1,,mechanisms
+130,1,Graviton Star Navigation System,com95,2,,mechanisms
+132,1,Vortex Hydro System,com97,1,,mechanisms
+133,1,Energetic Hydro System,com98,2,,mechanisms
+134,1,Temporal Hydro System,com99,3,,mechanisms
+140,1,Dispersive Cooling System,com105,3,,mechanisms
+141,1,Impulse Power System,com106,1,,mechanisms
+142,1,Graviton Power System,com107,2,,mechanisms
+143,1,Matrix Power System,com108,3,,mechanisms
+81,1,Polarizing Power Unit,com46,1,,electronics
+82,1,Analogue Power Unit,com47,2,,electronics
+83,1,Magnetic Power Unit,com48,3,,electronics
+84,1,Magnetic Switching Box,com49,1,,electronics
+85,1,Phase Switching Box,com50,2,,electronics
+86,1,Polarizing Switching Box,com51,3,,electronics
+87,1,Polarizing Resistor,com52,1,,electronics
+88,1,Tracing Resistor,com53,2,,electronics
+89,1,Hard-mineral Resistor,com54,3,,electronics
+90,1,Aeonic Heater Panel,com55,1,,electronics
+91,1,Energetic Heater Panel,com56,2,,electronics
+92,1,Heater Panel,com57,3,,electronics
+93,1,Correlative Line Filter,com58,1,,electronics
+106,1,Impulse Additional Electronics,com71,2,,electronics
+107,1,Energetic Additional Electronics,com72,3,,electronics
+109,1,Tracing Pressure Panel,com74,2,,electronics
+110,1,Magnetic Pressure Panel,com75,3,,electronics
+111,1,Aeonic Communicator,com76,1,,electronics
+112,1,Impulse Communicator,com77,2,,electronics
+113,1,Subtransfer Communicator,com78,3,,electronics
+264,1,Frame,mc1,0,S,units
+330,1,Afterburner element,mc67,0,S,elements
+331,1,Afterburner element,mc68,0,M,elements
+270,1,Weapon Missile element,mc7,0,S,elements
+333,1,Hyperjump element,mc70,0,S,elements
+334,1,Hyperjump element,mc71,0,M,elements
+336,1,Maneuver element,mc73,0,S,elements
+337,1,Maneuver element,mc74,0,M,elements
+271,1,Weapon Missile element,mc8,0,M,elements
+339,1,Weapon wiring,mc76,0,,wiring
+340,1,Shield wiring,mc77,0,,wiring
+341,1,Armor wiring,mc78,0,,wiring
+342,1,Cargo wiring,mc79,0,,wiring
+343,1,Mining wiring,mc80,0,,wiring
+344,1,Battery wiring,mc81,0,,wiring
+345,1,Regenerator wiring,mc82,0,,wiring
+346,1,Booster wiring,mc83,0,,wiring
+347,1,Radars wiring,mc84,0,,wiring
+348,1,Cloaker wiring,mc85,0,,wiring
+349,1,Drone wiring,mc86,0,,wiring
+350,1,Chip wiring,mc87,0,,wiring
+351,1,Afterburner wiring,mc88,0,,wiring
+352,1,Hyperjump wiring,mc89,0,,wiring
+353,1,Maneuver wiring,mc90,0,,wiring
+290,1,Shield Laser element,mc27,0,L,elements
+291,1,Shield Rail element,mc28,0,S,elements
+292,1,Shield Rail element,mc29,0,M,elements
+293,1,Shield Rail element,mc30,0,L,elements
+294,1,Shield Nuclear element,mc31,0,S,elements
+295,1,Shield Nuclear element,mc32,0,M,elements
+296,1,Shield Nuclear element,mc33,0,L,elements
+299,1,Armor element,mc36,0,L,elements
+302,1,Cargo element,mc39,0,L,elements
+305,1,Mining laser element,mc42,0,L,elements
+308,1,Mining extractor element,mc45,0,L,elements
+311,1,Battery element,mc48,0,L,elements
+314,1,Regenerator element,mc51,0,L,elements
+317,1,Booster element,mc54,0,L,elements
+320,1,Radars element,mc57,0,L,elements
+323,1,Cloaker element,mc60,0,L,elements
+326,1,Drone element,mc63,0,L,elements
+329,1,Chip element,mc66,0,L,elements
+332,1,Afterburner element,mc69,0,L,elements
+335,1,Hyperjump element,mc72,0,L,elements
+338,1,Maneuver element,mc75,0,L,elements
+396,1,Chip amplifier,mc133,0,S,amplifier
+72,1,Electrogenic Chassis,com37,1,,structures
+73,1,Submaterial Chassis,com38,2,,structures
+74,1,Hyperplasmic Chassis,com39,3,,structures
+75,1,Staging Generator,com40,1,,structures
+76,1,Colloidal Generator,com41,2,,structures
+77,1,Aquadan Generator,com42,3,,structures
+78,1,Cybernetic Toxic elements,com43,1,,structures
+79,1,Hard-mineral Toxic elements,com44,2,,structures
+80,1,Crystalline Toxic elements,com45,3,,structures
+117,1,Aeonic Condenser,com82,1,,electronics
+118,1,Dispersive Condenser,com83,2,,electronics
+354,1,Artillery amplifier,mc91,0,S,amplifier
+355,1,Artillery amplifier,mc92,0,M,amplifier
+356,1,Artillery amplifier,mc93,0,L,amplifier
+357,1,Missile amplifier,mc94,0,S,amplifier
+358,1,Missile amplifier,mc95,0,M,amplifier
+359,1,Missile amplifier,mc96,0,L,amplifier
+360,1,Laser amplifier,mc97,0,S,amplifier
+361,1,Laser amplifier,mc98,0,M,amplifier
+362,1,Laser amplifier,mc99,0,L,amplifier
+363,1,Rail amplifier,mc100,0,S,amplifier
+364,1,Rail amplifier,mc101,0,M,amplifier
+365,1,Rail amplifier,mc102,0,L,amplifier
+366,1,Nuclear amplifier,mc103,0,S,amplifier
+367,1,Nuclear amplifier,mc104,0,M,amplifier
+368,1,Nuclear amplifier,mc105,0,L,amplifier
+369,1,Armor amplifier,mc106,0,S,amplifier
+370,1,Armor amplifier,mc107,0,M,amplifier
+371,1,Armor amplifier,mc108,0,L,amplifier
+372,1,Cargo amplifier,mc109,0,S,amplifier
+373,1,Cargo amplifier,mc110,0,M,amplifier
+374,1,Cargo amplifier,mc111,0,L,amplifier
+375,1,Mining amplifier,mc112,0,S,amplifier
+376,1,Mining amplifier,mc113,0,M,amplifier
+377,1,Mining amplifier,mc114,0,L,amplifier
+378,1,Battery amplifier,mc115,0,S,amplifier
+379,1,Battery amplifier,mc116,0,M,amplifier
+380,1,Battery amplifier,mc117,0,L,amplifier
+381,1,Regenerator amplifier,mc118,0,S,amplifier
+382,1,Regenerator amplifier,mc119,0,M,amplifier
+383,1,Regenerator amplifier,mc120,0,L,amplifier
+144,1,Polarizing Horizon sensors System,com109,1,,mechanisms
+145,1,Programming Horizon Sensors System,com110,2,,mechanisms
+146,1,Screening Horizon Sensors System,com111,3,,mechanisms
+147,1,Analogue Tank Pressurization System,com112,1,,mechanisms
+148,1,Tracing Tank Pressurization System,com113,2,,mechanisms
+149,1,Impulse Tank pressurization System,com114,3,,mechanisms
+114,1,Analogue Quantity Panel,com79,1,,electronics
+115,1,Super-relativistic Quantity Panel,com80,2,,electronics
+116,1,Cybernetic Quantity Panel,com81,3,,electronics
+119,1,Analogue Condenser,com84,3,,electronics
+397,1,Chip amplifier,mc134,0,M,amplifier
+398,1,Chip amplifier,mc135,0,L,amplifier
+399,1,Afterburner amplifier,mc136,0,S,amplifier
+400,1,Afterburner amplifier,mc137,0,M,amplifier
+401,1,Afterburner amplifier,mc138,0,L,amplifier
+402,1,Hyperjump amplifier,mc139,0,S,amplifier
+403,1,Hyperjump amplifier,mc140,0,M,amplifier
+404,1,Hyperjump amplifier,mc141,0,L,amplifier
+405,1,Maneuver amplifier,mc142,0,S,amplifier
+406,1,Maneuver amplifier,mc143,0,M,amplifier
+407,1,Maneuver amplifier,mc144,0,L,amplifier
+36,1,Pneumatic Side Hatch,com1,1,,structures
+45,1,Electrogenic Wing,com10,1,,structures
+135,1,Matrix Stabilizer System,com100,1,,mechanisms
+136,1,Gyroscopic Stabilizer System,com101,2,,mechanisms
+137,1,Screening Stabilizer System,com102,3,,mechanisms
+138,1,Cryogenic Cooling System,com103,1,,mechanisms
+139,1,Molecular Cooling System,com104,2,,mechanisms
+273,1,Weapon Laser element,mc10,0,S,elements
+282,1,Shield Artillery element,mc19,0,S,elements
+283,1,Shield Artillery element,mc20,0,M,elements
+285,1,Shield Missile element,mc22,0,S,elements
+286,1,Shield Missile element,mc23,0,M,elements
+288,1,Shield Laser element,mc25,0,S,elements
+289,1,Shield Laser element,mc26,0,M,elements
+297,1,Armor element,mc34,0,S,elements
+298,1,Armor element,mc35,0,M,elements
+300,1,Cargo element,mc37,0,S,elements
+301,1,Cargo element,mc38,0,M,elements
+267,1,Weapon Artillery element,mc4,0,S,elements
+303,1,Mining laser element,mc40,0,S,elements
+304,1,Mining laser element,mc41,0,M,elements
+306,1,Mining extractor element,mc43,0,S,elements
+307,1,Mining extractor element,mc44,0,M,elements
+309,1,Battery element,mc46,0,S,elements
+310,1,Battery element,mc47,0,M,elements
+312,1,Regenerator element,mc49,0,S,elements
+268,1,Weapon Artillery element,mc5,0,M,elements
+313,1,Regenerator element,mc50,0,M,elements
+315,1,Booster element,mc52,0,S,elements
+316,1,Booster element,mc53,0,M,elements
+318,1,Radars element,mc55,0,S,elements
+319,1,Radars element,mc56,0,M,elements
+321,1,Cloaker element,mc58,0,S,elements
+322,1,Cloaker element,mc59,0,M,elements
+324,1,Drone element,mc61,0,S,elements
+325,1,Drone element,mc62,0,M,elements
+327,1,Chip element,mc64,0,S,elements
+328,1,Chip element,mc65,0,M,elements
+265,1,Medium Frame,mc2,0,M,units
