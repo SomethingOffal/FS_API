@@ -158,6 +158,7 @@ namespace eval res {
     set res_header ""
     set res_fr {}
     set cur_type {}
+    set cur_name ""
 }
 # resource  list box
 set rfr [frame $w.rfr -borderwidth 4 -relief sunken]
