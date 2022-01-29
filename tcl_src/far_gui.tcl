@@ -91,7 +91,7 @@ proc show_res_details {wid fr} {
 
 
 
-set version "v0.02"
+set version "Alpha 0.1"
 wm title . "Farsite Workbench $version"
 # #############################
 bind . <F12> {catch {console show}}
@@ -143,10 +143,15 @@ namespace eval comp {
     set info_win {}
     set comp_lst {}
     set comp_header ""
+    set comp_filter {}
+    set comp_id ""
 }
 # components list box
 set cfr [frame $w.cfr -borderwidth 4 -relief sunken]
 set comp::clb [listbox $cfr.cmp -width 34]
+set comp::filter [entry $cfr.en1 -width 34 -borderwidth 4 -relief raised]
+pack $comp::filter -fill x
+bind $comp::filter <KeyRelease> { filter_lb %W $comp::clb}
 pack $comp::clb -anchor w -side left -fill y -expand 1
 bind $comp::clb <ButtonRelease-1> { show_comp_details %W }
 bind $comp::clb <KeyRelease> { show_comp_details %W}

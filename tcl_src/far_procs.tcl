@@ -15,16 +15,20 @@ proc scrol_canv  {wid diff} {
     global scr_offset
     if {$diff < 0} {
         incr scr_offset
+        $wid yview scroll $diff unit
     } else {
         incr scr_offset -1
-    }
-    if {$scr_offset < 2 && $scr_offset > -2} {
         $wid yview scroll $diff unit
-    } elseif {$scr_offset >= 3} {
-        set scr_offset 2
-    } elseif {$scr_offset <= -3} {
-        set scr_offset -2
     }
+    #if {$scr_offset < 2 && $scr_offset > -2} {
+    #    $wid yview scroll $diff unit
+    #} elseif {$scr_offset >= 3} {
+    #    set scr_offset 2
+    #    $wid yview scroll $diff unit
+    #} elseif {$scr_offset <= -3} {
+    #    set scr_offset -2
+    #    $wid yview scroll $diff unit
+    #}
 }
 
 
@@ -261,8 +265,8 @@ proc mater_info {canv mid id x y {side ""}} {
     
     set bcolr "black"
     set brcolr "white"
-    puts $res::cur_name
-    puts "$name  $id   $mid"
+    #puts $res::cur_name
+    #puts "$name  $id   $mid"
     if {$res::cur_name == $name} {
         set bcolr "red"
         set brcolr "yellow1"
@@ -473,7 +477,7 @@ proc show_res_details {wid} {
     #puts $sel_idx
     set reso [$wid get $sel_idx]
     set res::cur_name $reso
-    puts $reso
+    #puts $reso
     set id ""
     foreach r $far_db::res_lst {
         set info [lindex $r 1]
@@ -519,18 +523,9 @@ proc show_res_details {wid} {
         pack $fr.fr$idx -anchor nw
         incr idx
     }
-    #puts "sending in ID:  $id"
+    # get the resource chain
     set chain {}
     set chain [get_reso_chain $id $chain]
-    #if {$chain == {}} {
-    #    puts "Base material, no Refine.  $id"
-    #    mine_cost $canv1 $id
-    #    return
-    #}
-    #puts "Got chain back: $chain"
-    #if {$chain == {}} {
-    #    return
-    #}
     set lbc [label $fr.clb -text "Resource Chain" -justify center]
     pack $lbc -side top -fill x -expand 1
     set cnv1 [canvas $fr.canv1  -borderwidth 4 -relief sunken -width 450 -height 900 -background wheat]
@@ -582,6 +577,7 @@ proc inv_color {col} {
 proc load_base {} {
     puts "loading base ..."
     set header ""
+    $res::plb delete 0 end
     foreach ore $far_db::res_lst {
         if {[lindex $ore 0] == "0"} {
             set header [lindex $ore 1]
@@ -596,12 +592,94 @@ proc load_base {} {
         #puts $ore
     }
     
+    $comp::clb delete 0 end
     foreach cmp $far_db::comps_lst {
         if {[lindex $cmp 0] == "0"} {
             set header [lindex $ore 1]
             continue
         }
+        set cnumb [lindex $cmp 0]
         set nam [lindex [lindex $cmp 1] 1]
-        $comp::clb insert end $nam
+        set cid [lindex [lindex $cmp 1] 2]
+        $comp::clb insert end "$cnumb :  $nam"
     }
+}
+
+load_base
+# ##################################################################################
+#   component stuff
+# ##################################################################################
+
+# #####################################
+#   get the component spec from id sent
+#    id :  name
+proc get_comp_spec {cmp} {
+    set rtn {}
+    
+    set scomp [split $cmp ":"]
+    set cid [lindex $scomp 0]
+    set header ""
+    set rlst {}
+    
+    foreach c $far_db::compres_lst {
+        if {[lindex $c 0] == 0} {
+            set header [lindex $c 1]
+            set rtn [lappend rtn $header]
+        }
+        
+        if {[lindex $c 0] == $cid} {
+            #  flatten  c
+            set tlst {}
+            set tlst [lappend tlst [lindex $c 0]]
+            set tlst [lappend tlst [lindex [lindex $c 1] 0]]
+            set tlst [lappend tlst [lindex [lindex $c 1] 1]]
+            set rtn [lappend rtn $tlst]
+        }
+    }
+    return $rtn
+}
+
+
+# #################################
+#   filter the list box based on entry
+#   wid   entry widget
+#   lb    list box to filter.
+proc filter_lb {wid lb} {
+    set txt [$wid get]
+    #puts $txt
+    ## if no text reload 
+    if {$txt == ""} {
+        load_base
+        return
+    }
+    
+    $comp::clb delete 0 end
+    foreach cmp $far_db::comps_lst {
+        if {[lindex $cmp 0] == "0"} {
+            continue
+        }
+        set cnumb [lindex $cmp 0]
+        set nam [lindex [lindex $cmp 1] 1]
+        set cid [lindex [lindex $cmp 1] 2]
+        set compt [string tolower "$cid :  $nam"]
+        set is_one [string first $txt $compt]
+        if {$is_one >= 0} {
+            $comp::clb insert end "$cnumb :  $nam"
+        }
+    }
+}
+
+# ##############################################
+#  show the component details.
+#   wid is the component list box
+proc show_comp_details {wid} {
+    
+    set sel_idx [$wid curselection]
+    #puts $sel_idx
+    set comp_txt [$wid get $sel_idx]
+    set comp::comp_id $comp_txt
+    #set res::cur_name $reso
+    puts $comp_txt
+    set comp_spec [get_comp_spec $comp_txt]
+    puts $comp_spec
 }
