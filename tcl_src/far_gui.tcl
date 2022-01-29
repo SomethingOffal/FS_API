@@ -43,55 +43,7 @@ package require Tk
 
 source "c:/work/Farsite/FS_API/tcl_src/tcl_db.tcl"
 
-
-# ########################################
-proc show_res_details {wid fr} {
-    update
-    
-    set sel_idx [$wid curselection]
-    #puts $sel_idx
-    set reso [$wid get $sel_idx]
-    #puts $reso
-    foreach r $res::res_lst {
-        set reso_info [string first $reso $r]
-        if {$reso_info >= 0} {
-            set info $r
-            break
-        }
-    }
-    set idx 0
-    set sr [split $r ","]
-    set sh [split $res::res_header ","]
-    # clean up from previous
-    foreach t $sh {
-        destroy $fr.fr$idx
-        incr idx
-    }
-    
-    set idx 0
-    foreach t $sh {
-        destroy .main.fr$idx
-        set if_fr$idx [frame $fr.fr$idx]
-        set lbname [lindex $sr $idx]
-        puts $lbname
-        if {$lbname == ""} {
-            incr idx
-            continue
-        }
-        set lb [label $fr.fr$idx.lb -text $lbname]
-        set lb1 [label $fr.fr$idx.lb2 -text $t]
-        pack $lb1 $lb -side left -padx 20
-        pack $fr.fr$idx -anchor w
-        incr idx
-    }
-    #puts $r
-}
-
-
-
-
-
-set version "Alpha 0.1"
+set version "Alpha 0.2"
 wm title . "Farsite Workbench $version"
 # #############################
 bind . <F12> {catch {console show}}

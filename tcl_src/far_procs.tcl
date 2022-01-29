@@ -1,4 +1,5 @@
 
+
 # for reloading / sourcing more than once. ...
 set fts [font names]
 set is_f [lsearch $fts font_info_txt]
@@ -50,12 +51,16 @@ proc get_reso_chain {rid lst} {
         if {[lindex $r 0] == 0} {
             continue
         }
+        #puts $r
         if {[lindex $r 0] == $rid} {
             set mlst [lappend mlst $r]
-        } elseif {[lindex [lindex $r 1] end] == $rid} {
+            #puts "Found master $mlst"
+        } elseif {[lindex [lindex $r 1] 0] == $rid} {
             set dlst [lappend dlst $r]
+            #puts "Found deriv  $dlst"
         }
     }
+    
     ## if we got a main list
     if {$mlst != {}} {
         #set rlst [lappend rlst $mlst]
@@ -177,7 +182,7 @@ proc mater_info {canv mid id x y {side ""}} {
         #puts "$i  [lindex $i 0]"
         if {[lindex $i 0] == $mid} {
             set tmp_lst [lindex $i 1]
-            if {[lindex $tmp_lst end] == $id} {
+            if {[lindex $tmp_lst 0] == $id} {
                 set refo $i
                 break
             }
@@ -188,9 +193,9 @@ proc mater_info {canv mid id x y {side ""}} {
     }
     set mlst [lindex $refo 1]
     
-    set midm [lindex $mlst end]
+    set midm [lindex $mlst 0]
     set minm [lindex $mlst 1]
-    set maxm [lindex $mlst 0]
+    set maxm [lindex $mlst 2]
     #puts $refo
     
     # get the refinery info
@@ -412,6 +417,7 @@ proc disp_res_chain {cnv1 chain} {
                 $cnv1 create line 0 [expr {$yp - 26}] 450 [expr {$yp - 26}] -width 4
             }
             set mreso [get_reso $id]
+            #puts "Got res id :  $mreso"
             set lastmid $id
             set mupdated 1
             set disp_lst [lappend disp_lst $mreso]
@@ -420,8 +426,11 @@ proc disp_res_chain {cnv1 chain} {
         }
         ## get the derivative
         set der [lindex $r 1]
-        set der_id [lindex $der end]
+        #puts $der
+        set der_id [lindex $der 0]
+        #puts $der_id
         set dreso [get_reso $der_id]
+        #puts "Got dres id :  $mreso"
         set disp_lst [lappend disp_lst $dreso]
         set orig_id ""
         
@@ -526,6 +535,7 @@ proc show_res_details {wid} {
     # get the resource chain
     set chain {}
     set chain [get_reso_chain $id $chain]
+    #puts $chain
     set lbc [label $fr.clb -text "Resource Chain" -justify center]
     pack $lbc -side top -fill x -expand 1
     set cnv1 [canvas $fr.canv1  -borderwidth 4 -relief sunken -width 450 -height 900 -background wheat]
