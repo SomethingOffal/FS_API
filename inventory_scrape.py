@@ -8,9 +8,22 @@ import sys
 import warnings
 
 warnings.filterwarnings('ignore')
+#print ('Argument List:' + str(sys.argv))
 
-email = input('email:')
-pwd = getpass.getpass('pwd:')
+if len(sys.argv) == 1:
+    email = input('email:')
+    pwd = getpass.getpass('pwd:')
+else:
+    email = sys.argv[1]
+    pwd  =  sys.argv[2]
+    
+#print(email + " " + pwd)
+
+sys.exit('Rtn11 ' + email + " " + pwd)
+#sys.exit(0)
+
+#exit
+
 headers = {'accept' : 'application/json', 'content-type' : 'application/json'}
 
 def get_auth_token():

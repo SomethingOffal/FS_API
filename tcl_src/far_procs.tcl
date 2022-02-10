@@ -9,27 +9,13 @@ if {$is_f  >= 0} {
 font create font_info_txt -family Helvetica -size 8
 font create font_info_res -family Helvetica -size 11 -weight bold
 
-
-set scr_offset 2
 # ###################################
 proc scrol_canv  {wid diff} {
-    global scr_offset
     if {$diff < 0} {
-        incr scr_offset
         $wid yview scroll $diff unit
     } else {
-        incr scr_offset -1
         $wid yview scroll $diff unit
     }
-    #if {$scr_offset < 2 && $scr_offset > -2} {
-    #    $wid yview scroll $diff unit
-    #} elseif {$scr_offset >= 3} {
-    #    set scr_offset 2
-    #    $wid yview scroll $diff unit
-    #} elseif {$scr_offset <= -3} {
-    #    set scr_offset -2
-    #    $wid yview scroll $diff unit
-    #}
 }
 
 
@@ -478,7 +464,6 @@ proc disp_res_chain {cnv1 chain} {
 
 # ########################################
 proc show_res_details {wid} {
-    global scr_offset
 
     update
     
@@ -540,7 +525,7 @@ proc show_res_details {wid} {
     pack $lbc -side top -fill x -expand 1
     set cnv1 [canvas $fr.canv1  -borderwidth 4 -relief sunken -width 450 -height 900 -background wheat]
     $cnv1 configure -yscrollincrement 1
-    set scr_offset 2
+    $cnv1 configure -scrollregion {0 0 450 1200}
     pack $cnv1 -side top -fill both -expand 1
     bind $cnv1 <MouseWheel> {scrol_canv %W %D}
     if {$chain == {}} {
@@ -693,3 +678,4 @@ proc show_comp_details {wid} {
     set comp_spec [get_comp_spec $comp_txt]
     puts $comp_spec
 }
+
