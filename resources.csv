@@ -1,157 +1,157 @@
-id,code,name,type,group,color,volume
-1,RU1,Rubies,Mineral,Gem,#cc41cc,2
-2,EM2,Emeralds,Mineral,Gem,#cc41cc,3
-3,SA3,Sapphires,Mineral,Gem,#cc41cc,2
-4,DI4,Diamonds,Mineral,Gem,#cc41cc,3
-5,AG5,Agate,Mineral,Gem,#cc41cc,2
-6,AM6,Amber,Mineral,Gem,#cc41cc,3
-7,TO7,Tourmaline,Mineral,Gem,#cc41cc,2
-8,ZI8,Zircon,Mineral,Gem,#cc41cc,3
-9,SU9,Sunstone,Mineral,Gem,#cc41cc,2
-10,JA10,Jade,Mineral,Gem,#cc41cc,3
-11,CI11,Citrine,Mineral,Gem,#cc41cc,2
-12,TO12,Topaz,Mineral,Gem,#cc41cc,3
-13,AQ13,Aquamarine,Mineral,Gem,#cc41cc,2
-14,MO14,Moonstone,Mineral,Gem,#cc41cc,3
-15,KA15,Kariya crystals,Mineral,Crystal,#6d2c99,2
-16,HA16,Harp crystals,Mineral,Crystal,#6d2c99,3
-17,RE17,Reberite crystals,Mineral,Crystal,#6d2c99,2
-18,TH18,Thorite crystals,Mineral,Crystal,#6d2c99,3
-19,QU19,Quartz crystals,Mineral,Crystal,#6d2c99,2
-20,CA20,Cavansite crystals,Mineral,Crystal,#6d2c99,3
-21,CA21,Сalcite crystals,Mineral,Crystal,#6d2c99,2
-22,PY22,Pyrite crystals,Mineral,Crystal,#6d2c99,3
-23,BE23,Beryl crystals,Mineral,Crystal,#6d2c99,2
-24,AP24,Apatite crystals,Mineral,Crystal,#6d2c99,3
-25,GA25,Garnet crystals,Mineral,Crystal,#6d2c99,2
-26,FL26,Fluorite crystals,Mineral,Crystal,#6d2c99,3
-27,SA27,Sand,Mineral,Stone rock,#634220,1
-28,CR28,Crystal sand,Mineral,Stone rock,#634220,2
-29,ON29,Onyx sand,Mineral,Stone rock,#634220,3
-30,CL30,Clay,Mineral,Stone rock,#634220,1
-31,CR31,Crushed stone,Mineral,Stone rock,#634220,1
-32,GR32,Granite,Mineral,Stone rock,#634220,1
-33,MA33,Marble,Mineral,Stone rock,#634220,1
-34,ON34,Onyx,Mineral,Stone rock,#634220,2
-35,OB35,Obsidian,Mineral,Stone rock,#634220,3
-36,VO36,Volcanic glass,Mineral,Stone rock,#634220,5
-37,BA37,Basalt,Mineral,Stone rock,#634220,4
-38,PAm38,Paraffins,Material,Oil,#742222,1
-39,POm39,Polymers,Material,Oil,#742222,1
-40,ALm40,Alkali,Material,Oil,#742222,2
-41,POm41,Polypropylene,Material,Oil,#742222,2
-42,PIm42,Plastic,Material,Oil,#742222,2
-43,BIm43,Bitumen,Material,Oil,#742222,2
-44,TEm44,Textolite,Material,Oil,#742222,3
-45,COm45,Combustible,Material,Oil,#742222,3
-46,POm46,Polystyrene,Material,Oil,#742222,5
-47,HYm47,Hydrogen,Material,Gas,#a89a73,1
-48,OXm48,Oxygen,Material,Gas,#a89a73,1
-49,NIm49,Nitrogen,Material,Gas,#a89a73,2
-50,KRm50,Krypton,Material,Gas,#a89a73,2
-51,NEm51,Neon,Material,Gas,#a89a73,2
-52,RAm52,Radon,Material,Gas,#a89a73,2
-53,XEm53,Xenon,Material,Gas,#a89a73,3
-54,ARm54,Argon,Material,Gas,#a89a73,3
-55,OGm55,Oganeson,Material,Gas,#a89a73,5
-56,TIm56,Tin,Material,Metal,#85a1bb,1
-57,IRm57,Iron,Material,Metal,#85a1bb,1
-58,STm58,Scandium,Material,Metal,#85a1bb,1
-59,COm59,Copper,Material,Metal,#85a1bb,1
-60,ALm60,Aluminum,Material,Metal,#85a1bb,1
-61,ZIm61,Zinc,Material,Metal,#85a1bb,2
-62,NIm62,Nickel,Material,Metal,#85a1bb,2
-63,TIm63,Titanium,Material,Metal,#85a1bb,2
-64,TUm64,Tungsten,Material,Metal,#85a1bb,2
-65,QUm65,Quicksilver,Material,Metal,#85a1bb,2
-66,LEm66,Lead,Material,Metal,#85a1bb,2
-67,YTm67,Yttrium,Material,Metal,#85a1bb,2
-68,ERm68,Erbium,Material,Metal,#85a1bb,2
-69,SAm69,Samarium,Material,Metal,#85a1bb,2
-70,HOm70,Holmium,Material,Metal,#85a1bb,2
-71,TAm71,Tantalum,Material,Metal,#85a1bb,3
-72,SIm72,Silver,Material,Metal,#85a1bb,3
-73,GOm73,Gold,Material,Metal,#85a1bb,3
-74,PLm74,Platinum,Material,Metal,#85a1bb,3
-75,IRm75,Iridium,Material,Metal,#85a1bb,3
-76,URm76,Uranus,Material,Radioactive metal,#5282ae,5
-77,PLm77,Plutonium,Material,Radioactive metal,#5282ae,5
-78,TEm78,Technicium,Material,Radioactive metal,#5282ae,5
-79,PRm79,Promethium,Material,Radioactive metal,#5282ae,5
-151,LUm80,Lumber,Material,Nature resource,#659c4d,1
-81,CAm81,Caoutchouc,Material,Nature resource,#659c4d,2
-82,SIm82,Silicone,Material,Nature resource,#659c4d,2
-154,WAm83,Water,Material,Nature resource,#659c4d,3
-84,PLm84,Plant,Material,Nature resource,#659c4d,3
-85,SUm85,Sulfur,Material,Fossil,#88735a,4
-86,CLm86,Chloride,Material,Fossil,#88735a,4
-87,SOm87,Sodium,Material,Fossil,#88735a,4
-88,CAm88,Carbon,Material,Fossil,#88735a,4
-89,SIm89,Silicium,Material,Fossil,#88735a,4
-90,COm90,Coal,Material,Fossil,#88735a,5
-91,SIm91,Simple acids,Material,Fossil,#88735a,4
-92,COm92,Complex acids,Material,Fossil,#88735a,5
-93,ACm93,Acetone,Material,Fossil,#88735a,4
-94,POm94,Polythene,Material,Fossil,#88735a,4
-95,STm95,Styrofoam,Material,Fossil,#88735a,5
-96,RmCO2,Regular CO2,Material,Side,#999999,1
-97,SmCO2,Solid CO2,Material,Side,#999999,1
-98,LmCO2,Liquid CO2,Material,Side,#999999,1
-99,PDm1,Planetary Dust,Material,Side,#999999,1
-100,SDm1,Star Dust,Material,Side,#999999,1
-101,MPm1,Matter particles,Material,Side,#999999,1
-102,HE96,Helium-3,,Unique resource,#ff0202,5
-103,CA97,Californium,,Unique resource,#ff0202,5
-104,POo1,Paraffin oil,Ore,Oil,#742222,1
-105,POo2,Polymer oil,Ore,Oil,#742222,1
-106,AOo3,Alkali oil,Ore,Oil,#742222,1
-107,POo4,Polypropylene oil,Ore,Oil,#742222,1
-108,POo5,Plastic oil,Ore,Oil,#742222,1
-109,BOo6,Bitumen oil,Ore,Oil,#742222,1
-110,TOo7,Textolite oil,Ore,Oil,#742222,1
-111,COo8,Combustible oil,Ore,Oil,#742222,1
-112,COo9,Complex oil,Ore,Oil,#742222,1
-113,POo10,Polystyrene oil,Ore,Oil,#742222,1
-114,HGo11,Hydrogen gas,Ore,Gas,#a89a73,1
-115,OGo12,Oxygen gas,Ore,Gas,#a89a73,1
-116,NGo13,Nitrogen gas,Ore,Gas,#a89a73,1
-117,KGo14,Krypton gas,Ore,Gas,#a89a73,1
-118,NG015,Neon gas,Ore,Gas,#a89a73,1
-119,RGo16,Radon gas,Ore,Gas,#a89a73,1
-120,XGo17,Xenon gas,Ore,Gas,#a89a73,1
-121,AGo18,Argon gas,Ore,Gas,#a89a73,1
-122,CGo19,Complex gas,Ore,Gas,#a89a73,1
-123,OGo20,Oganeson gas,Ore,Gas,#a89a73,1
-124,TOo21,Tin ore,Ore,Metal,#85a1bb,1
-125,IOo22,Iron ore,Ore,Metal,#85a1bb,1
-126,SOo23,Scandium ore,Ore,Metal,#85a1bb,1
-127,COo24,Copper ore,Ore,Metal,#85a1bb,1
-128,AOo25,Aluminum ore,Ore,Metal,#85a1bb,1
-129,ZOo26,Zinc ore,Ore,Metal,#85a1bb,1
-130,NOo27,Nickel ore,Ore,Metal,#85a1bb,1
-131,TOo28,Titanium ore,Ore,Metal,#85a1bb,1
-132,TOo29,Tungsten ore,Ore,Metal,#85a1bb,1
-133,QOo30,Quicksilver ore,Ore,Metal,#85a1bb,1
-134,LOo31,Lead ore,Ore,Metal,#85a1bb,1
-135,YOo32,Yttrium ore,Ore,Metal,#85a1bb,1
-136,EOo33,Erbium ore,Ore,Metal,#85a1bb,1
-137,SOo34,Samarium ore,Ore,Metal,#85a1bb,1
-138,HOo35,Holmium ore,Ore,Metal,#85a1bb,1
-139,TOo36,Tantalum ore,Ore,Metal,#85a1bb,1
-140,SOo37,Silver ore,Ore,Metal,#85a1bb,1
-141,GOo38,Gold ore,Ore,Metal,#85a1bb,1
-142,POo39,Platinum ore,Ore,Metal,#85a1bb,1
-143,COo40,Complex ore,Ore,Metal,#85a1bb,1
-144,SOo41,Special ore,Ore,Metal,#85a1bb,1
-145,COo42,Combined ore,Ore,Metal,#85a1bb,1
-146,COo43,Composite ore,Ore,Metal,#85a1bb,1
-147,UOo44,Uranus ore,Ore,Radioactive metal,#5282ae,1
-148,POo45,Plutonium ore,Ore,Radioactive metal,#5282ae,1
-149,TOo46,Technicium ore,Ore,Radioactive metal,#5282ae,1
-150,POo47,Promethium ore,Ore,Radioactive metal,#5282ae,1
-80,LOo48,Lumber organic,Ore,Nature resource,#659c4d,1
-152,COo49,Caoutchouc organic,Ore,Nature resource,#659c4d,1
-153,SOo50,Silicone organic,Ore,Nature resource,#659c4d,1
-83,WOo51,Water organic,Ore,Nature resource,#659c4d,1
-155,POo52,Plant organic,Ore,Nature resource,#659c4d,1
-156,COo53,Complex organic,Ore,Nature resource,#659c4d,1
+id,code,name,type,group,color,volume,discovered
+1,RU1,Rubies,Mineral,Gem,#cc41cc,2,True
+2,EM2,Emeralds,Mineral,Gem,#cc41cc,3,True
+3,SA3,Sapphires,Mineral,Gem,#cc41cc,2,True
+4,DI4,Diamonds,Mineral,Gem,#cc41cc,3,True
+5,AG5,Agate,Mineral,Gem,#cc41cc,2,
+6,AM6,Amber,Mineral,Gem,#cc41cc,3,
+7,TO7,Tourmaline,Mineral,Gem,#cc41cc,2,
+8,ZI8,Zircon,Mineral,Gem,#cc41cc,3,
+9,SU9,Sunstone,Mineral,Gem,#cc41cc,2,
+10,JA10,Jade,Mineral,Gem,#cc41cc,3,
+11,CI11,Citrine,Mineral,Gem,#cc41cc,2,
+12,TO12,Topaz,Mineral,Gem,#cc41cc,3,
+13,AQ13,Aquamarine,Mineral,Gem,#cc41cc,2,
+14,MO14,Moonstone,Mineral,Gem,#cc41cc,3,
+15,KA15,Kariya crystals,Mineral,Crystal,#6d2c99,2,True
+16,HA16,Harp crystals,Mineral,Crystal,#6d2c99,3,True
+17,RE17,Reberite crystals,Mineral,Crystal,#6d2c99,2,True
+18,TH18,Thorite crystals,Mineral,Crystal,#6d2c99,3,True
+19,QU19,Quartz crystals,Mineral,Crystal,#6d2c99,2,
+20,CA20,Cavansite crystals,Mineral,Crystal,#6d2c99,3,
+21,CA21,Сalcite crystals,Mineral,Crystal,#6d2c99,2,
+22,PY22,Pyrite crystals,Mineral,Crystal,#6d2c99,3,
+23,BE23,Beryl crystals,Mineral,Crystal,#6d2c99,2,
+24,AP24,Apatite crystals,Mineral,Crystal,#6d2c99,3,
+25,GA25,Garnet crystals,Mineral,Crystal,#6d2c99,2,
+26,FL26,Fluorite crystals,Mineral,Crystal,#6d2c99,3,
+27,SA27,Sand,Mineral,Stone rock,#634220,1,True
+28,CR28,Crystal sand,Mineral,Stone rock,#634220,2,
+29,ON29,Onyx sand,Mineral,Stone rock,#634220,3,
+30,CL30,Clay,Mineral,Stone rock,#634220,1,True
+31,CR31,Crushed stone,Mineral,Stone rock,#634220,1,True
+32,GR32,Granite,Mineral,Stone rock,#634220,1,True
+33,MA33,Marble,Mineral,Stone rock,#634220,1,True
+34,ON34,Onyx,Mineral,Stone rock,#634220,2,
+35,OB35,Obsidian,Mineral,Stone rock,#634220,3,
+36,VO36,Volcanic glass,Mineral,Stone rock,#634220,5,
+37,BA37,Basalt,Mineral,Stone rock,#634220,4,
+38,PAm38,Paraffins,Material,Oil,#742222,1,True
+39,POm39,Polymers,Material,Oil,#742222,1,True
+40,ALm40,Alkali,Material,Oil,#742222,2,True
+41,POm41,Polypropylene,Material,Oil,#742222,2,True
+42,PIm42,Plastic,Material,Oil,#742222,2,
+43,BIm43,Bitumen,Material,Oil,#742222,2,
+44,TEm44,Textolite,Material,Oil,#742222,3,
+45,COm45,Combustible,Material,Oil,#742222,3,
+46,POm46,Polystyrene,Material,Oil,#742222,5,
+47,HYm47,Hydrogen,Material,Gas,#a89a73,1,True
+48,OXm48,Oxygen,Material,Gas,#a89a73,1,True
+49,NIm49,Nitrogen,Material,Gas,#a89a73,2,True
+50,KRm50,Krypton,Material,Gas,#a89a73,2,True
+51,NEm51,Neon,Material,Gas,#a89a73,2,
+52,RAm52,Radon,Material,Gas,#a89a73,2,
+53,XEm53,Xenon,Material,Gas,#a89a73,3,
+54,ARm54,Argon,Material,Gas,#a89a73,3,
+55,OGm55,Oganeson,Material,Gas,#a89a73,5,
+56,TIm56,Tin,Material,Metal,#85a1bb,1,True
+57,IRm57,Iron,Material,Metal,#85a1bb,1,True
+58,STm58,Scandium,Material,Metal,#85a1bb,1,True
+59,COm59,Copper,Material,Metal,#85a1bb,1,True
+60,ALm60,Aluminum,Material,Metal,#85a1bb,1,True
+61,ZIm61,Zinc,Material,Metal,#85a1bb,2,True
+62,NIm62,Nickel,Material,Metal,#85a1bb,2,True
+63,TIm63,Titanium,Material,Metal,#85a1bb,2,True
+64,TUm64,Tungsten,Material,Metal,#85a1bb,2,
+65,QUm65,Quicksilver,Material,Metal,#85a1bb,2,
+66,LEm66,Lead,Material,Metal,#85a1bb,2,
+67,YTm67,Yttrium,Material,Metal,#85a1bb,2,
+68,ERm68,Erbium,Material,Metal,#85a1bb,2,
+69,SAm69,Samarium,Material,Metal,#85a1bb,2,
+70,HOm70,Holmium,Material,Metal,#85a1bb,2,
+71,TAm71,Tantalum,Material,Metal,#85a1bb,3,
+72,SIm72,Silver,Material,Metal,#85a1bb,3,
+73,GOm73,Gold,Material,Metal,#85a1bb,3,
+74,PLm74,Platinum,Material,Metal,#85a1bb,3,
+75,IRm75,Iridium,Material,Metal,#85a1bb,3,
+76,URm76,Uranus,Material,Radioactive metal,#5282ae,5,
+77,PLm77,Plutonium,Material,Radioactive metal,#5282ae,5,
+78,TEm78,Technicium,Material,Radioactive metal,#5282ae,5,
+79,PRm79,Promethium,Material,Radioactive metal,#5282ae,5,
+151,LUm80,Lumber,Material,Nature resource,#659c4d,1,True
+81,CAm81,Caoutchouc,Material,Nature resource,#659c4d,2,
+82,SIm82,Silicone,Material,Nature resource,#659c4d,2,
+154,WAm83,Water,Material,Nature resource,#659c4d,3,True
+84,PLm84,Plant,Material,Nature resource,#659c4d,3,
+85,SUm85,Sulfur,Material,Fossil,#88735a,4,
+86,CLm86,Chloride,Material,Fossil,#88735a,4,
+87,SOm87,Sodium,Material,Fossil,#88735a,4,
+88,CAm88,Carbon,Material,Fossil,#88735a,4,
+89,SIm89,Silicium,Material,Fossil,#88735a,4,
+90,COm90,Coal,Material,Fossil,#88735a,5,
+91,SIm91,Simple acids,Material,Fossil,#88735a,4,
+92,COm92,Complex acids,Material,Fossil,#88735a,5,
+93,ACm93,Acetone,Material,Fossil,#88735a,4,
+94,POm94,Polythene,Material,Fossil,#88735a,4,
+95,STm95,Styrofoam,Material,Fossil,#88735a,5,
+96,RmCO2,Regular CO2,Material,Side,#999999,1,True
+97,SmCO2,Solid CO2,Material,Side,#999999,1,True
+98,LmCO2,Liquid CO2,Material,Side,#999999,1,True
+99,PDm1,Planetary Dust,Material,Side,#999999,1,True
+100,SDm1,Star Dust,Material,Side,#999999,1,True
+101,MPm1,Matter particles,Material,Side,#999999,1,True
+102,HE96,Helium-3,,Unique resource,#ff0202,5,
+103,CA97,Californium,,Unique resource,#ff0202,5,
+104,POo1,Paraffin oil,Ore,Oil,#742222,1,True
+105,POo2,Polymer oil,Ore,Oil,#742222,1,True
+106,AOo3,Alkali oil,Ore,Oil,#742222,1,True
+107,POo4,Polypropylene oil,Ore,Oil,#742222,1,True
+108,POo5,Plastic oil,Ore,Oil,#742222,1,
+109,BOo6,Bitumen oil,Ore,Oil,#742222,1,
+110,TOo7,Textolite oil,Ore,Oil,#742222,1,
+111,COo8,Combustible oil,Ore,Oil,#742222,1,
+112,COo9,Complex oil,Ore,Oil,#742222,1,
+113,POo10,Polystyrene oil,Ore,Oil,#742222,1,
+114,HGo11,Hydrogen gas,Ore,Gas,#a89a73,1,True
+115,OGo12,Oxygen gas,Ore,Gas,#a89a73,1,True
+116,NGo13,Nitrogen gas,Ore,Gas,#a89a73,1,True
+117,KGo14,Krypton gas,Ore,Gas,#a89a73,1,True
+118,NG015,Neon gas,Ore,Gas,#a89a73,1,
+119,RGo16,Radon gas,Ore,Gas,#a89a73,1,
+120,XGo17,Xenon gas,Ore,Gas,#a89a73,1,
+121,AGo18,Argon gas,Ore,Gas,#a89a73,1,
+122,CGo19,Complex gas,Ore,Gas,#a89a73,1,
+123,OGo20,Oganeson gas,Ore,Gas,#a89a73,1,
+124,TOo21,Tin ore,Ore,Metal,#85a1bb,1,True
+125,IOo22,Iron ore,Ore,Metal,#85a1bb,1,True
+126,SOo23,Scandium ore,Ore,Metal,#85a1bb,1,True
+127,COo24,Copper ore,Ore,Metal,#85a1bb,1,True
+128,AOo25,Aluminum ore,Ore,Metal,#85a1bb,1,True
+129,ZOo26,Zinc ore,Ore,Metal,#85a1bb,1,True
+130,NOo27,Nickel ore,Ore,Metal,#85a1bb,1,True
+131,TOo28,Titanium ore,Ore,Metal,#85a1bb,1,True
+132,TOo29,Tungsten ore,Ore,Metal,#85a1bb,1,
+133,QOo30,Quicksilver ore,Ore,Metal,#85a1bb,1,
+134,LOo31,Lead ore,Ore,Metal,#85a1bb,1,
+135,YOo32,Yttrium ore,Ore,Metal,#85a1bb,1,
+136,EOo33,Erbium ore,Ore,Metal,#85a1bb,1,
+137,SOo34,Samarium ore,Ore,Metal,#85a1bb,1,
+138,HOo35,Holmium ore,Ore,Metal,#85a1bb,1,
+139,TOo36,Tantalum ore,Ore,Metal,#85a1bb,1,
+140,SOo37,Silver ore,Ore,Metal,#85a1bb,1,
+141,GOo38,Gold ore,Ore,Metal,#85a1bb,1,
+142,POo39,Platinum ore,Ore,Metal,#85a1bb,1,
+143,COo40,Complex ore,Ore,Metal,#85a1bb,1,
+144,SOo41,Special ore,Ore,Metal,#85a1bb,1,
+145,COo42,Combined ore,Ore,Metal,#85a1bb,1,
+146,COo43,Composite ore,Ore,Metal,#85a1bb,1,
+147,UOo44,Uranus ore,Ore,Radioactive metal,#5282ae,1,
+148,POo45,Plutonium ore,Ore,Radioactive metal,#5282ae,1,
+149,TOo46,Technicium ore,Ore,Radioactive metal,#5282ae,1,
+150,POo47,Promethium ore,Ore,Radioactive metal,#5282ae,1,
+80,LOo48,Lumber organic,Ore,Nature resource,#659c4d,1,True
+152,COo49,Caoutchouc organic,Ore,Nature resource,#659c4d,1,
+153,SOo50,Silicone organic,Ore,Nature resource,#659c4d,1,
+83,WOo51,Water organic,Ore,Nature resource,#659c4d,1,True
+155,POo52,Plant organic,Ore,Nature resource,#659c4d,1,
+156,COo53,Complex organic,Ore,Nature resource,#659c4d,1,

@@ -43,55 +43,7 @@ package require Tk
 
 source "c:/work/Farsite/FS_API/tcl_src/tcl_db.tcl"
 
-
-# ########################################
-proc show_res_details {wid fr} {
-    update
-    
-    set sel_idx [$wid curselection]
-    #puts $sel_idx
-    set reso [$wid get $sel_idx]
-    #puts $reso
-    foreach r $res::res_lst {
-        set reso_info [string first $reso $r]
-        if {$reso_info >= 0} {
-            set info $r
-            break
-        }
-    }
-    set idx 0
-    set sr [split $r ","]
-    set sh [split $res::res_header ","]
-    # clean up from previous
-    foreach t $sh {
-        destroy $fr.fr$idx
-        incr idx
-    }
-    
-    set idx 0
-    foreach t $sh {
-        destroy .main.fr$idx
-        set if_fr$idx [frame $fr.fr$idx]
-        set lbname [lindex $sr $idx]
-        puts $lbname
-        if {$lbname == ""} {
-            incr idx
-            continue
-        }
-        set lb [label $fr.fr$idx.lb -text $lbname]
-        set lb1 [label $fr.fr$idx.lb2 -text $t]
-        pack $lb1 $lb -side left -padx 20
-        pack $fr.fr$idx -anchor w
-        incr idx
-    }
-    #puts $r
-}
-
-
-
-
-
-set version "v0.02"
+set version "Alpha 0.2"
 wm title . "Farsite Workbench $version"
 # #############################
 bind . <F12> {catch {console show}}
@@ -103,7 +55,7 @@ console show
 
 #  command buttons and options frame
 set cmdf [frame .fc -borderwidth 4 -relief sunken]
-set cmdb [button $cmdf.bt1 -text "Reload" -command {source "c:/work/Farsite/FS_API/tcl_src/far_procs.tcl"}]
+set cmdb [button $cmdf.bt1 -text "Reload" -command {source "c:/work/Farsite/FS_API/tcl_src/user_procs.tcl"}]
 pack $cmdb
 pack $cmdf -side top -anchor n -fill x -expand 1
 
@@ -113,14 +65,15 @@ set cmd_ent [entry $c.cmd1]
 pack $cmd_ent -side bottom -anchor s -expand 1 -fill x -padx 2
 set hlp_lb [label $c.hlb -textvariable helpVar -justify left]
 pack $hlp_lb -side left -fill x -padx 4
-pack .f1 -side bottom -anchor s -fill x
+#pack .f1 -side bottom -anchor s -fill x
 
 # setup the notebook
-set nb [ttk::notebook .note]
-pack $nb -side top -fill both -expand 1 -anchor n 
+set nb [ttk::notebook .note -height 1100]
+pack $nb -anchor n -side top -expand 1 -fill both
+pack .f1 -side bottom -anchor s -fill x
 set mfr $nb.base
 #$nb add [frame .note.reso -borderwidth 4 -relief sunken] -text  "Farsite DB" -underline 0
-$nb add [frame $mfr -borderwidth 4 -relief sunken] -text  "Farsite DB" -underline 0
+$nb add [frame $mfr -borderwidth 4 -relief sunken] -text "\[ Farsite DB \]" -underline 0 -padding {5 5 5 5}
 # This is the planets list frame.
 set w [ttk::frame $mfr.f2 -borderwidth 4 -relief sunken -width 96]
 #pack $w -fill both -expand 1
@@ -143,10 +96,15 @@ namespace eval comp {
     set info_win {}
     set comp_lst {}
     set comp_header ""
+    set comp_filter {}
+    set comp_id ""
 }
 # components list box
 set cfr [frame $w.cfr -borderwidth 4 -relief sunken]
 set comp::clb [listbox $cfr.cmp -width 34]
+set comp::filter [entry $cfr.en1 -width 34 -borderwidth 4 -relief raised]
+pack $comp::filter -fill x
+bind $comp::filter <KeyRelease> { filter_lb %W $comp::clb}
 pack $comp::clb -anchor w -side left -fill y -expand 1
 bind $comp::clb <ButtonRelease-1> { show_comp_details %W }
 bind $comp::clb <KeyRelease> { show_comp_details %W}
@@ -186,10 +144,73 @@ pack $info::info_fr -anchor nw
 
 # ##################
 set modfr .note.mods
-$nb add [frame .note.mods -borderwidth 4 -relief sunken] -text  "Modules" -underline 2
+$nb add [frame .note.mods -borderwidth 4 -relief sunken] -text  "\[ User Ships \]" -underline 2 -padding {5 5 5 5}
 ttk::notebook::enableTraversal $nb
 
+# ##################
+namespace eval uzr {
+    set name ""
+    set id ""
+    set email ""
+    set pw ""
+    set key ""
+    set user_note_frame {};  # user frame
+}
+
+$nb add [ttk::frame .note.usr -borderwidth 4 -relief sunken] -text  "\[ User Status \]" -underline 2 -padding {5 5 5 5}
+
+set uzr_work_fr .note.usr
+#set uzr::user_note_frame [ttk::frame $uzr_work_fr.uinfo -borderwidth 4 -relief sunken -height 800]
+set uzr::user_note_frame [ttk::frame $uzr_work_fr.uinfo -borderwidth 4 -relief sunken -height 1800]
+#set uzr::user_note_frame $uzr_work_fr
+
+set ufr [frame $uzr_work_fr.bts -borderwidth 4 -relief sunken]
+set ubfr [frame $ufr.bfr1 -height 10]
+set nfr [frame $ubfr.nf]
+set nlb [label $nfr.lb1 -text "Log Email: "]
+set unen [entry $nfr.en1 -width 25 -textvariable uzr::email]
+pack $nlb $unen -side left
+set pfr [frame $ubfr.pf]
+set plb [label $pfr.lb1 -text "Log Password: "]
+set pnen [entry $pfr.en1 -width 35 -show "#" -textvariable uzr::pw]
+set gbtn [button $pfr.bt1 -text "Get" -command get_uzr_info]
+set lbtn [button $pfr.bt2 -text "Load" -command {load_uzr_info; generate_view}]
+pack $plb $pnen -side left
+pack $nfr $pfr -side left
+pack $gbtn $lbtn -side left
+pack $ubfr -side top -anchor n -expand 1 -fill x
+pack $ufr -side top -anchor n -expand 1 -fill x
+
+
+# ###############################################################################
+#   test tab
+namespace eval 3D {
+    set ufr {}
+    set canv {}
+    set sys_lst {}
+    set sys_conn_lst {}
+    set planet_lst {}
+    set origin {0.0,0.0,0.0}
+    
+}
+
+$nb add [frame .note.tst -borderwidth 4 -relief sunken] -text  "\[ Test \]" -underline 2 -padding {5 5 5 5}
+set 3D::ufr .note.tst
+#pack $3D::ufr -side left -fill both -expand 1
+
+
+#pack $uzr::user_note_frame -side top -anchor n -expand 1 -fill both
+pack $uzr::user_note_frame -fill both -expand 1
+
+#pack $uzr::user_note_frame  -side left -expand 1 -fill both
+#set cfgs [ttk::style configure style]
+#puts $cfgs
+#?-option ?value option value...? ?
+#ttk::notebook::enableTraversal $nb
+
 source "c:/work/Farsite/FS_API/tcl_src/far_procs.tcl"
+source "c:/work/Farsite/FS_API/tcl_src/user_procs.tcl"
+source "c:/work/Farsite/FS_API/tcl_src/test_procs.tcl"
 
 load_base
 
@@ -203,3 +224,11 @@ proc mouse_move {wid x y} {
     global helpVar
     set helpVar "x: $x y: $y Win: $wid "
 }
+
+
+# ###   the universe
+#https://farsite.online/api/1.0/universe
+#https://farsite.online/api/1.0/universe  --> Constellations
+#https://farsite.online/api/1.0/universe/star/1/planets  --> Planets of a Star
+#https://farsite.online/api/1.0/universe/planets/HOM-11/sectors  ##  replace HOM-11 with planet.
+
