@@ -40,10 +40,17 @@ package require Tk
 #  put all the variables in one file.
 #source "./far_var.tcl"
 #source "c:/work/Farsite/src/far_var.tcl"
+namespace eval sys {
+    set cdir ""
+}
 
-source "c:/work/Farsite/FS_API/tcl_src/tcl_db.tcl"
 
-set version "Alpha 0.2"
+set sys::cdir [pwd]
+source "$sys::cdir/tcl_db.tcl"
+
+#source "c:/work/Farsite/FS_API/tcl_src/tcl_db.tcl"
+
+set version "Alpha 0.3"
 wm title . "Farsite Workbench $version"
 # #############################
 bind . <F12> {catch {console show}}
@@ -55,7 +62,7 @@ console show
 
 #  command buttons and options frame
 set cmdf [frame .fc -borderwidth 4 -relief sunken]
-set cmdb [button $cmdf.bt1 -text "Reload" -command {source "c:/work/Farsite/FS_API/tcl_src/user_procs.tcl"}]
+set cmdb [button $cmdf.bt1 -text "Reload" -command {source "$sys::cdir/user_procs.tcl"}]
 pack $cmdb
 pack $cmdf -side top -anchor n -fill x -expand 1
 
@@ -155,6 +162,7 @@ namespace eval uzr {
     set pw ""
     set key ""
     set user_note_frame {};  # user frame
+    set bkup_en 1
 }
 
 $nb add [ttk::frame .note.usr -borderwidth 4 -relief sunken] -text  "\[ User Status \]" -underline 2 -padding {5 5 5 5}
@@ -175,9 +183,11 @@ set plb [label $pfr.lb1 -text "Log Password: "]
 set pnen [entry $pfr.en1 -width 35 -show "#" -textvariable uzr::pw]
 set gbtn [button $pfr.bt1 -text "Get" -command get_uzr_info]
 set lbtn [button $pfr.bt2 -text "Load" -command {load_uzr_info; generate_view}]
+set bucb [checkbutton $pfr.cb1 -text "Backup Enable " -variable uzr::bkup_en -anchor w]
 pack $plb $pnen -side left
 pack $nfr $pfr -side left
 pack $gbtn $lbtn -side left
+pack $bucb
 pack $ubfr -side top -anchor n -expand 1 -fill x
 pack $ufr -side top -anchor n -expand 1 -fill x
 
@@ -208,9 +218,9 @@ pack $uzr::user_note_frame -fill both -expand 1
 #?-option ?value option value...? ?
 #ttk::notebook::enableTraversal $nb
 
-source "c:/work/Farsite/FS_API/tcl_src/far_procs.tcl"
-source "c:/work/Farsite/FS_API/tcl_src/user_procs.tcl"
-source "c:/work/Farsite/FS_API/tcl_src/test_procs.tcl"
+source "$sys::cdir/far_procs.tcl"
+source "$sys::cdir/user_procs.tcl"
+source "$sys::cdir/test_procs.tcl"
 
 load_base
 
