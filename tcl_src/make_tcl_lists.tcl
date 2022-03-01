@@ -75,7 +75,7 @@ proc csv2tlst {fh} {
 }
 
 set fo [open "C:/work/Farsite/FS_API/tcl_src/tcl_db.tcl" "w"]
-set fh [open "C:/work/Farsite/FS_API/resources.csv" "r"]
+set fh [open "C:/work/Farsite/FS_API/Resources.csv" "r"]
 set res_lst [csv2tlst $fh]
 close $fh
 set fh [open "C:/work/Farsite/FS_API/refinery_outputs.csv" "r"]

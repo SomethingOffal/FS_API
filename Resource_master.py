@@ -169,7 +169,7 @@ refinery_outputs_df = refinery_outputs_df.set_index('input_resource_id')
 
 
 # Finally - dump all these to csv:
-resources_df.to_csv('resources.csv')
+resources_df.to_csv('Resources.csv')
 components_df.to_csv('components.csv')
 component_resource_requirements_df.to_csv('component_resource_requirements.csv')
 component_main_requirements_df.to_csv('component_main_requirements.csv')

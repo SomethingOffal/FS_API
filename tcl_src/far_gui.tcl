@@ -37,32 +37,31 @@
 package require Ttk
 package require Tk
 
-#  put all the variables in one file.
-#source "./far_var.tcl"
-#source "c:/work/Farsite/src/far_var.tcl"
+#  use name spaces everywhere.
+#   name spaces are used for most items in this file.
 namespace eval sys {
     set cdir ""
 }
 
-
-set sys::cdir [pwd]
+# # get the current location of where I am running from
+set me [file normalize [info script]]
+set me_path [string range $me 0 [string last "/" $me]]
+#puts $me_path
+set sys::cdir $me_path
 source "$sys::cdir/tcl_db.tcl"
 
-#source "c:/work/Farsite/FS_API/tcl_src/tcl_db.tcl"
-
-set version "Alpha 0.3"
+set version "Alpha 0.4"
 wm title . "Farsite Workbench $version"
 # #############################
 bind . <F12> {catch {console show}}
 console show
 
 # This is the menu
-#set mb [menu .mb1 -type menubar -tearoff 0]
-#  menue source here
+#   menue  TBD
 
 #  command buttons and options frame
 set cmdf [frame .fc -borderwidth 4 -relief sunken]
-set cmdb [button $cmdf.bt1 -text "Reload" -command {source "$sys::cdir/user_procs.tcl"}]
+set cmdb [button $cmdf.bt1 -text "Reload" -command {source "$sys::cdir/far_procs.tcl"}]
 pack $cmdb
 pack $cmdf -side top -anchor n -fill x -expand 1
 
@@ -72,31 +71,31 @@ set cmd_ent [entry $c.cmd1]
 pack $cmd_ent -side bottom -anchor s -expand 1 -fill x -padx 2
 set hlp_lb [label $c.hlb -textvariable helpVar -justify left]
 pack $hlp_lb -side left -fill x -padx 4
-#pack .f1 -side bottom -anchor s -fill x
 
 # setup the notebook
 set nb [ttk::notebook .note -height 1100]
 pack $nb -anchor n -side top -expand 1 -fill both
 pack .f1 -side bottom -anchor s -fill x
 set mfr $nb.base
-#$nb add [frame .note.reso -borderwidth 4 -relief sunken] -text  "Farsite DB" -underline 0
+
 $nb add [frame $mfr -borderwidth 4 -relief sunken] -text "\[ Farsite DB \]" -underline 0 -padding {5 5 5 5}
 # This is the planets list frame.
 set w [ttk::frame $mfr.f2 -borderwidth 4 -relief sunken -width 96]
-#pack $w -fill both -expand 1
+
 # ships name space
-namespace eval ship {
+namespace eval cmp_dets {
     set slb {}
     set info_win {}
-    set ship_lst {}
-    set ship_header ""
+    set canv {}
+    set header ""
 }
-# ships list box
-set sfr [frame $w.sfr -borderwidth 4 -relief sunken]
-set ship::slb [listbox $sfr.shp -width 30]
-pack $ship::slb -anchor w -side left -fill y -expand 1
-bind $ship::slb <ButtonRelease-1> { show_ship_details %W }
-bind $ship::slb <KeyRelease> { show_ship_details %W}
+# components details frame
+set cdfr [frame $w.cdfr -borderwidth 4 -relief sunken]
+set cmp_dets::canv [canvas $cdfr.cav1 -width 450 -height 1200]
+pack $cmp_dets::canv -anchor w -side left -fill y -expand 1
+$cmp_dets::canv configure -scrollregion {0 0 450 3600}
+#bind $cmp_dets::canv <ButtonRelease-1> { show_ship_details %W }
+#bind $cmp_dets::canv <KeyRelease> { show_ship_details %W}
 # components name space
 namespace eval comp {
     set clb {}
@@ -134,7 +133,7 @@ bind $res::plb <KeyRelease> { show_res_details %W}
 
 
 # pack main frames
-pack $sfr $cfr $rfr -side left -fill y -expand 1
+pack $cdfr $cfr $rfr -side left -fill y -expand 1
 
 namespace eval info {
     set info_fr {}
@@ -144,9 +143,7 @@ set info::info_fr [frame $mfr.inf -width 120 -borderwidth 4 -relief sunken]
 set info_lb [label $info::info_fr.lb1 -text "This is a default message message .....  until something is clicked."]
 pack $info_lb -side top -fill x
 # pack the main frames.
-#pack $w  -side left  -fill y -expand 1
 pack $w  -side left  -fill y -expand 1 -anchor w
-#pack $info::info_fr  -side left  -fill both -expand 1 -anchor w
 pack $info::info_fr -anchor nw
 
 # ##################
@@ -158,8 +155,8 @@ ttk::notebook::enableTraversal $nb
 namespace eval uzr {
     set name ""
     set id ""
-    set email ""
-    set pw ""
+#    set email ""
+#    set pw ""
     set key ""
     set user_note_frame {};  # user frame
     set bkup_en 1
@@ -168,21 +165,16 @@ namespace eval uzr {
 $nb add [ttk::frame .note.usr -borderwidth 4 -relief sunken] -text  "\[ User Status \]" -underline 2 -padding {5 5 5 5}
 
 set uzr_work_fr .note.usr
-#set uzr::user_note_frame [ttk::frame $uzr_work_fr.uinfo -borderwidth 4 -relief sunken -height 800]
 set uzr::user_note_frame [ttk::frame $uzr_work_fr.uinfo -borderwidth 4 -relief sunken -height 1800]
-#set uzr::user_note_frame $uzr_work_fr
 
 set ufr [frame $uzr_work_fr.bts -borderwidth 4 -relief sunken]
 set ubfr [frame $ufr.bfr1 -height 10]
 set nfr [frame $ubfr.nf]
-set nlb [label $nfr.lb1 -text "Log Email: "]
-set unen [entry $nfr.en1 -width 25 -textvariable uzr::email]
-pack $nlb $unen -side left
 set pfr [frame $ubfr.pf]
-set plb [label $pfr.lb1 -text "Log Password: "]
-set pnen [entry $pfr.en1 -width 35 -show "#" -textvariable uzr::pw]
-set gbtn [button $pfr.bt1 -text "Get" -command get_uzr_info]
-set lbtn [button $pfr.bt2 -text "Load" -command {load_uzr_info; generate_view}]
+set plb [label $pfr.lb1 -text "User ID: "]
+set pnen [entry $pfr.en1 -width 7 -show "#" -textvariable uzr::id]
+set gbtn [button $pfr.bt1 -text "Get Status" -command get_uzr_info]
+set lbtn [button $pfr.bt2 -text "Load Status" -command {load_uzr_info; generate_view}]
 set bucb [checkbutton $pfr.cb1 -text "Backup Enable " -variable uzr::bkup_en -anchor w]
 pack $plb $pnen -side left
 pack $nfr $pfr -side left
