@@ -470,6 +470,11 @@ proc show_res_details {wid} {
     set sel_idx [$wid curselection]
     #puts $sel_idx
     set reso [$wid get $sel_idx]
+    if {$reso == "All"} {
+        load_base
+        return
+    }
+    
     set res::cur_name $reso
     #puts $reso
     set id ""
@@ -588,6 +593,7 @@ proc load_base {} {
     }
     
     $comp::clb delete 0 end
+    set clst []
     foreach cmp $far_db::comps_lst {
         if {[lindex $cmp 0] == "0"} {
             set header [lindex $ore 1]
@@ -596,7 +602,13 @@ proc load_base {} {
         set cnumb [lindex $cmp 0]
         set nam [lindex [lindex $cmp 1] 1]
         set cid [lindex [lindex $cmp 1] 2]
-        $comp::clb insert end "$cnumb :  $nam"
+        set csz [lindex [lindex $cmp 1] 4]
+        set clst [lappend clst "$cnumb :  $nam $csz"]
+        #$comp::clb insert end "$cnumb :  $nam $csz"
+    }
+    set clst [lsort -decreasing $clst]
+    foreach c $clst {
+        $comp::clb insert end $c
     }
 }
 
@@ -674,8 +686,47 @@ proc show_comp_details {wid} {
     set comp_txt [$wid get $sel_idx]
     set comp::comp_id $comp_txt
     #set res::cur_name $reso
-    puts $comp_txt
+    #puts $comp_txt
     set comp_spec [get_comp_spec $comp_txt]
-    puts $comp_spec
+    #puts $comp_spec
+    
+    ##  hard coded index ...
+    set dlst [lrange $comp_spec 1 end]
+    $cmp_dets::canv delete all
+    $cmp_dets::canv configure -scrollregion {0 0 450 3600}
+    bind $cmp_dets::canv <MouseWheel> {scrol_canv %W 1}
+    set mlst {}
+    foreach d $dlst {
+        set r [lindex $d 1]
+        set mlst [lappend mlst [get_reso $r]]
+    }
+    
+    $res::plb delete 0 end
+    $res::plb insert end "All"
+    foreach r $mlst {
+        #puts $r
+        set mat [lindex [lindex $r 1] 0]
+        foreach ore $far_db::res_lst {
+            if {[lindex $ore 0] == "0"} {
+                set header [lindex $ore 1]
+                continue
+            }
+            set data [lindex $ore 1]
+            #puts $data
+            set name [lindex $data 0]
+            #puts "Looking for '$mat'   but is  '$name'"
+            if {$name == $mat} {
+                #puts $name
+                #break
+            
+                set txt [inv_color [lindex $data 4]]
+                $res::plb insert end [lindex $data 0]
+                $res::plb itemconfigure end -background [lindex $data 4]
+                #puts $txt
+                $res::plb itemconfigure end -foreground white
+                #puts $ore
+            }
+        }
+    }
 }
 

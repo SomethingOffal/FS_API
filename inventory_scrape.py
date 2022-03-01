@@ -19,7 +19,7 @@ else:
     
 #print(email + " " + pwd)
 
-sys.exit('Rtn11 ' + email + " " + pwd)
+#sys.exit('Rtn11 ' + email + " " + pwd)
 #sys.exit(0)
 
 #exit
@@ -61,6 +61,7 @@ account_info_dict['Blueprints'] = api_get_request(f'https://farsite.online/api/1
 account_info_dict['Modules'] =  api_get_request(f'https://farsite.online/api/1.0/modules/{user_id}/list')
 account_info_dict['Components'] =  api_get_request(f'https://farsite.online/api/1.0/components/{user_id}/list')
 account_info_dict['Accessories'] =  api_get_request(f'https://farsite.online/api/1.0/accessories/{user_id}/list')
+account_info_dict['Resources'] =  api_get_request(f'https://farsite.online/api/1.0/resources/{user_id}/list')
 
 # Write high level object snapshots to csv
 
@@ -70,10 +71,11 @@ json_normalize(account_info_dict['Ships']).drop([x for x in json_normalize(accou
 json_normalize(account_info_dict['Blueprints']).drop([x for x in json_normalize(account_info_dict['Blueprints']).keys() if 'owner' in x], axis = 1).to_csv('Blueprints.csv', index = False)
 json_normalize(account_info_dict['Modules']).drop([x for x in json_normalize(account_info_dict['Modules']).keys() if 'owner' in x], axis = 1).to_csv('Modules.csv', index = False)
 json_normalize(account_info_dict['Components']).drop([x for x in json_normalize(account_info_dict['Components']).keys() if 'owner' in x], axis = 1).to_csv('Components.csv', index = False)
+json_normalize(account_info_dict['Resources']).drop([x for x in json_normalize(account_info_dict['Resources']).keys() if 'owner' in x], axis = 1).to_csv('uzrResources.csv', index = False)
 # pd.DataFrame(account_info_dict['Accessories']).drop('owner', axis = 1).to_excel(writer, sheet_name = 'Accesories')
 
 
-    
+
 # Write each ships detail with ship ID as index
 
 all_ships_df = pd.DataFrame()
