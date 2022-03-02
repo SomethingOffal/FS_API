@@ -50,7 +50,7 @@ set me_path [string range $me 0 [string last "/" $me]]
 set sys::cdir $me_path
 source "$sys::cdir/tcl_db.tcl"
 
-set version "Alpha 0.4"
+set version "Alpha 0.41"
 wm title . "Farsite Workbench $version"
 # #############################
 bind . <F12> {catch {console show}}
@@ -61,7 +61,8 @@ console show
 
 #  command buttons and options frame
 set cmdf [frame .fc -borderwidth 4 -relief sunken]
-set cmdb [button $cmdf.bt1 -text "Reload" -command {source "$sys::cdir/far_procs.tcl"}]
+#set cmdb [button $cmdf.bt1 -text "Reload" -command {source "$sys::cdir/far_procs.tcl"}]
+set cmdb [button $cmdf.bt1 -text "Reload"]
 pack $cmdb
 pack $cmdf -side top -anchor n -fill x -expand 1
 
@@ -147,9 +148,9 @@ pack $w  -side left  -fill y -expand 1 -anchor w
 pack $info::info_fr -anchor nw
 
 # ##################
-set modfr .note.mods
-$nb add [frame .note.mods -borderwidth 4 -relief sunken] -text  "\[ User Ships \]" -underline 2 -padding {5 5 5 5}
-ttk::notebook::enableTraversal $nb
+#set modfr .note.mods
+#$nb add [frame .note.mods -borderwidth 4 -relief sunken] -text  "\[ User Ships \]" -underline 2 -padding {5 5 5 5}
+#ttk::notebook::enableTraversal $nb
 
 # ##################
 namespace eval uzr {
@@ -171,15 +172,16 @@ set ufr [frame $uzr_work_fr.bts -borderwidth 4 -relief sunken]
 set ubfr [frame $ufr.bfr1 -height 10]
 set nfr [frame $ubfr.nf]
 set pfr [frame $ubfr.pf]
-set plb [label $pfr.lb1 -text "User ID: "]
-set pnen [entry $pfr.en1 -width 7 -show "#" -textvariable uzr::id]
-set gbtn [button $pfr.bt1 -text "Get Status" -command get_uzr_info]
+#set plb [label $pfr.lb1 -text "User ID: "]
+#set pnen [entry $pfr.en1 -width 7 -show "#" -textvariable uzr::id]
+#set gbtn [button $pfr.bt1 -text "Get Status" -command get_uzr_info]
 set lbtn [button $pfr.bt2 -text "Load Status" -command {load_uzr_info; generate_view}]
-set bucb [checkbutton $pfr.cb1 -text "Backup Enable " -variable uzr::bkup_en -anchor w]
-pack $plb $pnen -side left
+#set bucb [checkbutton $pfr.cb1 -text "Backup Enable " -variable uzr::bkup_en -anchor w]
+#pack $plb $pnen -side left
 pack $nfr $pfr -side left
-pack $gbtn $lbtn -side left
-pack $bucb
+pack $lbtn -side left
+#pack $gbtn $lbtn -side left
+#pack $bucb
 pack $ubfr -side top -anchor n -expand 1 -fill x
 pack $ufr -side top -anchor n -expand 1 -fill x
 
@@ -196,8 +198,8 @@ namespace eval 3D {
     
 }
 
-$nb add [frame .note.tst -borderwidth 4 -relief sunken] -text  "\[ Test \]" -underline 2 -padding {5 5 5 5}
-set 3D::ufr .note.tst
+#$nb add [frame .note.tst -borderwidth 4 -relief sunken] -text  "\[ Test \]" -underline 2 -padding {5 5 5 5}
+#set 3D::ufr .note.tst
 #pack $3D::ufr -side left -fill both -expand 1
 
 
@@ -212,7 +214,7 @@ pack $uzr::user_note_frame -fill both -expand 1
 
 source "$sys::cdir/far_procs.tcl"
 source "$sys::cdir/user_procs.tcl"
-source "$sys::cdir/test_procs.tcl"
+#source "$sys::cdir/test_procs.tcl"
 
 load_base
 
