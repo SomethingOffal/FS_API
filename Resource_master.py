@@ -47,7 +47,7 @@ component_resource_requirements_df = pd.DataFrame()
 
 # Flattening this out isn't so easy
 # walk through each component and flatten each?
-for component_key, component_value in overall_data_dict['schemes']['Components'].items():
+for component_key, component_value in overall_data_dict['schemes']['Bases']['Actions']['5']['1'].items():
     if len(component_value['Requirements']['Resources']) > 0:
         # Start at the number of resources to define each row in our entry
         for key, value in component_value['Requirements']['Resources'].items():
@@ -62,10 +62,9 @@ component_resource_requirements_df = component_resource_requirements_df.set_inde
 
 component_main_requirements_df = pd.DataFrame()
 
-for component_key, component_value in overall_data_dict['schemes']['Components'].items():
+for component_key, component_value in overall_data_dict['schemes']['Bases']['Actions']['5']['1'].items():
     line_item = {'component_id' : component_key, 
                 'duration' : component_value['Duration'], 
-                'cooldown' : component_value['Cooldown'],
                 'credits' : component_value['Requirements']['Credits']}
     component_main_requirements_df = component_main_requirements_df.append(line_item, ignore_index = True)
 
@@ -169,7 +168,7 @@ refinery_outputs_df = refinery_outputs_df.set_index('input_resource_id')
 
 
 # Finally - dump all these to csv:
-resources_df.to_csv('Resources.csv')
+resources_df.to_csv('resources.csv')
 components_df.to_csv('components.csv')
 component_resource_requirements_df.to_csv('component_resource_requirements.csv')
 component_main_requirements_df.to_csv('component_main_requirements.csv')
