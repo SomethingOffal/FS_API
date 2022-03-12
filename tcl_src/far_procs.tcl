@@ -1,13 +1,31 @@
-
+#! /usr/bin/env wish
+# -------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
+# --                     Copyright 2022 Sckoarn
+# --                        All Rights Reserved
+#
+#           This program is free software; you can redistribute it and/or modify
+#               it under the following terms:
+#               1) reproduction of this code shall include this header.
+#               2) This program is distributed in the hope that it will be useful,
+#               but WITHOUT ANY WARRANTY; without even the implied warranty of
+#               MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#               3)  You may NOT sell this code, or any part there of.
+#
+#           Description: This file contains most of the proces that access the
+#               Farsite DB tab.  Also several generic procs to access rescources.
+#
+# -------------------------------------------------------------------------------
 
 # for reloading / sourcing more than once. ...
 set fts [font names]
 set is_f [lsearch $fts font_info_txt]
 if {$is_f  >= 0} {
-    font delete font_info_txt font_info_res
+    font delete font_info_txt font_info_res font_info_cou
 }
 font create font_info_txt -family Helvetica -size 8
 font create font_info_res -family Helvetica -size 11 -weight bold
+font create font_info_cou -family Courier -size 9
 
 # ###################################
 proc scrol_canv  {wid diff} {
@@ -17,7 +35,6 @@ proc scrol_canv  {wid diff} {
         $wid yview scroll $diff unit
     }
 }
-
 
 # #####################################
 #   get the resource chain based on passed ID
@@ -79,8 +96,6 @@ proc get_reso {id} {
     }
     return $rtn
 }
-
-
 
 # ######################################
 #   get the material names from the ID
@@ -461,7 +476,6 @@ proc disp_res_chain {cnv1 chain} {
     return $rtn
 }
 
-
 # ########################################
 proc show_res_details {wid} {
 
@@ -542,7 +556,6 @@ proc show_res_details {wid} {
     
 }
 
-
 # ##############################################
 proc inv_color {col} {
     set sc [split $col ""]
@@ -572,31 +585,15 @@ proc inv_color {col} {
     return $rtn
 }
 
-
-# ###############################################
-proc load_base {} {
-    puts "loading base ..."
-    set header ""
-    $res::plb delete 0 end
-    foreach ore $far_db::res_lst {
-        if {[lindex $ore 0] == "0"} {
-            set header [lindex $ore 1]
-            continue
-        }
-        set data [lindex $ore 1]
-        #set txt [inv_color [lindex $data 4]]
-        $res::plb insert end [lindex $data 0]
-        $res::plb itemconfigure end -background [lindex $data 4]
-        #puts $txt
-        $res::plb itemconfigure end -foreground white
-        #puts $ore
-    }
+# ##############################################
+#   update the comps list box
+proc load_comp_list {lst} {
     
     $comp::clb delete 0 end
     set clst []
-    foreach cmp $far_db::comps_lst {
+    foreach cmp $lst {
         if {[lindex $cmp 0] == "0"} {
-            set header [lindex $ore 1]
+            set header [lindex $cmp 1]
             continue
         }
         set cnumb [lindex $cmp 0]
@@ -610,6 +607,28 @@ proc load_base {} {
     foreach c $clst {
         $comp::clb insert end $c
     }
+}
+
+# ###############################################
+proc load_base {} {
+    puts "loading base ..."
+    set header ""
+    $res::plb delete 0 end
+    foreach ore $far_db::res_lst {
+        if {[lindex $ore 0] == "0"} {
+            set header [lindex $ore 1]
+            continue
+        }
+        set data [lindex $ore 1]
+        $res::plb insert end [lindex $data 0]
+        $res::plb itemconfigure end -background [lindex $data 4]
+        $res::plb itemconfigure end -foreground white
+    }
+    # load comps list with default
+    load_comp_list $far_db::comps_lst
+    #  reset check button state
+    set comp::show_uzr_comps 0
+    set comp::show_uzr_txt "Show Buildable"
 }
 
 load_base
@@ -645,7 +664,6 @@ proc get_comp_spec {cmp} {
     }
     return $rtn
 }
-
 
 # #################################
 #   filter the list box based on entry

@@ -1,38 +1,17 @@
 #! /usr/bin/env wish
-##-------------------------------------------------------------------------------
-##-------------------------------------------------------------------------------
-##--                     Copyright 2014 Sckoarn
-##--                        All Rights Reserved
-##
-##           This program is free software; you can redistribute it and/or modify
-##               it under the terms of the GNU General Public License as published by
-##               the Free Software Foundation; either version 2 of the License, or
-##               (at your option) any later version.
-##           
-##               This program is distributed in the hope that it will be useful,
-##               but WITHOUT ANY WARRANTY; without even the implied warranty of
-##               MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-##               GNU General Public License for more details.
-##           
-##               You should have received a copy of the GNU General Public License
-##               along with this program; if not, write to the Free Software
-##               Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-##-------------------------------------------------------------------------------
-##-- $Author: sckoarn $
-##--
-##-- $Date: 2013/12/29 04:01:43 $
-##--
-##-- $Name:  $
-##--
-##-- $Id:  $
-##--
-##-- $Source:  $
-##--
-##-- Description :
-##--      This application assists the user by eabling the user to create their
-##           own collection of items and BPO's to calculate manufacture cost.
-##--      
-##------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
+# --                     Copyright 2022 Sckoarn
+# --                        All Rights Reserved
+#
+#           This program is free software; you can redistribute it and/or modify
+#               it under the following terms:
+#               1) reproduction of this code shall include this header.
+#               2) This program is distributed in the hope that it will be useful,
+#               but WITHOUT ANY WARRANTY; without even the implied warranty of
+#               MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#               3)  You may NOT sell this code, or any part there of.  
+# -------------------------------------------------------------------------------
 #  Packages
 package require Ttk
 package require Tk
@@ -97,6 +76,22 @@ set fh [open "C:/work/Farsite/FS_API/components.csv" "r"]
 set comps_lst [csv2tlst $fh]
 close $fh
 
+puts $fo "#! /usr/bin/env wish"
+puts $fo "# -------------------------------------------------------------------------------"
+puts $fo "# -------------------------------------------------------------------------------"
+puts $fo "# --                     Copyright 2022 Sckoarn"
+puts $fo "# --                        All Rights Reserved"
+puts $fo "#"
+puts $fo "#           This program is free software; you can redistribute it and/or modify"
+puts $fo "#               it under the following terms:"
+puts $fo "#               1) reproduction of this code shall include this header."
+puts $fo "#               2) This program is distributed in the hope that it will be useful,"
+puts $fo "#               but WITHOUT ANY WARRANTY; without even the implied warranty of"
+puts $fo "#               MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+puts $fo "#               3)  You may NOT sell this code, or any part there of."  
+puts $fo "#  *** This is a generated file, see make_tcl_lists.tcl for the details   ***"
+puts $fo "# -------------------------------------------------------------------------------"
+puts $fo ""
 
 puts $fo "namespace eval far_db \{"
 puts $fo "    set res_lst \{\}"

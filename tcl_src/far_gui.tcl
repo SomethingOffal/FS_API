@@ -1,38 +1,23 @@
 #! /usr/bin/env wish
-##-------------------------------------------------------------------------------
-##-------------------------------------------------------------------------------
-##--                     Copyright 2014 Sckoarn
-##--                        All Rights Reserved
-##
-##           This program is free software; you can redistribute it and/or modify
-##               it under the terms of the GNU General Public License as published by
-##               the Free Software Foundation; either version 2 of the License, or
-##               (at your option) any later version.
-##           
-##               This program is distributed in the hope that it will be useful,
-##               but WITHOUT ANY WARRANTY; without even the implied warranty of
-##               MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-##               GNU General Public License for more details.
-##           
-##               You should have received a copy of the GNU General Public License
-##               along with this program; if not, write to the Free Software
-##               Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-##-------------------------------------------------------------------------------
-##-- $Author: sckoarn $
-##--
-##-- $Date: 2013/12/29 04:01:43 $
-##--
-##-- $Name:  $
-##--
-##-- $Id:  $
-##--
-##-- $Source:  $
-##--
-##-- Description :
-##--      This application assists the user by eabling the user to create their
-##           own collection of items and BPO's to calculate manufacture cost.
-##--      
-##------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
+# --                     Copyright 2022 Sckoarn
+# --                        All Rights Reserved
+#
+#           This program is free software; you can redistribute it and/or modify
+#               it under the following terms:
+#               1) reproduction of this code shall include this header.
+#               2) This program is distributed in the hope that it will be useful,
+#               but WITHOUT ANY WARRANTY; without even the implied warranty of
+#               MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#               3)  You may NOT sell this code, or any part there of.  
+#
+#           Description:  This file contains all static GUI elements.  Many others
+#               are created in other files but they are dynamic, elements here are
+#               static.
+#
+# -------------------------------------------------------------------------------
+
 #  Packages
 package require Ttk
 package require Tk
@@ -41,6 +26,7 @@ package require Tk
 #   name spaces are used for most items in this file.
 namespace eval sys {
     set cdir ""
+    set helpVar ""
 }
 
 # # get the current location of where I am running from
@@ -50,28 +36,37 @@ set me_path [string range $me 0 [string last "/" $me]]
 set sys::cdir $me_path
 source "$sys::cdir/tcl_db.tcl"
 
-set version "Alpha 0.41"
+set version "Alpha 0.5"
 wm title . "Farsite Workbench $version"
 # #############################
 bind . <F12> {catch {console show}}
 console show
 
+
+font create font_tabs -family Helvetica -size 10 -weight bold
+
 # This is the menu
 #   menue  TBD
+source "$sys::cdir/far_gui_menu.tcl"
 
 #  command buttons and options frame
-set cmdf [frame .fc -borderwidth 4 -relief sunken]
-#set cmdb [button $cmdf.bt1 -text "Reload" -command {source "$sys::cdir/far_procs.tcl"}]
-set cmdb [button $cmdf.bt1 -text "Reload"]
-pack $cmdb
-pack $cmdf -side top -anchor n -fill x -expand 1
+#set cmdf [frame .fc -borderwidth 4 -relief sunken]
+#pack $mbar -side top -fill x -expand 1
+#set cmdb [button $cmdf.bt1 -text "Reload" -command {source "$sys::cdir/user_procs.tcl"}]
+#set cmdb [button $cmdf.bt1 -text "Reload"]
+#pack $cmdb
+#pack $cmdf -side top -anchor n -fill x -expand 1
 
 # This is the message and command line frame
 set c [ttk::frame .f1 -borderwidth 4 -relief sunken]
 set cmd_ent [entry $c.cmd1]
 pack $cmd_ent -side bottom -anchor s -expand 1 -fill x -padx 2
-set hlp_lb [label $c.hlb -textvariable helpVar -justify left]
+set hlp_lb [label $c.hlb -textvariable sys::helpVar -justify left]
 pack $hlp_lb -side left -fill x -padx 4
+
+
+ttk::style configure TNotebook.Tab -font font_tabs
+ttk::style configure TNotebook.Tab -foreground #222288
 
 # setup the notebook
 set nb [ttk::notebook .note -height 1100]
@@ -79,7 +74,7 @@ pack $nb -anchor n -side top -expand 1 -fill both
 pack .f1 -side bottom -anchor s -fill x
 set mfr $nb.base
 
-$nb add [frame $mfr -borderwidth 4 -relief sunken] -text "\[ Farsite DB \]" -underline 0 -padding {5 5 5 5}
+$nb add [frame $mfr -borderwidth 4 -relief sunken] -text "\[ Farsite DB \]" -padding {5 5 5 5}
 # This is the planets list frame.
 set w [ttk::frame $mfr.f2 -borderwidth 4 -relief sunken -width 96]
 
@@ -105,14 +100,22 @@ namespace eval comp {
     set comp_header ""
     set comp_filter {}
     set comp_id ""
+    set show_uzr_txt "Show Buildable"
+    set show_uzr_comps 0
+    set uzr_comps_lst {}
 }
 # components list box
 set cfr [frame $w.cfr -borderwidth 4 -relief sunken]
+set cctlfr [frame $cfr.cctl]
 set comp::clb [listbox $cfr.cmp -width 34]
-set comp::filter [entry $cfr.en1 -width 34 -borderwidth 4 -relief raised]
-pack $comp::filter -fill x
+set comp::filter [entry $cctlfr.en1 -width 16 -borderwidth 4 -relief raised]
+#set ccb1 [checkbutton $cctlfr.ckb1 -variable comp::show_uzr_comps -textvariable comp::show_uzr_txt -command fill_uzr_comps]
+#pack $comp::filter $ccb1 -side left
+pack $comp::filter -side left
+pack $cctlfr -fill x
 bind $comp::filter <KeyRelease> { filter_lb %W $comp::clb}
 pack $comp::clb -anchor w -side left -fill y -expand 1
+
 bind $comp::clb <ButtonRelease-1> { show_comp_details %W }
 bind $comp::clb <KeyRelease> { show_comp_details %W}
 # resources name space
@@ -163,7 +166,7 @@ namespace eval uzr {
     set bkup_en 1
 }
 
-$nb add [ttk::frame .note.usr -borderwidth 4 -relief sunken] -text  "\[ User Status \]" -underline 2 -padding {5 5 5 5}
+$nb add [ttk::frame .note.usr -borderwidth 4 -relief sunken] -text  "\[ User Status \]" -padding {5 5 5 5}
 
 set uzr_work_fr .note.usr
 set uzr::user_note_frame [ttk::frame $uzr_work_fr.uinfo -borderwidth 4 -relief sunken -height 1800]
@@ -185,26 +188,8 @@ pack $lbtn -side left
 pack $ubfr -side top -anchor n -expand 1 -fill x
 pack $ufr -side top -anchor n -expand 1 -fill x
 
-
-# ###############################################################################
-#   test tab
-namespace eval 3D {
-    set ufr {}
-    set canv {}
-    set sys_lst {}
-    set sys_conn_lst {}
-    set planet_lst {}
-    set origin {0.0,0.0,0.0}
-    
-}
-
-#$nb add [frame .note.tst -borderwidth 4 -relief sunken] -text  "\[ Test \]" -underline 2 -padding {5 5 5 5}
-#set 3D::ufr .note.tst
-#pack $3D::ufr -side left -fill both -expand 1
-
-
 #pack $uzr::user_note_frame -side top -anchor n -expand 1 -fill both
-pack $uzr::user_note_frame -fill both -expand 1
+pack $uzr::user_note_frame -anchor w -fill both -expand 1
 
 #pack $uzr::user_note_frame  -side left -expand 1 -fill both
 #set cfgs [ttk::style configure style]
@@ -218,17 +203,52 @@ source "$sys::cdir/user_procs.tcl"
 
 load_base
 
+# If the user has loaded accout data before
+if {[file exists "../Account.csv"] == 1} {
+    load_uzr_info
+    generate_view
+}
 
+# ##########################################################
+#   load user saved settings and ...
+set is_ini [file exists "~/far_tool/.far_ini"]
+if {$is_ini == 1} {
+    source "~/far_tool/.far_ini"
+} else {
+    file mkdir "~/far_tool"
+    set th [open "~/far_tool/.far_ini" "w"]
+    puts $th "puts \"Test out ...\""
+    close $th
+}
+
+namespace eval glbl  {
+    set uzr_mat_lst {}
+    set uzr_sec_lst {}
+}
 
 
 bind . <Motion> "+mouse_move %W %x %y"
 # ###########
 # #  the zone and action for mouse movement
 proc mouse_move {wid x y} {
-    global helpVar
-    set helpVar "x: $x y: $y Win: $wid "
+    #global helpVar
+    set sys::helpVar "x: $x y: $y Win: $wid "
 }
 
+#  when the user exits deal with ini
+proc user_exit {} {
+    if {[tk_messageBox -message "Quit?" -type yesno] eq "yes"} {
+        #if {[tk_messageBox -message "Update ini?" -type yesno] eq "yes"} {
+        #   puts "updating ini ..."
+        #}
+       exit
+    }
+}
+
+# when user hits the "x" button, come here close down
+wm protocol . WM_DELETE_WINDOW {
+    user_exit
+}
 
 # ###   the universe
 #https://farsite.online/api/1.0/universe
