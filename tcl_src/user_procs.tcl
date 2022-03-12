@@ -1,3 +1,21 @@
+#! /usr/bin/env wish
+# -------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
+# --                     Copyright 2022 Sckoarn
+# --                        All Rights Reserved
+#
+#           This program is free software; you can redistribute it and/or modify
+#               it under the following terms:
+#               1) reproduction of this code shall include this header.
+#               2) This program is distributed in the hope that it will be useful,
+#               but WITHOUT ANY WARRANTY; without even the implied warranty of
+#               MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#               3)  You may NOT sell this code, or any part there of.
+#
+#           Description:  This file contains most of the procs that access the 
+#               User Status tab.
+#
+# -------------------------------------------------------------------------------
 # for reloading / sourcing more than once. ...
 #set fts [font names]
 #set is_f [lsearch $fts font_info_txt]
@@ -19,6 +37,8 @@ namespace eval ulsts {
     set acc_lst {}
     set bp_lst {}
     set mod_lst {}
+    set mine_reso_lst {}
+    set comp_build_lst {}
 }
 
 namespace eval dfiles {
@@ -202,17 +222,41 @@ proc fill_sector_listbox {fr} {
     #    puts $s
     #}
     set sidx [lsearch -exact $sheader "name"]
+    set rsidx [lsearch -exact $sheader "resources.spots"]
+    set rdidx [lsearch -exact $sheader "resources.deposits"]
     #puts $pidx
     set dlst [lrange $ulsts::sec_lst 1 end]
     set idx 0
     foreach s $dlst {
         set pid [lindex [csv::split -alternate $s] $sidx]
+        #puts $s
         if {$pid < 0} {
             continue
         } else {
             $fr insert end $pid
+            set tlst {}
+            set tres [string trim [lindex [csv::split -alternate $s] $rsidx] "\[\]"]
+            set tres [split $tres ","]
+            foreach r $tres {
+                set is_on [lsearch $ulsts::mine_reso_lst [string trim $r]]
+                if {$is_on < 0} {
+                    set ulsts::mine_reso_lst [lappend ulsts::mine_reso_lst [string trim $r]]
+                }
+            }
+            #puts "Spots: $tres"
+            set tres [string trim [lindex [csv::split -alternate $s] $rdidx] "\[\]"]
+            set tres [split $tres ","]
+            foreach r $tres {
+                set is_on [lsearch $ulsts::mine_reso_lst [string trim $r]]
+                if {$is_on < 0} {
+                    set ulsts::mine_reso_lst [lappend ulsts::mine_reso_lst [string trim $r]]
+                }
+            }
+            #puts "deposits: $tres"
         }
     }
+    set ulsts::mine_reso_lst [lsort -integer $ulsts::mine_reso_lst]
+    puts $ulsts::mine_reso_lst
 }
 
 # ############################################
@@ -667,6 +711,9 @@ proc show_ship_module_details {wid} {
             set idx 0
             set found 1
             foreach h $sheader {
+                if {$h == "userId"} {
+                    continue
+                }
                 ## skip fields with 0 or no content.  may need refinement.
                 if {[lindex $si $idx] != "0" && [lindex $si $idx] != ""} {
                     #puts [lindex $si $idx]
@@ -722,6 +769,9 @@ proc show_inv_module_details {wid} {
                     incr ly 20
                     incr vy 20
             foreach h $sheader {
+                if {$h == "userId"} {
+                    continue
+                }
                 ## skip fields with 0 or no content.  may need refinement.
                 if {[lindex $si $idx] != "0" && [lindex $si $idx] != ""} {
                     #puts [lindex $si $idx]
@@ -750,7 +800,7 @@ proc show_inv_module_details {wid} {
 proc gen_info_container {fr title lstbx canv} {
     set l1 [label $fr.lb1 -text $title]
     pack $l1
-    set lstbx [listbox $fr.lsb1 -borderwidth 4 -relief sunken -width 30 -height 10]
+    set lstbx [listbox $fr.lsb1 -borderwidth 4 -relief sunken -width 36 -height 10  -font font_info_cou]
     set canv [canvas $fr.pc1 -borderwidth 4 -relief sunken  -width 400 -height 500  -yscrollincrement 1]
     $canv configure -scrollregion {0 0 400 900}
     bind $canv <MouseWheel> {scrol_canv %W %D}
@@ -805,6 +855,9 @@ proc show_ship_details {wid} {
         set found 1
         foreach h $sheader {
             #  put down text
+            if {$h == "userId"} {
+                continue
+            }
             $uwids::shcanv create text $lx $ly -anchor e -text "$h:"
             $uwids::shcanv create text $vx $vy -anchor w -text [lindex $si $idx]
             incr idx
@@ -836,7 +889,7 @@ proc show_ship_details {wid} {
         if {$id == $cship_id} {
             set mods_lst [lappend mods_lst $m]
             # Add this to the ship equipted modules list box
-            $uwids::module_lsb insert end "Slot  $slot:$place - $this_name"
+            $uwids::module_lsb insert end "S:$slot:$place - $this_name"
         }
     }
     $uwids::shicanv delete all
@@ -860,7 +913,7 @@ proc generate_view {} {
     }
     ##  note book for user sections
     set uzr_tbs [ttk::notebook $uzr::user_note_frame.note -height 1100]
-    pack $uzr_tbs
+    pack $uzr_tbs -anchor w -fill both -expand 1
     set mfr $uzr_tbs.t1
     set shipfr $uzr_tbs.t2
     set bpfr $uzr_tbs.t3
@@ -874,6 +927,7 @@ proc generate_view {} {
     ##  planet info
     set pfr [ttk::frame $mfr.pl1 -borderwidth 4 -relief sunken]
     set wids [gen_info_container $pfr "Planets" $uwids::planet_lsb $uwids::pcanv]
+    #pack $pfr -anchor w -fill y
     set uwids::planet_lsb [lindex $wids 0]
     set uwids::pcanv [lindex $wids 1]
 
@@ -886,6 +940,7 @@ proc generate_view {} {
     ##  Sector info
     set sfr [ttk::frame $mfr.sl1 -borderwidth 4 -relief sunken]
     set wids [gen_info_container $sfr "Sectors" $uwids::sector_lsb $uwids::scanv]
+    #pack $sfr -side left -fill y
     set uwids::sector_lsb [lindex $wids 0]
     set uwids::scanv [lindex $wids 1]
 
@@ -1003,3 +1058,111 @@ proc get_uzr_info {} {
     generate_view
 }
 
+proc fill_uzr_comps {} {
+    if {$ulsts::mine_reso_lst == {}} {
+        puts "Error:  User must load user data before this function will work"
+        return
+    }
+    
+    if {$comp::show_uzr_comps == 1} {
+        set comp::show_uzr_txt "Show All"
+        load_comp_list $far_db::comps_lst
+        return
+    } else {
+        set comp::show_uzr_txt "Show Buildable"
+    }
+    
+    if {$ulsts::comp_build_lst != {}} {
+        load_comp_list $ulsts::comp_build_lst
+        return
+    }
+    
+    set lst {}
+    ##  get a list of all resources user can mine
+    #puts $ulsts::mine_reso_lst
+    foreach r $ulsts::mine_reso_lst {
+        set tlst {}
+        set tlst [get_reso_chain $r tlst]
+        #puts $r
+        if {$tlst == {}} {
+            set lst [lappend lst $r]
+        } else {
+            set lst [lappend lst $r]
+            foreach o $tlst {
+                set m [lindex [split [lindex $o 1] " "] 0]
+                #puts $m
+                if {[lsearch -integer $lst $m] < 0} {
+                    set lst [lappend lst [lindex $m 0]]
+                }
+            }
+        }
+    }
+    ##  no mining  return.
+    if {$lst == {}} {
+        return
+    }
+    set ulsts::mine_reso_lst [lsort -integer $lst]
+#    set dlst [lrange $comp_spec 1 end]
+    # find all the components that match available resources.
+    set uzr_cmp_lst {}
+    set lastr ""
+    set clst {}
+    set dlst [lrange $far_db::compres_lst 1 end]
+    #  for all items in the component resource list
+    foreach r $dlst {
+        set resd [split [lindex $r 1] " "]
+        set cmp [string trim [lindex $r 0]]
+        #puts $resd
+        if {$cmp == $lastr} {
+            set clst [lappend clst [lindex $resd 0]]
+            puts "Add resource to comp list: [lindex $resd 0]"
+        } else {
+            if {$lastr == ""} {
+                puts "Very first $cmp"
+                set lastr $cmp
+                set clst [lappend clst $cmp]
+            } else {
+                puts "new comp found : $cmp"
+                set clst [lappend clst [lindex $resd 0]]
+                #puts $lastr
+                #puts $clst
+                #puts $ulsts::mine_reso_lst
+                set found 1
+                if {$clst != {}} {
+                    foreach c $clst {
+                        set found [lsearch $ulsts::mine_reso_lst $c]
+                        #puts ""
+                        if {$found < 0} {
+                            set lastr $cmp
+                            set clst {}
+                            break
+                        }
+                    }
+                    if {$found >= 0} {
+                        #puts "Found:  [lindex $ulsts::mine_reso_lst $found] \n was found    Looking for:  $c"
+                        foreach c $far_db::comps_lst {
+                            set id [lindex $c 0]
+                            if {$id == $lastr} {
+                                set ulsts::comp_build_lst [lappend ulsts::comp_build_lst $c]
+                                #puts $c
+                            }
+                        }
+                        #set uc [lsearch $far_db::comps_lst $res]
+                        #set cmp [lindex $far_db::comps_lst $uc]
+                        #puts $cmp
+                        #set ulsts::comp_build_lst [lappend ulsts::comp_build_lst $r]
+                        #puts "Resource found:  $res"
+                    }
+                }
+                set lastr $cmp
+                set clst {}
+                #set clst [lappend clst [lindex $resd 0]]
+            }
+        }
+        
+    }
+
+    load_comp_list $ulsts::comp_build_lst
+    
+    puts $lst
+}
