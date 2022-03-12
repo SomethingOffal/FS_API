@@ -1,0 +1,4 @@
+id,code,name,size,index,mapId,price,resources.spots,resources.deposits,planet.starId,planet.id,planet.x,planet.y,planet.z,planet.name,planet.type,planet.size,planet.status,planet.resources.spots,planet.resources.deposits,planet.sectors,planet.scale,planet.distance,planet.offset,planet.rotation,planet.speed,planet.inclination
+1036,CETO-2-026,CETO-2-026,L,26,5,2567000,"[126, 124, 129, 15, 17, 16, 18]","[33, 117, 31]",23,337,-2078,0,-4453,CETO-2,gas,L,opened,"[126, 124, 129, 15, 17, 16, 18]","[116, 117, 33, 31]",80,1.25,0,0,30,0,15
+1302,HEBO-18-012,HEBO-18-012,S,12,2,539000,"[125, 127, 15]",[115],5,263,-5545,-100,7133,HEBO-18,gas,S,opened,"[125, 127, 15]","[114, 115]",30,1.0,0,0,80,0,0
+1306,HEBO-18-016,HEBO-18-016,S,16,8,539000,"[125, 127, 15]","[114, 115]",5,263,-5545,-100,7133,HEBO-18,gas,S,opened,"[125, 127, 15]","[114, 115]",30,1.0,0,0,80,0,0
