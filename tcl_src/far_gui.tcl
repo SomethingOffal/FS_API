@@ -35,8 +35,8 @@ set me_path [string range $me 0 [string last "/" $me]]
 #puts $me_path
 set sys::cdir $me_path
 source "$sys::cdir/tcl_db.tcl"
-
-set version "Alpha 0.5"
+source "$sys::cdir/name_spaces.tcl"
+set version "Alpha 0.6"
 wm title . "Farsite Workbench $version"
 # #############################
 bind . <F12> {catch {console show}}

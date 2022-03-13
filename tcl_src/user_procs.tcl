@@ -27,52 +27,6 @@
 
 package require csv
 
-# ############################
-#  name space to hold all file names.
-namespace eval ulsts {
-    set sec_lst {}
-    set secd_lst {}
-    set ship_lst {}
-    set shipd_lst {}
-    set acc_lst {}
-    set bp_lst {}
-    set mod_lst {}
-    set mine_reso_lst {}
-    set comp_build_lst {}
-}
-
-namespace eval dfiles {
-    set usectors "../Sectors.csv"
-    set usec_detail "../Sectors_Bases_Detail.csv"
-    set uships "../Ships.csv"
-    
-    set uflst {"../Sectors.csv" \
-               "../Sectors_Bases_Detail.csv" \
-               "../Ships.csv" \
-               "../Ships_Slot_Detail.csv" \
-               "../Account.csv" \
-               "../Blueprints.csv" \
-               "../Modules.csv"}
-    set info_lsts {{"this_header" "sectors" "sector_details" "ships" "ships_data" "account" "blueprints" "modules"}}
-}
-
-namespace eval uwids {
-    set planet_lsb {}
-    set pcanv {}
-    set sector_lsb {}
-    set scanv {}
-    set ship_lsb {}
-    set shcanv {}
-    set module_lsb {}
-    ##  shipe module canv
-    set shicanv {}
-    set inv_module_lsb {}
-    set inv_mod_canv {}
-    set base_lsb {}
-    set bcanv {}
-    set bluep_lsb {}
-}
-
 # #######################################
 #   extract the clock value from the
 #    farsite time string passed
@@ -101,6 +55,35 @@ proc pad_str {str len {pad " "}} {
     return $rtn
 }
 
+# ############################################
+#   get the list of materials and quantity
+#      return list of list  {code name Quant market}
+proc get_uzr_mats_inv {} {
+    set header [split [lindex $ulsts::ureso_lst 0] ","]
+    #foreach h $header {
+    #    puts $h
+    #}
+    set ridx [lsearch -exact $header resourceId]
+    set dlst [lrange $ulsts::ureso_lst 1 end]
+    set rtn {}
+    foreach m $dlst {
+        # user info
+        set sm [split $m ","]
+        #general info
+        set mat [get_mat_code [lindex $sm $ridx]]
+        # Access the returned data code and name.
+        set mat1 [lindex [lindex $mat 0] 1]
+        set ttxt [lindex $mat1 0]
+        append ttxt " " [lindex $mat1 1]
+        set ttxt [pad_str $ttxt 20]
+        append ttxt "Quant: " [lindex $sm 3]  
+        set ttxt [pad_str $ttxt 36]
+        append ttxt "Loc: " [lindex $sm 6]
+        set rtn [lappend rtn $ttxt]
+        puts $ttxt
+    }
+    return $rtn
+}
 # ##############################################
 #   load the user info
 #
@@ -121,6 +104,7 @@ proc load_uzr_info {} {
             set tlst {}
             while {![eof $fh]} {
                 set s [gets $fh]
+                if {$s == ""} {continue}
                 set tlst [lappend tlst $s]
             }
             #puts $tlst
@@ -164,6 +148,12 @@ proc load_uzr_info {} {
                 6 {
                     foreach i $tlst {
                         set ulsts::mod_lst [lappend ulsts::mod_lst $i]
+                    }
+                    set dfiles::info_lsts [lappend dfiles::info_lsts $tlst]
+                }
+                7 {
+                    foreach i $tlst {
+                        set ulsts::ureso_lst [lappend ulsts::ureso_lst $i]
                     }
                     set dfiles::info_lsts [lappend dfiles::info_lsts $tlst]
                 }
@@ -218,22 +208,30 @@ proc fill_sector_listbox {fr} {
     update
     set header [lindex $ulsts::sec_lst 0]
     set sheader [csv::split -alternate $header]
-    #foreach s $sheader {
-    #    puts $s
-    #}
+    # get some indexs
     set sidx [lsearch -exact $sheader "name"]
     set rsidx [lsearch -exact $sheader "resources.spots"]
     set rdidx [lsearch -exact $sheader "resources.deposits"]
-    #puts $pidx
+    set rsize [lsearch -exact $sheader "size"]
+    # get data section.
     set dlst [lrange $ulsts::sec_lst 1 end]
     set idx 0
     foreach s $dlst {
         set pid [lindex [csv::split -alternate $s] $sidx]
-        #puts $s
+        #  skip if blank
         if {$pid < 0} {
             continue
         } else {
             $fr insert end $pid
+            # update user info as we go by
+            set sz [lindex [csv::split -alternate $s] $rsize]
+            switch $sz {
+                "L" {incr refine::lsec_cnt}
+                "M" {incr refine::msec_cnt}
+                "S" {incr refine::ssec_cnt}
+                default {"Error:  unknown size from sec_lst"}
+            }
+            # create list of mineable materials
             set tlst {}
             set tres [string trim [lindex [csv::split -alternate $s] $rsidx] "\[\]"]
             set tres [split $tres ","]
@@ -256,7 +254,7 @@ proc fill_sector_listbox {fr} {
         }
     }
     set ulsts::mine_reso_lst [lsort -integer $ulsts::mine_reso_lst]
-    puts $ulsts::mine_reso_lst
+    #puts $ulsts::mine_reso_lst
 }
 
 # ############################################
@@ -285,6 +283,9 @@ proc fill_base_listbox {fr} {
         if {$pid < 0} {
             continue
         } else {
+            #  count mining facilities.
+            incr refine::mine_cnt
+            # put up in list depending on status.
             set cy [lindex [csv::split -alternate $s] $cycs]
             $fr insert end $pid
             if {$cy == 0} {
