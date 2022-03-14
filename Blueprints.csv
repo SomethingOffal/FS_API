@@ -1,0 +1,59 @@
+id,name,size,tier
+3,T-35 FE,S,3
+4,U-40 FE,S,4
+7,A-70 FE,S,7
+6,A-42,S,5
+5,A-42 FE,S,5
+9,T-250 FE,M,2
+8,A-200 FE,M,2
+10,A-70,S,7
+37,Drone S,S,1
+16,U-40,S,4
+31,Mining Extractor S,S,1
+49,Energy Battery M,M,1
+12,T-65,S,6
+55,Chip M,M,1
+21,T-250,M,2
+35,Radar S,S,1
+13,T-475,M,4
+61,Maneuver M,M,1
+11,A-425,M,4
+60,Hyperjump M,M,1
+26,Missile Shield S,S,1
+59,Mining Extractor M,M,1
+20,A-200,M,2
+18,T-25,S,2
+58,Mining Laser M,M,1
+57,Cargo M,M,1
+22,Artillery S,S,1
+39,Afterburner S,S,1
+38,Chip S,S,1
+32,Energy Battery S,S,1
+29,Cargo S,S,1
+24,Laser S,S,1
+48,Armor M,M,1
+51,Energy Booster M,M,1
+28,Armor S,S,1
+34,Energy Booster S,S,1
+45,Artillery Shield M,M,1
+27,Laser Shield S,S,1
+33,Energy Regen S,S,1
+53,Cloaker M,M,1
+52,Radar M,M,1
+14,A-30,S,3
+40,Hyperjump S,S,1
+30,Mining Laser S,S,1
+17,A-20,S,2
+23,Missile S,S,1
+54,Drone M,M,1
+36,Cloaker S,S,1
+25,Artillery Shield S,S,1
+56,Afterburner M,M,1
+41,Maneuver S,S,1
+43,Missile M,M,1
+50,Energy Regen M,M,1
+42,Artillery M,M,1
+19,T-35,S,3
+47,Laser Shield M,M,1
+46,Missile Shield M,M,1
+44,Laser M,M,1

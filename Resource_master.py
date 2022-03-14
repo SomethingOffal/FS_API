@@ -71,6 +71,22 @@ for component_key, component_value in overall_data_dict['schemes']['Bases']['Act
 component_main_requirements_df['component_id'] = component_main_requirements_df['component_id'].astype(int)
 component_main_requirements_df = component_main_requirements_df.set_index('component_id')
 
+# Get current blueprint requirements
+blueprint_component_requirements_df = pd.DataFrame()
+
+for blueprint_key, blueprint_value in api_get_request('https://farsite.online/api/1.0/config/schemes')['Blueprints'].items():
+    if len(blueprint_value['Requirements']['Components']) > 0:
+        # Start at the number of resources to define each row in our entry
+        for key, value in blueprint_value['Requirements']['Components'].items():
+            line_item = {'blueprint_id' : blueprint_key, 
+                        'component_id' : key, 
+                        'component_qty' : value}
+            blueprint_component_requirements_df = blueprint_component_requirements_df.append(line_item, ignore_index = True)
+
+blueprint_component_requirements_df['blueprint_id'] = blueprint_component_requirements_df['blueprint_id'].astype(int)
+blueprint_component_requirements_df['component_id'] = blueprint_component_requirements_df['component_id'].astype(int)
+blueprint_component_requirements_df = blueprint_component_requirements_df.set_index('blueprint_id')
+
 # usage (one possible method)
 # Make a Small Booster Amplifier (components_df id == 384):
 
@@ -172,6 +188,7 @@ resources_df.to_csv('resources.csv')
 components_df.to_csv('components.csv')
 component_resource_requirements_df.to_csv('component_resource_requirements.csv')
 component_main_requirements_df.to_csv('component_main_requirements.csv')
+blueprint_component_requirements_df.to_csv('blueprint_component_requirements.csv')
 mining_requirements_df.to_csv('mining_requirements.csv')
 refinery_main_requirements_df.to_csv('refinery_main_requirements.csv')
 refinery_outputs_df.to_csv('refinery_outputs.csv')
