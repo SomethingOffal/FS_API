@@ -70,6 +70,7 @@ namespace eval ulsts {
     set acc_lst {}
     set bp_lst {}
     set mod_lst {}
+    set comps_lst {}
     set mine_reso_lst {}
     set comp_build_lst {}
     set ureso_lst {}
@@ -87,8 +88,9 @@ namespace eval dfiles {
                "../Account.csv" \
                "../Blueprints.csv" \
                "../Modules.csv" \
-               "../uzrResources.csv"}
-    set info_lsts {{"this_header" "sectors" "sector_details" "ships" "ships_data" "account" "blueprints" "modules" ""}}
+               "../uzrResources.csv" \
+               "../uzrComponents.csv"}
+    set info_lsts {{"this_header" "sectors" "sector_details" "ships" "ships_data" "account" "blueprints" "modules" "components"}}
 }
 
 namespace eval uwids {
