@@ -22,6 +22,8 @@
 package require Ttk
 package require Tk
 
+package require sqlite3
+
 #  use name spaces everywhere.
 #   name spaces are used for most items in this file.
 namespace eval sys {
@@ -40,11 +42,16 @@ set version "Alpha 0.6"
 wm title . "Farsite Workbench $version"
 # #############################
 bind . <F12> {catch {console show}}
-console show
+#console show
 
 
 font create font_tabs -family Helvetica -size 10 -weight bold
 
+# ##########################################################################
+# #  Message, continue
+proc usr_msg { msg } {
+  tk_messageBox -message $msg -type ok
+}
 # This is the menu
 #   menue  TBD
 source "$sys::cdir/far_gui_menu.tcl"
@@ -151,11 +158,6 @@ pack $w  -side left  -fill y -expand 1 -anchor w
 pack $info::info_fr -anchor nw
 
 # ##################
-#set modfr .note.mods
-#$nb add [frame .note.mods -borderwidth 4 -relief sunken] -text  "\[ User Ships \]" -underline 2 -padding {5 5 5 5}
-#ttk::notebook::enableTraversal $nb
-
-# ##################
 namespace eval uzr {
     set name ""
     set id ""
@@ -164,7 +166,21 @@ namespace eval uzr {
     set key ""
     set user_note_frame {};  # user frame
     set bkup_en 1
+    set univ_frame {}
+    set univ_strlb {}
+    set univ_pltlb {}
+    set csel_star {}
+    set univ_canv {}
+    set canv_cent {650 500}
+    set canv_nexts 0
+    set canv_nsidx 0
+    set canv_cnt2 0
+    set canv_cnt3 0
+    set canv_prev_star ""
+    set canv_src_loc [list 0 0]
 }
+
+$nb add [ttk::frame .note.univ -borderwidth 4 -relief sunken] -text  "\[ Universe \]" -padding {5 5 5 5}
 
 $nb add [ttk::frame .note.usr -borderwidth 4 -relief sunken] -text  "\[ User Status \]" -padding {5 5 5 5}
 
@@ -197,9 +213,34 @@ pack $uzr::user_note_frame -anchor w -fill both -expand 1
 #?-option ?value option value...? ?
 #ttk::notebook::enableTraversal $nb
 
+#source "$sys::cdir/test_procs.tcl"
+
+# ##########################
+#   set perm  universe items and pack.
+set univ_fr .note.univ
+set uzr::univ_frame [ttk::frame $univ_fr.univinfo -borderwidth 4 -relief sunken -height 1800]
+set slfr [frame $uzr::univ_frame.lfr]
+set uzr::univ_strlb [listbox $slfr.slb -width 12 -height 26]
+bind $uzr::univ_strlb <ButtonRelease-1> { show_star_view %W }
+bind $uzr::univ_strlb <KeyRelease> { show_star_view %W}
+set uzr::univ_pltlb [listbox $slfr.plb -width 12 -height 14]
+bind $uzr::univ_pltlb <ButtonRelease-1> { show_planet_view %W }
+bind $uzr::univ_pltlb <KeyRelease> { show_planet_view %W}
+set cafr [frame $uzr::univ_frame.rfr]
+set uzr::univ_canv [canvas $cafr.canv -width 1300 -height 1000 -borderwidth 4 -relief sunken]
+$uzr::univ_canv configure -background #000000
+
+pack $uzr::univ_strlb
+pack $uzr::univ_pltlb
+pack $slfr -side left -fill y -expand 1
+pack $uzr::univ_canv -fill both -expand 1
+pack $cafr -side right -fill both -expand 1
+pack $uzr::univ_frame -anchor w -fill both -expand 1
+
+
 source "$sys::cdir/far_procs.tcl"
 source "$sys::cdir/user_procs.tcl"
-#source "$sys::cdir/test_procs.tcl"
+
 
 load_base
 
@@ -249,6 +290,7 @@ proc user_exit {} {
 wm protocol . WM_DELETE_WINDOW {
     user_exit
 }
+
 
 # ###   the universe
 #https://farsite.online/api/1.0/universe

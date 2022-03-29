@@ -17,6 +17,67 @@ package require Ttk
 package require Tk
 # #############################
 bind . <F12> {catch {console show}}
+source get_universe.tcl
+
+gen_planet_db
+gen_gate_db
+gen_star_db
+
+set univers {}
+foreach s $spg::sdb {
+    set slst {}
+    set slst [lappend slst $spg::sfields]
+    set nlst {}
+    foreach f $s {
+        #puts $f
+        set q [string trimleft $f "{"]
+        set q [string trimright $q "}"]
+        set q [string trim $q "\""]
+        set nlst [lappend nlst $q]
+    }
+    set slst [lappend slst $nlst]
+    set sid [lindex $s 0]
+    
+    set plst {}
+    set plst [lappend plst $spg::pfields]
+    foreach p $spg::pdb {
+        if {[lindex $p 0] == $sid} {
+            set nlst {}
+            foreach f $p {
+                #puts $f
+                set q [string trimleft $f "{"]
+                set q [string trimright $q "}"]
+                set q [string trim $q "\""]
+                set nlst [lappend nlst $q]
+            }
+            set plst [lappend plst $nlst]
+        }
+    }
+    set glst {}
+    set glst [lappend glst $spg::gfields]
+    foreach p $spg::gdb {
+        if {[lindex $p 0] == $sid} {
+            set nlst {}
+            foreach f $p {
+                #puts $f
+                set q [string trimleft $f "{"]
+                set q [string trimright $q "}"]
+                set q [string trim $q "\""]
+                set sq [split $q " "]
+                if {[llength $sq] > 1} {
+                    set nlst [lappend nlst [lindex $sq 1]]
+                } else {
+                    set nlst [lappend nlst $q]
+                }
+            }
+            set glst [lappend glst $nlst]
+        }
+    }
+    set slst [lappend slst $plst]
+    set slst [lappend slst $glst]
+    set univers [lappend univers $slst]
+}
+
 
 proc csv2tlst {fh} {
     # get the header of the csv file
@@ -101,6 +162,7 @@ puts $fo "    set mine_lst \{\}"
 puts $fo "    set compres_lst \{\}"
 puts $fo "    set compmain_lst \{\}"
 puts $fo "    set comps_lst \{\}"
+puts $fo "    set star_lst \{\}"
 puts $fo "\}"
 puts $fo ""
 
@@ -118,7 +180,9 @@ puts $fo "set far_db::compmain_lst \{ $compmain_lst \}"
 puts $fo ""
 puts $fo "set far_db::comps_lst \{ $comps_lst \}"
 puts $fo ""
+puts $fo "set far_db::star_lst \{$univers \}"
+puts $fo ""
 
 close $fo
 
-exit
+#exit

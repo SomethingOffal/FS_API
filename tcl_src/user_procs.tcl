@@ -80,7 +80,7 @@ proc get_uzr_mats_inv {} {
         set ttxt [pad_str $ttxt 36]
         append ttxt "Loc: " [lindex $sm 6]
         set rtn [lappend rtn $ttxt]
-        puts $ttxt
+        #puts $ttxt
     }
     return $rtn
 }
@@ -154,6 +154,12 @@ proc load_uzr_info {} {
                 7 {
                     foreach i $tlst {
                         set ulsts::ureso_lst [lappend ulsts::ureso_lst $i]
+                    }
+                    set dfiles::info_lsts [lappend dfiles::info_lsts $tlst]
+                }
+                8 {
+                    foreach i $tlst {
+                        set ulsts::comps_lst [lappend ulsts::comps_lst $i]
                     }
                     set dfiles::info_lsts [lappend dfiles::info_lsts $tlst]
                 }
@@ -1038,25 +1044,35 @@ proc uzr_history_add {} {
 #   get user info from the web
 proc get_uzr_info {} {
     puts "Getting user info ..."
-    uzr_history_add
+    #uzr_history_add
     set status 0
-    puts $uzr::email
-    if {[catch {exec python ../inventory_scrape.py $uzr::email $uzr::pw} results options]} {
-        set details [dict get $options -errorcode]
-        if {[lindex $details 0] eq "CHILDSTATUS"} {
-            set status [lindex $details 2]
-        } else {
-            # Some other error; regenerate it to let caller handle
-            return -options $options -level 0 $results
-        }
-    }
+    set uid 664409
+    #puts $uzr::email
+    #httpcopy "https://farsite.online/api/1.0/universe/sectors/$uid" "uzr_sectors.txt"
+#account_info_dict['Sectors'] = api_get_request('https://farsite.online/api/1.0/universe/sectors/my')
+    httpcopy "https://farsite.online/api/1.0/ships/$uid/list" "uzr_ships.txt"
+    httpcopy "https://farsite.online/api/1.0/blueprints/$uid/list" "uzr_blueprints.txt"
+    httpcopy "https://farsite.online/api/1.0/modules/$uid/list" "uzr_modules.txt"
+    httpcopy "https://farsite.online/api/1.0//components/$uid/list" "uzr_components.txt"
+    httpcopy "https://farsite.online/api/1.0/accessories/$uid/list" "uzr_accessories.txt"
+    httpcopy "https://farsite.online/api/1.0/resources/$uid/list" "uzr_resources.txt"
+    #httpcopy "https://farsite.online/api/1.0/storage/$uid/list" "uzr_storage.txt"
+    #if {[catch {exec python ../inventory_scrape.py $uzr::email $uzr::pw} results options]} {
+    #    set details [dict get $options -errorcode]
+    #    if {[lindex $details 0] eq "CHILDSTATUS"} {
+    #        set status [lindex $details 2]
+    #    } else {
+    #        # Some other error; regenerate it to let caller handle
+    #        return -options $options -level 0 $results
+    #    }
+    #}
     
-    puts "TCL  got back:  $results"
+    #puts "TCL  got back:  $results"
     #puts $details
-    puts $status
+    #puts $status
     #puts "Options $options"
-    load_uzr_info
-    generate_view
+    #load_uzr_info
+    #generate_view
 }
 
 proc fill_uzr_comps {} {

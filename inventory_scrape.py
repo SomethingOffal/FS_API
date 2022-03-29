@@ -70,7 +70,7 @@ json_normalize(account_info_dict['Sectors']).drop([x for x in json_normalize(acc
 json_normalize(account_info_dict['Ships']).drop([x for x in json_normalize(account_info_dict['Ships']).keys() if 'owner' in x], axis = 1).to_csv('Ships.csv', index = False)
 json_normalize(account_info_dict['Blueprints']).drop([x for x in json_normalize(account_info_dict['Blueprints']).keys() if 'owner' in x], axis = 1).to_csv('Blueprints.csv', index = False)
 json_normalize(account_info_dict['Modules']).drop([x for x in json_normalize(account_info_dict['Modules']).keys() if 'owner' in x], axis = 1).to_csv('Modules.csv', index = False)
-json_normalize(account_info_dict['Components']).drop([x for x in json_normalize(account_info_dict['Components']).keys() if 'owner' in x], axis = 1).to_csv('Components.csv', index = False)
+json_normalize(account_info_dict['Components']).drop([x for x in json_normalize(account_info_dict['Components']).keys() if 'owner' in x], axis = 1).to_csv('uzrComponents.csv', index = False)
 json_normalize(account_info_dict['Resources']).drop([x for x in json_normalize(account_info_dict['Resources']).keys() if 'owner' in x], axis = 1).to_csv('uzrResources.csv', index = False)
 # pd.DataFrame(account_info_dict['Accessories']).drop('owner', axis = 1).to_excel(writer, sheet_name = 'Accesories')
 

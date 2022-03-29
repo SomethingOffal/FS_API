@@ -129,6 +129,42 @@ proc get_mat_code {id} {
    return $rtn
 }
 
+# #########################################
+#  get start by name
+proc get_str_name {n} {
+    foreach s $far_db::star_lst {
+        set rtn {}
+        set rtn [lappend rtn [lindex $s 0]]
+        set star [lindex $s 1]
+        set sn [lindex $star end]
+        #puts "Check: $sn against: $n"
+        if {$sn == $n} {
+            set rtn [lappend rtn $star]
+            break
+        }
+    }
+    return $rtn
+}
+
+# ##############################################
+#  get planets of star id
+proc get_system {id} {
+    
+}
+# ##############################################
+#   get full star data of id passed.
+proc get_star {id} {
+    set rtn {}
+    foreach s $far_db::star_lst {
+        set sid [lindex [lindex $s 1] 0]
+        if {$sid == $id} {
+            set rtn $s
+            break
+        }
+    }
+    return $rtn
+}
+
 # ##########################################
 #   make the resource list a single list if items
 #   flatten to one index stream.
@@ -151,6 +187,33 @@ proc singlify {lst} {
     return $rtn
 }
 
+# ###################################################
+#   get the connected stars to the star passed.
+proc get_connected_stars {star} {
+    set sid [lindex [lindex $star 1] 0]
+    set all_star [get_star $sid]
+    if {$all_star == {}} {
+        return {}
+    }
+    set gates [lindex $all_star 3]
+    set glst {}
+    #set glst [lappend glst "$sid"]
+    set header [lindex $gates 0]
+    #puts $header
+    set gates [lrange $gates 1 end]
+    set next_idx [lsearch $header toStarId]
+    set fuel_idx [lsearch $header fuel]
+    foreach g $gates {
+        #puts $g
+        if {$g == ""} {
+            continue
+        }
+        set glst [lappend glst [list [lindex $g $next_idx] [lindex $g $fuel_idx]]]
+    }
+    return $glst
+}
+
+
 # ##########################################
 #  draw arrows on the canvase relative location x y
 proc draw_arrows_r {canv x yt yb} {
@@ -161,6 +224,106 @@ proc draw_arrows_r {canv x yt yb} {
     $canv create line $xs [expr {$ys + 6}] $xe $ys -width 2
     $canv create line $xs [expr {$ys - 6}] $xe $ys -width 2
     
+}
+
+# ###########################################
+#  draw a circle
+proc draw_cir {canv center sz fil} {
+    set cx [lindex $center 0]
+    set cy [lindex $center 1]
+    set xt [expr {$cx - ($sz / 2)}]
+    set xb [expr {$cx + ($sz / 2)}]
+    set yt [expr {$cy - ($sz / 2)}]
+    set yb [expr {$cy + ($sz / 2)}]
+    $canv create oval $xt $yt $xb $yb -fill $fil
+}
+
+# ###########################################
+#  draw star at location
+proc draw_star {canv star center} {
+    #puts $center
+    set header [lindex $star 0]
+    set dat [lindex $star 1]
+    set id_idx [lsearch $header "id"]
+    set name_idx [lsearch $header name]
+    set sz_idx [lsearch $header size]
+    set color_idx [lsearch $header color]
+    
+    set tx [lindex $center 0]
+    set ty [expr {int([lindex $center 1]) - 26}]
+
+    # draw connecting line
+    #if {$uzr::canv_src_loc != [list 0 0]} {
+        #set lxs [lindex $uzr::canv_src_loc 0]
+        #set lys [lindex $uzr::canv_src_loc 1]
+        
+        #$canv create line $lxs $lys $tx [lindex $center 1] -fill #ffc0c0
+        #set lstart $uzr::canv_src_loc
+    #}
+
+
+    draw_cir $uzr::univ_canv $center 20 [lindex $dat $color_idx]
+    $canv create text $tx $ty -text [lindex $dat $name_idx] -font font_info_res -fill #80ff80
+    #  add some text
+    set tx [expr {$tx + 26}]
+    set ty [expr {$ty + 20}]
+    $canv create text $tx $ty -text [lindex $dat $id_idx] -font font_info_txt -fill #c0ffc0
+
+}
+
+# ##########################################
+#  Draw the next start
+proc get_next_loc {lvl pos binc} {
+
+    set xinc [expr {$lvl * $binc}]
+    set yinc [expr {$lvl * $binc}]
+    set cx [lindex $uzr::canv_cent 0]
+    set cy [lindex $uzr::canv_cent 1]
+    #puts $uzr::canv_cnt2
+#    set stx2 [expr {$cx - ($uzr::canv_cnt2 * $binc)}]
+    set stx2 [expr {($cx -  $binc) + ($uzr::canv_cnt2 * $binc)}]
+    set sty2 [expr {($cy -  $binc) + ($uzr::canv_cnt2 * $binc)}]
+    
+    #puts "x:$stx2 y:$sty2"
+    
+    set xloc ""
+    set yloc ""
+    #puts $lvl
+    switch $lvl {
+        0 {
+            switch $pos {
+                0 {set xloc [expr {$cx - int($xinc)}]; set yloc $cy}
+                1 {set xloc $cx; set yloc [expr {$cy - int($yinc)}]}
+                2 {set xloc [expr {$cx + int($xinc)}]; set yloc $cy}
+                3 {set xloc $cx; set yloc [expr {$cy + int($yinc)}]}
+                default {puts "Error:  "}
+            }
+        }
+        1 {
+            switch $pos {
+                0 {set xloc [expr {$cx - int($xinc)}]; set yloc $cy}
+                1 {set xloc $cx; set yloc [expr {$cy - int($yinc)}]}
+                2 {set xloc [expr {$cx + int($xinc)}]; set yloc $cy}
+                3 {set xloc $cx; set yloc [expr {$cy + int($yinc)}]}
+                default {puts "Error:  "}
+            }
+        }
+        2 {
+            
+            switch $pos {
+                0 {set xloc [expr {$cx - int($xinc)}]; set yloc $sty2}
+                1 {set xloc $stx2; set yloc [expr {$cy - int($yinc)}]}
+                2 {set xloc [expr {$cx + int($xinc)}]; set yloc $sty2}
+                3 {set xloc $stx2; set yloc [expr {$cy + int($yinc)}]}
+                default {puts "Error:  "}
+            }
+            incr uzr::canv_cnt2
+        }
+        default {puts "Error:  "}
+    }
+    
+    
+    return [list $xloc $yloc]
 }
 
 # ############################################
@@ -609,6 +772,201 @@ proc load_comp_list {lst} {
     }
 }
 
+# #############################################
+#  simple load, may need upgrading  hard coded indexes.
+proc load_star_lst {lst} {
+    $uzr::univ_strlb delete 0 end
+    $uzr::univ_pltlb delete 0 end
+    
+    foreach s $lst {
+        set star [lindex $s 1]
+        set sname [lindex $star end]
+        $uzr::univ_strlb insert end $sname
+    }
+}
+
+proc show_star_view {wid} {
+    set uzr::canv_cnt2 0
+    set cx [lindex $uzr::canv_cent 0]
+    set cy [lindex $uzr::canv_cent 1]
+    set binc 100
+    set px $cx
+    set py $cy
+    set lvl 0
+    set pos 0
+
+    set sel_idx [$wid curselection]
+    #puts $sel_idx
+    set sname [$wid get $sel_idx]
+    set star [get_str_name $sname]
+    set msidx [lindex [lindex $star 1] 0]
+    set fstar [get_star $msidx]
+    set uzr::canv_prev_star $msidx
+    #puts [lindex $dat $id_idx]
+    $uzr::univ_canv delete all
+    draw_star $uzr::univ_canv $star [list $cx $cy]
+    set uzr::canv_src_loc [list $cx $cy]
+    set con_stars {}
+    set con_stars [get_connected_stars $star]
+    #puts $con_stars
+    set lvl 1
+    foreach c $con_stars {
+        set uzr::canv_cnt2 0
+        set s [get_star [lindex $c 0]]
+        set fuel [lindex $c 1]
+        set npos [get_next_loc $lvl $pos $binc]
+        $uzr::univ_canv create line [lindex $npos 0] [lindex $npos 1] $cx $cy -fill #ffc0c0
+        if {$fuel >= "700"} {
+            set ffill #ff6060
+        } else {
+            set ffill #ffc000
+        }
+        $uzr::univ_canv create text [lindex $npos 0] [expr {[lindex $npos 1] + 20}] -text $fuel -fill $ffill
+        #puts $npos
+        draw_star $uzr::univ_canv $s $npos
+        set con [get_connected_stars $s]
+        set len [llength $con]
+        #puts "$con  length $len"
+        if {$len != 0} {
+            set uzr::canv_src_loc $npos
+            set lvl 2
+            foreach l1 $con {
+                if {[lindex $l1 0] == $uzr::canv_prev_star} {
+                    continue
+                }
+                #puts "Draw next "
+                set sl2 [get_star [lindex $l1 0]]
+                set fuel [lindex $l1 1]
+                set loc [get_next_loc $lvl $pos $binc]
+                set nx [lindex $loc 0]
+                set ny [lindex $loc 1]
+                draw_star $uzr::univ_canv $sl2 [list $nx $ny]
+                $uzr::univ_canv create line [lindex $npos 0] [lindex $npos 1] $nx $ny -fill #ffc000
+                if {$fuel >= "700"} {
+                    $uzr::univ_canv create text $nx [expr {$ny + 20}] -text $fuel -fill #ff6060
+                } else {
+                    $uzr::univ_canv create text $nx [expr {$ny + 20}] -text $fuel -fill #ffc000
+                }
+            }
+        }
+        incr pos
+        #if {$pos >= 4} break
+        set lvl 1
+    }
+    
+    load_planet_lst $fstar
+}
+
+proc load_planet_lst {star} {
+    # enter planets in planet list box
+    set pheader [lindex [lindex $star 2] 0]
+    set nidx [lsearch $pheader "name"]
+    set pdat [lrange [lindex $star 2] 1 end]
+    $uzr::univ_pltlb delete 0 end
+    foreach p $pdat {
+        set pname [lindex $p $nidx]
+        $uzr::univ_pltlb insert end $pname
+        #puts $pname
+    }
+    set gheader [lindex [lindex $star 3] 0]
+    set nidx [lsearch $pheader "name"]
+    set gdat [lrange [lindex $star 3] 1 end]
+    foreach g $gdat {
+        set gname [lindex $g $nidx]
+        $uzr::univ_pltlb insert end $gname
+        #puts $pname
+    }
+    
+}
+
+proc show_planet_view {wid} {
+    set cx [lindex $uzr::canv_cent 0]
+    set cy [lindex $uzr::canv_cent 1]
+    set scale_down 26
+    $uzr::univ_canv delete all
+    set sel_idx [$wid curselection]
+    #puts $sel_idx
+    set pname [$wid get $sel_idx]
+    #puts $uzr::canv_prev_star
+    set sdat [get_star $uzr::canv_prev_star]
+    set star [lindex $sdat 1]
+    set planets [lindex $sdat 2]
+    set gates [lindex $sdat 3]
+    
+    set pdat [lrange $planets 1 end]
+    foreach p $pdat {
+        set cid [lindex $p 0]
+        set x [lindex $p 2]
+        set y [lindex $p 3]
+        set z [lindex $p 4]
+        set pn [lindex $p 5]
+        set pt [lindex $p 6]
+        set pav [lindex $p 8]
+        set rad [expr {sqrt(($x * $x) + ($z * $z))}]
+        
+        # adjust the size and center.
+        set x [expr {int($x / $scale_down) + $cx}]
+        set z [expr {int($z / $scale_down) + $cy}]
+        set rad [expr {int($rad / $scale_down)}]
+        set c $x
+        set c [lappend c $z]
+        set xt [expr {$cx - $rad}]
+        set yt [expr {$cy - $rad}]
+        set xb [expr {$cx + $rad}]
+        set yb [expr {$cy + $rad}]
+        $uzr::univ_canv create oval $xt $yt $xb $yb -dash 20 -outline #203020
+        if {$pname == $pn} {
+            draw_cir $uzr::univ_canv $c 25 #40ff40
+            $uzr::univ_canv create text $x [expr {$z - 20}] -text $pn -font font_info_cou -fill #ffffff
+        } else {
+            draw_cir $uzr::univ_canv $c 15 #808080
+        }
+    }
+    draw_star $uzr::univ_canv $sdat [list $cx $cy]
+    
+    set gheader [lindex $gates 0]
+    set gdat [lrange $gates 1 end]
+    set gc_lst {}
+    foreach g $gdat {
+    # starId id x y z name toStarId available type
+        set x [lindex $g 2]
+        set y [lindex $g 3]
+        set z [lindex $g 4]
+        set gn [lindex $g 5]
+        set gt [lindex $g 6]
+        set gav [lindex $g 7]
+        set gtp [lindex $g 8]
+        
+        set x [expr {int($x / $scale_down) + $cx}]
+        set z [expr {int($z / $scale_down) + $cy}]
+        set xt [expr {$x - 10}]
+        set yt [expr {$z - 10}]
+        set xb [expr {$x + 10}]
+        set yb [expr {$z + 10}]
+        if {$pname == $gn} {
+            $uzr::univ_canv create rectangle [expr {$xt - 10}] [expr {$yt-10}] $xb $yb -fill #40ff40
+        } else {
+            $uzr::univ_canv create rectangle $xt $yt $xb $yb -fill #fff080
+        }
+        $uzr::univ_canv create text $xb [expr {$yb + 20}] -text $gn -fill #ffffff
+        set gc_lst [lappend gc_lst [list $x $z]]
+    }
+    #set len [llength $gc_lst]
+    #set idx 0
+    #foreach g $gc_lst {
+    #    if {$idx < $len} {
+    #        set x1 [lindex $g 0]
+    #        set z1 [lindex $g 1]
+    #        set g1 [lindex $gc_lst [expr {$idx + 1}]]
+    #        set x2 [lindex $g1 0]
+    #        set z2 [lindex $g1 1]
+    #    $uzr::univ_canv create line $x1 $z1 $x2 $z2 -fill #008000
+    #    } else {
+    #    }
+    #    incr idx
+    #}
+}
+
 # ###############################################
 proc load_base {} {
     puts "loading base ..."
@@ -629,6 +987,7 @@ proc load_base {} {
     #  reset check button state
     set comp::show_uzr_comps 0
     set comp::show_uzr_txt "Show Buildable"
+    load_star_lst $far_db::star_lst
 }
 
 load_base
