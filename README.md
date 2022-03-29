@@ -2,6 +2,8 @@
 Python code to scrape the client-side API to create an inventory and status snapshot.
 Requires Python 3, pandas, and dependencies.
 
+Farsite Workbench TCL/TK GUI that provides graphical interface to the Farsite data base.
+Requires TCL/TK  8.6.12 or later
 
 ### Resource_Master.py ###
 Retrieves the anonymous universe data - components, resources, etc.
@@ -82,3 +84,22 @@ There will be updates to the source.  You can pull them down any time by typing 
 git fetch
 git pull
 
+###  Running Instructions  ###
+
+Now to complete these instructions,  you now have the latest copy of the Farsite Workbench on your machine.
+
+It is designed to enable you to place a shortcut on your desktop.  You know where you installed it so make a shortcut of the file "tcl_src\far_gui.tcl" and place it on your desktop,  double click to start.
+
+If you do not like shortcuts, then you can do it the long way.  From the shell you have just pulled the repository into, and you are in the top directory.  Change directories to the "tcl_src" directory and type "wish far_gui.tcl"
+
+In both cases you should have the tool up on your screen.  Quick look at the title to confirm the version is correct.
+
+At this point you may notice that no user data is available, or is should not be if you exactly follow these instructions on a fresh checkout.
+
+You will have to invoke the python inventory_scrape.py script in a "cmd"  shell.  This will ask you for your Farsite login email and password.  Once you enter that information, it will pause, and will be longer if your inventory is bigger.  It will complete, and once done you can restart the tool and your account data should be presented.
+
+When you want to see your current account status, you will have to run the python script again.
+
+###  Dev Instructions  ###
+
+This tool will support custom development.  TBD when this will be enabled and documented.
