@@ -696,7 +696,7 @@ proc show_res_details {wid} {
         set lb1 [label $fr.fr$idx.lb2 -text [lindex $inflst $idx]]
         pack $lb -side left -padx 20
         pack $lb1 -side right -padx 20
-        pack $fr.fr$idx -anchor nw
+        pack $fr.fr$idx -fill x -expand 1 -anchor nw
         incr idx
     }
     # get the resource chain
@@ -705,7 +705,7 @@ proc show_res_details {wid} {
     #puts $chain
     set lbc [label $fr.clb -text "Resource Chain" -justify center]
     pack $lbc -side top -fill x -expand 1
-    set cnv1 [canvas $fr.canv1  -borderwidth 4 -relief sunken -width 450 -height 900 -background wheat]
+    set cnv1 [canvas $fr.canv1  -borderwidth 4 -relief sunken -width 650 -height 900 -background wheat]
     $cnv1 configure -yscrollincrement 1
     $cnv1 configure -scrollregion {0 0 450 1200}
     pack $cnv1 -side top -fill both -expand 1
@@ -753,7 +753,7 @@ proc inv_color {col} {
 proc load_comp_list {lst} {
     
     $comp::clb delete 0 end
-    set clst []
+    set clst {}
     foreach cmp $lst {
         if {[lindex $cmp 0] == "0"} {
             set header [lindex $cmp 1]
@@ -769,6 +769,28 @@ proc load_comp_list {lst} {
     set clst [lsort -decreasing $clst]
     foreach c $clst {
         $comp::clb insert end $c
+    }
+}
+
+# ##############################################
+#   update the comps list box
+proc load_bp_list {lst} {
+    
+    $cmp_dets::bp_lb delete 0 end
+    set plst {}
+    foreach bp $lst {
+        if {[lindex $bp 0] == "bp_id"} {
+            set header $bp
+            continue
+        }
+        set bid [lindex $bp 0]
+        set bname [lindex $bp 1]
+        set plst [lappend clst "$bid : $bname"]
+        #$comp::clb insert end "$cnumb :  $nam $csz"
+    }
+    #set plst [lsort -integer $plst]
+    foreach c $plst {
+        $cmp_dets::bp_lb insert end $c
     }
 }
 
@@ -982,6 +1004,8 @@ proc load_base {} {
         $res::plb itemconfigure end -background [lindex $data 4]
         $res::plb itemconfigure end -foreground white
     }
+    # load blueprints
+    load_bp_list $far_db::bp_lst
     # load comps list with default
     load_comp_list $far_db::comps_lst
     #  reset check button state
@@ -1069,9 +1093,9 @@ proc show_comp_details {wid} {
     
     ##  hard coded index ...
     set dlst [lrange $comp_spec 1 end]
-    $cmp_dets::canv delete all
-    $cmp_dets::canv configure -scrollregion {0 0 450 3600}
-    bind $cmp_dets::canv <MouseWheel> {scrol_canv %W 1}
+    #$cmp_dets::canv delete all
+    #$cmp_dets::canv configure -scrollregion {0 0 450 3600}
+    #bind $cmp_dets::canv <MouseWheel> {scrol_canv %W 1}
     set mlst {}
     foreach d $dlst {
         set r [lindex $d 1]
@@ -1105,5 +1129,48 @@ proc show_comp_details {wid} {
             }
         }
     }
+}
+
+# ##############################################
+#  show the blueprint details.
+#   wid is the component list box
+proc show_bp_details {wid} {
+    
+    set sel_idx [$wid curselection]
+    #puts $sel_idx
+    set bp_txt [$wid get $sel_idx]
+    set stxt [split $bp_txt ":"]
+    
+    set pid [string trim [lindex $stxt 0]]
+    #puts $pid
+    set rtn {}
+    set bdat [lrange $far_db::bp_lst 1 end]
+    foreach p $bdat {
+        #puts $p
+        if {[lindex $p 0] == $pid} {
+            set rtn $p
+            break
+        }
+    }
+    set bp_clst {}
+    foreach c $far_db::comps_lst {
+        if {[lindex $c 0] == 0} {continue}
+        set c_idx [lindex $c 0]
+        #puts $c_idx
+        foreach pc $rtn {
+            set pidx [lsearch $pc $c_idx]
+            if {$pidx >= 0} {
+                set bp_clst [lappend bp_clst $c]
+                #puts $c
+                break
+            }
+        }
+    }
+    
+    set rtn [lsort -index 0 -integer $bp_clst]
+
+    load_comp_list $rtn
+    
+    #puts $rtn
 }
 

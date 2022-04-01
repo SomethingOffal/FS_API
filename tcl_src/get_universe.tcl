@@ -23,6 +23,88 @@ namespace eval uni {
     set gate_lst {}
 }
 
+namespace eval bp {
+    set src "../BOM_SWIMLANE72.csv"
+    set bp_lst {}
+}
+
+# ####################################################
+#   extract BP  from  swimlane dump.
+proc get_bp_lst {} {
+    set fh [open $bp::src "r"]
+    set fdat [read $fh]
+    set fdat [split $fdat "\n"]
+    
+    set idx 0
+    set header [lindex $fdat 0]
+    set sheader [split $header ";"]
+    set bid [lsearch $sheader "blue_id"]
+    set bn [lsearch $sheader "blue_name"]
+    set bcid [lsearch $sheader "component_id"]
+    set cname [lsearch $sheader "component_name"]
+    set ccode [lsearch $sheader "component_code"]
+#    set ccode [lsearch $sheader "planet_names"]matres_input_name
+    set mater [lsearch $sheader "matres_input_name"]
+    set fdat [lrange $fdat 1 end]
+    set bp_lst {}
+    set last_bp ""
+    set comp_lst {}
+    set start 0
+    foreach d $fdat {
+        if {$d == ""} {
+            set tlst  $last_bp
+            set tlst [lappend tlst $bp_name]
+            set tlst [lappend tlst [lsort -integer $comp_lst]]
+            set bp_lst [lappend bp_lst $tlst]
+            break
+        }
+        set sd [split $d ";"]
+        
+        ##  here get more details about the current.
+        #set planets [lindex $sd end]
+        #set splanets [split $planets ","]
+        #set mat [lindex $sd $mater]
+        #if {[llength $splanets] == 1} {
+        #    puts "$planets  $mat"
+        #}
+#        set bp_id "[lindex $sd $bid] : [lindex $sd $bn]"
+        set bp_id [lindex $sd $bid]
+        #set bp_name [lindex $sd $bn]
+        if {$bp_id == $last_bp} {
+            #set bp_id [lindex $sd $bid]
+            set bp_name [lindex $sd $bn]
+            set comp_id [lindex $sd $bcid]
+            if {[lsearch $comp_lst $comp_id] < 0} {
+                set comp_lst [lappend comp_lst $comp_id]
+            }
+        } else {
+            if {$start == 0} {
+                set start 1
+                set last_bp $bp_id
+                continue
+            }
+            #puts $last_bp
+            #puts [lsort -integer $comp_lst]
+            set tlst  $last_bp
+            set tlst [lappend tlst $bp_name]
+            set tlst [lappend tlst [lsort -integer $comp_lst]]
+            set bp_lst [lappend bp_lst $tlst]
+            set last_bp $bp_id
+            set comp_id [lindex $sd $bcid]
+            set comp_lst {}
+            set comp_lst [lappend comp_lst $comp_id]
+            #set tlst {}
+        }
+    }
+    set blue_list [lappend blue_list [list bp_id bp_name comps_list]]
+    foreach b $bp_lst {
+        set blue_list [lappend blue_list $b]
+    }
+    return $blue_list
+}
+
+
+
 # ############################################
 #   get data from list   key:val
 proc csv_data {tlst} {
@@ -352,10 +434,10 @@ proc gen_sql {} {
     set sd [db onecolumn {SELECT * FROM stars}]
     puts $sd
     
-db eval {SELECT * FROM stars ORDER BY "id"} values {
-    parray values
-    puts ""
-}
+    db eval {SELECT * FROM stars ORDER BY "id"} values {
+        parray values
+        puts ""
+    }
     
     db close
 }

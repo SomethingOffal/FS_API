@@ -79,6 +79,7 @@ foreach s $spg::sdb {
 }
 
 
+
 proc csv2tlst {fh} {
     # get the header of the csv file
     set header [gets $fh]
@@ -137,6 +138,8 @@ set fh [open "C:/work/Farsite/FS_API/components.csv" "r"]
 set comps_lst [csv2tlst $fh]
 close $fh
 
+set blueprints [get_bp_lst]
+
 puts $fo "#! /usr/bin/env wish"
 puts $fo "# -------------------------------------------------------------------------------"
 puts $fo "# -------------------------------------------------------------------------------"
@@ -162,6 +165,7 @@ puts $fo "    set mine_lst \{\}"
 puts $fo "    set compres_lst \{\}"
 puts $fo "    set compmain_lst \{\}"
 puts $fo "    set comps_lst \{\}"
+puts $fo "    set bp_lst \{\}"
 puts $fo "    set star_lst \{\}"
 puts $fo "\}"
 puts $fo ""
@@ -180,8 +184,9 @@ puts $fo "set far_db::compmain_lst \{ $compmain_lst \}"
 puts $fo ""
 puts $fo "set far_db::comps_lst \{ $comps_lst \}"
 puts $fo ""
-puts $fo "set far_db::star_lst \{$univers \}"
+puts $fo "set far_db::bp_lst \{$blueprints \}"
 puts $fo ""
+puts $fo "set far_db::star_lst \{$univers \}"
 
 close $fo
 

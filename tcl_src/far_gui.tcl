@@ -38,7 +38,7 @@ set me_path [string range $me 0 [string last "/" $me]]
 set sys::cdir $me_path
 source "$sys::cdir/tcl_db.tcl"
 source "$sys::cdir/name_spaces.tcl"
-set version "Alpha 0.6"
+set version "Alpha 1.0"
 wm title . "Farsite Workbench $version"
 # #############################
 bind . <F12> {catch {console show}}
@@ -91,12 +91,15 @@ namespace eval cmp_dets {
     set info_win {}
     set canv {}
     set header ""
+    set bp_lb {}
 }
 # components details frame
 set cdfr [frame $w.cdfr -borderwidth 4 -relief sunken]
-set cmp_dets::canv [canvas $cdfr.cav1 -width 450 -height 1200]
-pack $cmp_dets::canv -anchor w -side left -fill y -expand 1
-$cmp_dets::canv configure -scrollregion {0 0 450 3600}
+set cmp_dets::bp_lb [listbox $cdfr.bplb -width 26 -height 40]
+pack $cmp_dets::bp_lb -anchor w -side left -fill y -expand 1
+bind $cmp_dets::bp_lb <ButtonRelease-1> { show_bp_details %W }
+bind $cmp_dets::bp_lb <KeyRelease> { show_bp_details %W}
+#$cmp_dets::canv configure -scrollregion {0 0 450 3600}
 #bind $cmp_dets::canv <ButtonRelease-1> { show_ship_details %W }
 #bind $cmp_dets::canv <KeyRelease> { show_ship_details %W}
 # components name space
@@ -150,12 +153,13 @@ namespace eval info {
     set info_fr {}
 }
 
-set info::info_fr [frame $mfr.inf -width 120 -borderwidth 4 -relief sunken]
+#set info::info_fr [frame $mfr.inf -width 120 -borderwidth 4 -relief sunken]
+set info::info_fr [frame $mfr.inf -borderwidth 4 -relief sunken]
 set info_lb [label $info::info_fr.lb1 -text "This is a default message message .....  until something is clicked."]
 pack $info_lb -side top -fill x
 # pack the main frames.
 pack $w  -side left  -fill y -expand 1 -anchor w
-pack $info::info_fr -anchor nw
+pack $info::info_fr -fill both -expand 1 -anchor nw
 
 # ##################
 namespace eval uzr {
