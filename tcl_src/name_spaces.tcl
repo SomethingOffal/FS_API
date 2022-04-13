@@ -60,6 +60,13 @@ namespace eval refine {
     set inv_value 0
 }
 
+# ###########################################
+#   costing and search mode variables.
+namespace eval cmode {
+    set mode "None"
+    set srch_mode "Reso"
+}
+
 # ############################
 #  name space to hold all file names.
 namespace eval ulsts {

@@ -1044,6 +1044,38 @@ proc uzr_history_add {} {
 #   get user info from the web
 proc get_uzr_info {} {
     puts "Getting user info ..."
+    set hdict [dict create accept application/json content-type application/json]
+    http::register https 443 [list ::tls::socket -autoservername true]
+    #puts "$uzr::email  $uzr::pw"
+    set url "https://farsite.online/api/1.0/auth/signin"
+    set login [::http::formatQuery email $uzr::email password $uzr::pw ]
+    set log [http::geturl $url -query $login]
+
+    set stat [http::status $log]
+    puts $stat
+    
+    set auth_dic [json::json2dict [http::data $log]]
+    set token [dict get $auth_dic accessToken]
+    #puts $token
+    http::cleanup $log
+    set header "Authorization "
+    append header $token
+    
+    set url "https://farsite.online/api/1.0/users/"
+    set acc [::http::formatQuery Authorization $token]
+    puts $acc
+    return
+    set lacc [http::geturl $url -query $acc]
+    set stat [http::status $lacc]
+    puts $stat
+    
+    set met [http::meta $lacc]
+    set dat [http::data $lacc]
+    puts $met
+    puts $dat
+    
+    return
+
     #uzr_history_add
     set status 0
     set uid 664409

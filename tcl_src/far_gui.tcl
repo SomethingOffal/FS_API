@@ -38,7 +38,7 @@ set me_path [string range $me 0 [string last "/" $me]]
 set sys::cdir $me_path
 source "$sys::cdir/tcl_db.tcl"
 source "$sys::cdir/name_spaces.tcl"
-set version "Alpha 1.0"
+set version "Alpha 1.1"
 wm title . "Farsite Workbench $version"
 # #############################
 bind . <F12> {catch {console show}}
@@ -92,10 +92,18 @@ namespace eval cmp_dets {
     set canv {}
     set header ""
     set bp_lb {}
+    set bp_cnt 0
+    set bp_filter {}
 }
 # components details frame
 set cdfr [frame $w.cdfr -borderwidth 4 -relief sunken]
 set cmp_dets::bp_lb [listbox $cdfr.bplb -width 26 -height 40]
+set bfr [frame $cdfr.sf1]
+set cmp_dets::bp_filter [entry $bfr.en1  -width 16 -borderwidth 4 -relief raised]
+bind $cmp_dets::bp_filter <KeyRelease> { filter_lb %W $cmp_dets::bp_lb }
+set cmp_cnt [label $bfr.clb1 -textvariable cmp_dets::bp_cnt]
+pack $cmp_dets::bp_filter $cmp_cnt -side left
+pack $bfr -fill x
 pack $cmp_dets::bp_lb -anchor w -side left -fill y -expand 1
 bind $cmp_dets::bp_lb <ButtonRelease-1> { show_bp_details %W }
 bind $cmp_dets::bp_lb <KeyRelease> { show_bp_details %W}
@@ -109,6 +117,7 @@ namespace eval comp {
     set comp_lst {}
     set comp_header ""
     set comp_filter {}
+    set comp_cnt 0
     set comp_id ""
     set show_uzr_txt "Show Buildable"
     set show_uzr_comps 0
@@ -119,9 +128,10 @@ set cfr [frame $w.cfr -borderwidth 4 -relief sunken]
 set cctlfr [frame $cfr.cctl]
 set comp::clb [listbox $cfr.cmp -width 34]
 set comp::filter [entry $cctlfr.en1 -width 16 -borderwidth 4 -relief raised]
+set comp_cnt [label $cctlfr.clb1 -textvariable comp::comp_cnt]
 #set ccb1 [checkbutton $cctlfr.ckb1 -variable comp::show_uzr_comps -textvariable comp::show_uzr_txt -command fill_uzr_comps]
 #pack $comp::filter $ccb1 -side left
-pack $comp::filter -side left
+pack $comp::filter $comp_cnt -side left
 pack $cctlfr -fill x
 bind $comp::filter <KeyRelease> { filter_lb %W $comp::clb}
 pack $comp::clb -anchor w -side left -fill y -expand 1
@@ -142,8 +152,9 @@ namespace eval res {
 set rfr [frame $w.rfr -borderwidth 4 -relief sunken]
 set res::plb [listbox $rfr.res -width 10 -height 40]
 pack $res::plb -anchor w -side left -fill y -expand 1
-bind $res::plb <ButtonRelease-1> { show_res_details %W }
-bind $res::plb <KeyRelease> { show_res_details %W}
+#bind $res::plb <ButtonRelease-1> { show_res_details %W }
+bind $res::plb <ButtonRelease-1> { update_view %W }
+bind $res::plb <KeyRelease> { update_view %W}
 
 
 # pack main frames
@@ -165,8 +176,8 @@ pack $info::info_fr -fill both -expand 1 -anchor nw
 namespace eval uzr {
     set name ""
     set id ""
-#    set email ""
-#    set pw ""
+    set email ""
+    set pw ""
     set key ""
     set user_note_frame {};  # user frame
     set bkup_en 1
@@ -195,15 +206,17 @@ set ufr [frame $uzr_work_fr.bts -borderwidth 4 -relief sunken]
 set ubfr [frame $ufr.bfr1 -height 10]
 set nfr [frame $ubfr.nf]
 set pfr [frame $ubfr.pf]
-#set plb [label $pfr.lb1 -text "User ID: "]
-#set pnen [entry $pfr.en1 -width 7 -show "#" -textvariable uzr::id]
-#set gbtn [button $pfr.bt1 -text "Get Status" -command get_uzr_info]
+set elb [label $pfr.lb1 -text "Email: "]
+set enen [entry $pfr.en1 -width 26  -textvariable uzr::email]
+set plb [label $pfr.lb2 -text "PassWord: "]
+set pnen [entry $pfr.en2 -width 14 -show "#" -textvariable uzr::pw]
+set gbtn [button $pfr.bt1 -text "Login" -command get_uzr_info]
 set lbtn [button $pfr.bt2 -text "Load Status" -command {load_uzr_info; generate_view}]
 #set bucb [checkbutton $pfr.cb1 -text "Backup Enable " -variable uzr::bkup_en -anchor w]
 #pack $plb $pnen -side left
 pack $nfr $pfr -side left
+#pack $lbtn $elb $enen $plb $pnen $gbtn -side left
 pack $lbtn -side left
-#pack $gbtn $lbtn -side left
 #pack $bucb
 pack $ubfr -side top -anchor n -expand 1 -fill x
 pack $ufr -side top -anchor n -expand 1 -fill x
@@ -244,6 +257,7 @@ pack $uzr::univ_frame -anchor w -fill both -expand 1
 
 source "$sys::cdir/far_procs.tcl"
 source "$sys::cdir/user_procs.tcl"
+source "$sys::cdir/far_costing.tcl"
 
 
 load_base
