@@ -97,6 +97,25 @@ proc get_reso {id} {
     return $rtn
 }
 
+proc get_reso_id {wid} {
+    set sel_idx [$wid curselection]
+    #puts $sel_idx
+    set reso [$wid get $sel_idx]
+    
+    set id ""
+    foreach r $far_db::res_lst {
+        set info [lindex $r 1]
+        set reso_info [string first $reso [lindex $info 0]]
+        #puts $reso_info
+        if {$reso_info >= 0} {
+            set info $r
+            set id [lindex $r 0]
+            #puts $id
+            break
+        }
+    }
+    return [list $id $info]
+}
 # ######################################
 #   get the material names from the ID
 proc get_mat_code {id} {
@@ -130,7 +149,7 @@ proc get_mat_code {id} {
 }
 
 # #########################################
-#  get start by name
+#  get star by name
 proc get_str_name {n} {
     foreach s $far_db::star_lst {
         set rtn {}
@@ -647,6 +666,7 @@ proc show_res_details {wid} {
     set sel_idx [$wid curselection]
     #puts $sel_idx
     set reso [$wid get $sel_idx]
+    
     if {$reso == "All"} {
         load_base
         return
@@ -654,18 +674,9 @@ proc show_res_details {wid} {
     
     set res::cur_name $reso
     #puts $reso
-    set id ""
-    foreach r $far_db::res_lst {
-        set info [lindex $r 1]
-        set reso_info [string first $reso [lindex $info 0]]
-        #puts $reso_info
-        if {$reso_info >= 0} {
-            set info $r
-            set id [lindex $r 0]
-            #puts $id
-            break
-        }
-    }
+    set res_info [get_reso_id $wid]
+    set id [lindex $res_info 0]
+    set info [lindex $res_info 1]
     #  make a single list
     set inflst [lindex $info 0]
     foreach i [lindex $info 1] {
@@ -767,9 +778,12 @@ proc load_comp_list {lst} {
         #$comp::clb insert end "$cnumb :  $nam $csz"
     }
     set clst [lsort -decreasing $clst]
+    set cnt 0
     foreach c $clst {
         $comp::clb insert end $c
+        incr cnt
     }
+    set comp::comp_cnt "Showing: $cnt"
 }
 
 # ##############################################
@@ -789,9 +803,12 @@ proc load_bp_list {lst} {
         #$comp::clb insert end "$cnumb :  $nam $csz"
     }
     #set plst [lsort -integer $plst]
+    set cnt 0
     foreach c $plst {
         $cmp_dets::bp_lb insert end $c
+        incr cnt
     }
+    set cmp_dets::bp_cnt "Showing: $cnt"
 }
 
 # #############################################
@@ -938,10 +955,10 @@ proc show_planet_view {wid} {
         set yb [expr {$cy + $rad}]
         $uzr::univ_canv create oval $xt $yt $xb $yb -dash 20 -outline #203020
         if {$pname == $pn} {
-            draw_cir $uzr::univ_canv $c 25 #40ff40
+            draw_cir $uzr::univ_canv $c 25 #80ff80
             $uzr::univ_canv create text $x [expr {$z - 20}] -text $pn -font font_info_cou -fill #ffffff
         } else {
-            draw_cir $uzr::univ_canv $c 15 #808080
+            draw_cir $uzr::univ_canv $c 15 #a0a0a0
         }
     }
     draw_star $uzr::univ_canv $sdat [list $cx $cy]
@@ -973,20 +990,21 @@ proc show_planet_view {wid} {
         $uzr::univ_canv create text $xb [expr {$yb + 20}] -text $gn -fill #ffffff
         set gc_lst [lappend gc_lst [list $x $z]]
     }
-    #set len [llength $gc_lst]
-    #set idx 0
-    #foreach g $gc_lst {
-    #    if {$idx < $len} {
-    #        set x1 [lindex $g 0]
-    #        set z1 [lindex $g 1]
-    #        set g1 [lindex $gc_lst [expr {$idx + 1}]]
-    #        set x2 [lindex $g1 0]
-    #        set z2 [lindex $g1 1]
-    #    $uzr::univ_canv create line $x1 $z1 $x2 $z2 -fill #008000
-    #    } else {
-    #    }
-    #    incr idx
-    #}
+    set sid [lindex $star 0]
+    set s [expr {srand($sid)}]
+    set nstars [expr {int(rand() * 200.0 + 100.0)}]
+    for {set i 1} {$i < $nstars} {incr i} {
+        set loc [expr {int(rand() * 1300)}]
+        set loc [lappend loc [expr {int(rand() * 980)}]]
+        set r [expr {int(rand() * 127)}]
+        set g [expr {int(rand() * 127)}]
+        set b [expr {int(rand() * 127)}]
+        #puts $num
+        set color [format "#%02X%02X%02X" $r $g $b]
+        draw_cir $uzr::univ_canv $loc 4 $color
+
+    }
+    
 }
 
 # ###############################################
@@ -1053,28 +1071,49 @@ proc get_comp_spec {cmp} {
 #   wid   entry widget
 #   lb    list box to filter.
 proc filter_lb {wid lb} {
-    set txt [$wid get]
+    set txt [string tolower [$wid get]]
     #puts $txt
     ## if no text reload 
     if {$txt == ""} {
         load_base
         return
     }
+    $lb delete 0 end
     
-    $comp::clb delete 0 end
-    foreach cmp $far_db::comps_lst {
-        if {[lindex $cmp 0] == "0"} {
-            continue
+    if {$wid == $comp::filter} {
+        foreach cmp $far_db::comps_lst {
+            if {[lindex $cmp 0] == "0"} {
+                continue
+            }
+            set cnumb [lindex $cmp 0]
+            set nam [lindex [lindex $cmp 1] 1]
+            set cid [lindex [lindex $cmp 1] 2]
+            set compt [string tolower "$cid :  $nam"]
+            set is_one [string first $txt $compt]
+            if {$is_one >= 0} {
+                $comp::clb insert end "$cnumb :  $nam"
+            }
         }
-        set cnumb [lindex $cmp 0]
-        set nam [lindex [lindex $cmp 1] 1]
-        set cid [lindex [lindex $cmp 1] 2]
-        set compt [string tolower "$cid :  $nam"]
-        set is_one [string first $txt $compt]
-        if {$is_one >= 0} {
-            $comp::clb insert end "$cnumb :  $nam"
+    } elseif {$wid == $cmp_dets::bp_filter} {
+        set bp_lst [lrange $far_db::bp_lst 1 end]
+        foreach bp $bp_lst {
+            set bpid [lindex $bp 0]
+            set bpna [lindex $bp 1]
+            set field "$bpid : $bpna"
+            set lfield [string tolower $field]
+            set is_in [string first $txt $lfield]
+            if {$is_in >= 0} {
+                $cmp_dets::bp_lb insert end $field
+            }
         }
+    } else {
+        puts "Error unknown list box ..."
+        return
     }
+    #$cmp_dets::bp_lb
+    #puts $wid
+    
+    #$lb delete 0 end
 }
 
 # ##############################################
@@ -1174,3 +1213,96 @@ proc show_bp_details {wid} {
     #puts $rtn
 }
 
+# #################################################################################
+#   access functions
+#
+#  get the list of components from the material passed
+#    if not a mat,  return list of full component details.
+proc get_comps_from_id {wid} {
+    set sel_idx [$wid curselection]
+    set sel_txt [$wid get $sel_idx]
+    
+    set midx ""
+    foreach m $far_db::res_lst {
+        if {[lindex $m 0] == 0} {continue}
+        set lnm [lindex [lindex $m 1] 0]
+        if {$lnm == $sel_txt} {
+            set typ [lindex [lindex $m 1] 2]
+            if {$typ == "Ore"} {return ""}
+            set disc [lindex [lindex $m 1] end]
+            if {$disc != "True"} {return ""}
+            set midx [lindex $m 0]
+            #puts "Found $lnm  index :  $midx"
+            break
+        }
+    }
+    if {$midx == ""} {return ""}
+    set cmp_lst {}
+    foreach cmp $far_db::compres_lst {
+        if {[lindex $cmp 0] == 0} {continue}
+        set res [lindex [lindex $cmp 1] 0]
+        if {$res == $midx} {
+            set comp [lindex $cmp 0]
+            set cmp_lst [lappend cmp_lst $comp]
+        }
+    }
+    set fcmp_lst {}
+    foreach c $far_db::comps_lst {
+        set id [lindex $c 0]
+        if {[lsearch $cmp_lst [lindex $c 0]] >= 0} {
+            set fcmp_lst [lappend fcmp_lst $c]
+        }
+    }
+    #foreach c $cmp_lst {
+    #    puts $c
+    #}
+    return $fcmp_lst
+}
+
+# #######################################
+#  get the Blue prints that have items on
+#    the component list passed.
+proc get_bp_from_comp_lst {lst} {
+    set rtn_lst {}
+    foreach bp $far_db::bp_lst {
+        set bps [lindex $bp 2]
+        foreach c $lst {
+            set cid [lindex $c 0]
+            set ison [lsearch $bps $cid]
+            if {$ison >= 0} {
+                if {[lsearch $rtn_lst $bp] < 0} {
+                    set rtn_lst [lappend rtn_lst $bp]
+                }
+            }
+        }
+    }
+    return $rtn_lst
+}
+# ################################################
+#  update the whole view of lists based on sorting mode
+#  
+proc update_view {wid} {
+    set sel_idx [$wid curselection]
+    set sel_txt [$wid get $sel_idx]
+    if {$wid == $res::plb} {
+        if {$cmode::srch_mode == "Reso"} {
+            set rcmp_lst [get_comps_from_id $wid]
+            if {$rcmp_lst != ""} {
+                load_comp_list $rcmp_lst
+                set bp_lst [get_bp_from_comp_lst $rcmp_lst]
+                load_bp_list $bp_lst
+            } else {
+                load_comp_list $far_db::comps_lst
+                load_bp_list $far_db::bp_lst
+            }
+        } elseif {$cmode::srch_mode == "Comp"} {
+        } elseif {$cmode::srch_mode == "Blue"} {
+        }
+        show_res_details $wid
+    } elseif {$wid == $comp::clb} {
+    } elseif {$wid == $cmp_dets::bp_lb} {
+    } else {
+        puts "Error update_view unexpected wid def ..."
+        return
+    }
+}

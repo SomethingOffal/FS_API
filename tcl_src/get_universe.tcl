@@ -204,7 +204,19 @@ proc extract_uni {} {
     return $data
 }
 
-
+proc get_url_data {url {chunk 4096} } {
+    http::register https 443 [list ::tls::socket -autoservername true]
+    set hndl [::http::geturl $url]
+    set body [::http::data $hndl]
+    set b1 [json::json2dict $body]
+    #puts $body
+    #set header [::http::meta $hndl]
+    #puts $header
+    foreach {n v} $b1 {
+        puts "$n: $v"
+    }
+    
+}
 
 # ###############################################################
 #   dump the url to a file.
@@ -292,7 +304,6 @@ proc two_csv {lst} {
     return $rtn
 }
 
-
 namespace eval spg {
     set sfields {id x y z size color textureId name}
     set sdb {}
@@ -333,7 +344,6 @@ proc extract_fields {lst flds} {
     set planet_list {}
     foreach p $plst {
         set sp [split $p ","]
-        set p_spec $fields
         set tline $flds
         set is_reso 0
         set star_plst {}
@@ -463,6 +473,196 @@ proc gen_sql {} {
 # pack $t
 
 
+# ######################################################################
+#   market stuff
+namespace eval mark {
+    set bfields { id username }
+    set ofields { id username }
+    set dfields {type buyer $mark::bfields owner $mark::ofields buyPrice quantity isPartial originalId }
+    #set mfields {id type objectType objectId data $mark::dfields createdAt}
+    set mfields {id type objectType objectId data "$dfields" createdAt}
+}
 
+proc get_mark_data { str flds } {
+    
+    set idx 1
+    set len [string length $str]
+    set tstr ""
+    set mlst {}
+    set tstr [string trim $str "\]\["]
+    set idx [string first "\},\{" $tstr]
+    #puts $idx
+    while {$idx >= 0} {
+        set mlst [lappend mlst [string range $tstr 0 $idx]]
+        set tstr [string range $tstr $idx+2 end]
+        #puts $tstr
+        set idx [string first "\},\{" $tstr]
+    }
+    
+    # get the last planet.
+    if {$tstr != ""} {
+        set mlst [lappend mlst [string range $tstr 0 end]]
+    }
+    # if nothing return nul
+    if {[llength $mlst] == 0} {
+        return {}
+    }
+    
+    foreach m $mlst {
+        set len [string length $m]
+        set idx 0
+        set hidx 0
+        while {$idx < $len} {
+            set ch [lindex $mark::mfields $hidx]
+            puts $ch
+            set kl [string first $ch $m $idx]
+            puts $kl
+            if {$kl >= 0} {
+                set send [expr {[string length $ch] + $kl}]
+                set key [string range $m $kl $send-1]
+                puts $key
+                incr idx [string length $ch]
+                incr hidx
+            } else {
+                puts "Key not found?  $idx  $mark::mfields"
+                return
+            }
+        }
+    }
+}
+
+
+
+# #####################################
+#   get the planets and gates ...
+#    NOT complete
+proc get_mark_data_o { lst flds } {
+    set rtn {}
+    set fields $flds
+    set idx 1
+    set len [string length $lst]
+    set tstr ""
+    set mlst {}
+    set tstr [string trim $lst "\]\["]
+    set idx [string first "\},\{" $tstr]
+    #puts $idx
+    while {$idx >= 0} {
+        set mlst [lappend mlst [string range $tstr 0 $idx]]
+        set tstr [string range $tstr $idx+2 end]
+        #puts $tstr
+        set idx [string first "\},\{" $tstr]
+    }
+    
+    # get the last planet.
+    if {$tstr != ""} {
+        set mlst [lappend mlst [string range $tstr 0 end]]
+    }
+    # if nothing return nul
+    if {[llength $mlst] == 0} {
+        return {}
+    }
+    
+    set return_list {}
+    foreach p $mlst {
+        set slen [string length $p]
+        set kov 0
+        set inout 0
+        set key ""
+        set val ""
+        set hlst {}
+        set dlst {}
+        set lst_lvl 0
+        set lvl_lst {}
+        for {set i 0} {$i < $slen} {incr i} {
+            set c [string index $p $i]
+            set code [scan $c %c]
+            #puts $code
+    #return
+            incr lst_lvl
+            if {$lst_lvl >= 100} {
+                break
+            }
+            switch $code {
+                ##  postrify
+                ##  comoa
+                "44" {
+                    puts "got:  , "
+                    set kov 0
+                    set hlst [lappend hlst $key]
+                    set dlst [lappend dlst $val]
+                    set val ""
+                    set key ""
+                }
+                ##  colon
+                "58" {
+                    puts "got:  : "
+                    set kov 1
+                }
+                ##  left facing curly
+                "125" {
+                    if {$kov == 1} {
+                        incr lst_lvl -1
+                    } else {
+                        puts "Error  unexpected open curly bracket at index $i"
+                    }
+                }
+                ##  right facing curly
+                "123" {
+                    if {$kov == 1} {
+                        set lvl_lst [lappend lvl_lst $key]
+                        set key ""
+                        set kov 0
+                        incr lst_lvl
+                    } else {
+                        puts "Error  unexpected open curly bracket at index $i"
+                    }
+                }
+                ##  space
+                "32" {}
+                default {
+                    if {$kov == 1} {
+                        append val $c
+                    } else {
+                        append key $c
+                    }
+                }
+            }
+            puts "inout : $inout"
+            puts "kov  :  $kov"
+            puts "Key  :  $key"
+            puts "Val  :  $val"
+        }
+    
+    }
+    puts $dlst
+    puts $hlst
+    
+    return $return_list
+    #foreach p $return_list {
+    #    puts [lindex $p 0]
+    #}
+}
+
+# #####################################
+#   read in the files with market data.
+proc load_market_data {} {
+    set flst [glob "../hist_*"]
+    foreach f $flst {
+        puts $f
+        set fh [open $f "r"]
+        set fdat [read $fh]
+        close $fh
+        set jvalid [json::validate $fdat]
+        puts $fdat
+        
+        
+        #set b1 [json::json2dict $fdat]
+        #foreach {k v} $b1 {
+        #    puts "$k: $v"
+        #}
+        #set mdat [get_mark_data $fdat $mark::mfields]
+    }
+    puts $flst
+}
 
 #exit
