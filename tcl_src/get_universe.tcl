@@ -217,7 +217,7 @@ proc get_url_data {url {chunk 4096} } {
     }
     
 }
-
+# set result [exec cmd /c ipconfig]   <<<  cmd shell start up.
 # ###############################################################
 #   dump the url to a file.
 proc httpcopy { url file {chunk 4096} } {
