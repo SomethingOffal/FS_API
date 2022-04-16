@@ -29,9 +29,9 @@ menu $mbar.f4
 $mbar add cascade -menu $mbar.f4 -label View -underline 0
 #$mbar.f4 add command -label "View" -background #ffffff
 menu $mbar.f4.sh
-$mbar.f4.sh add command -label "From Reso (default)"   -command {set cmode::srch_mode "Reso"} -background #ffffff
-$mbar.f4.sh add command -label "From Comp"   -command {set cmode::srch_mode "Comp"} -background #ffffff
-$mbar.f4.sh add command -label "From Blue"   -command {set cmode::srch_mode "Blue"} -background #ffffff
+$mbar.f4.sh add command -label "From Reso (default)"   -command {load_base; set sys::modeVar "R"; set cmode::srch_mode "Reso"} -background #ffffff
+$mbar.f4.sh add command -label "From Comp"   -command {load_base; set sys::modeVar "C"; set cmode::srch_mode "Comp"} -background #ffffff
+$mbar.f4.sh add command -label "From Blue"   -command {load_base; set sys::modeVar "B"; set cmode::srch_mode "Blue"} -background #ffffff
 $mbar.f4 add cascade -label "Sorting ..." -menu $mbar.f4.sh
 $mbar.f4 add separator
 #$mbar.f4 add command -label "Another CMD"   -command {set cmode::srch_mode "refine"} -background #ffffff

@@ -22,13 +22,14 @@
 package require Ttk
 package require Tk
 
-package require sqlite3
+#package require sqlite3
 
 #  use name spaces everywhere.
 #   name spaces are used for most items in this file.
 namespace eval sys {
     set cdir ""
     set helpVar ""
+    set modeVar "R"
 }
 
 # # get the current location of where I am running from
@@ -38,7 +39,7 @@ set me_path [string range $me 0 [string last "/" $me]]
 set sys::cdir $me_path
 source "$sys::cdir/tcl_db.tcl"
 source "$sys::cdir/name_spaces.tcl"
-set version "Alpha 1.1"
+set version "Alpha 1.2"
 wm title . "Farsite Workbench $version"
 # #############################
 bind . <F12> {catch {console show}}
@@ -67,8 +68,10 @@ source "$sys::cdir/far_gui_menu.tcl"
 # This is the message and command line frame
 set c [ttk::frame .f1 -borderwidth 4 -relief sunken]
 set cmd_ent [entry $c.cmd1]
-pack $cmd_ent -side bottom -anchor s -expand 1 -fill x -padx 2
+#pack $cmd_ent -side bottom -anchor s -expand 1 -fill x -padx 2
 set hlp_lb [label $c.hlb -textvariable sys::helpVar -justify left]
+set sm_lb [label $c.sm1 -width 1 -textvariable sys::modeVar -justify left]
+pack $sm_lb -side right -padx 4
 pack $hlp_lb -side left -fill x -padx 4
 
 
@@ -105,8 +108,8 @@ set cmp_cnt [label $bfr.clb1 -textvariable cmp_dets::bp_cnt]
 pack $cmp_dets::bp_filter $cmp_cnt -side left
 pack $bfr -fill x
 pack $cmp_dets::bp_lb -anchor w -side left -fill y -expand 1
-bind $cmp_dets::bp_lb <ButtonRelease-1> { show_bp_details %W }
-bind $cmp_dets::bp_lb <KeyRelease> { show_bp_details %W}
+bind $cmp_dets::bp_lb <ButtonRelease-1> { update_view %W }
+bind $cmp_dets::bp_lb <KeyRelease> { update_view %W}
 #$cmp_dets::canv configure -scrollregion {0 0 450 3600}
 #bind $cmp_dets::canv <ButtonRelease-1> { show_ship_details %W }
 #bind $cmp_dets::canv <KeyRelease> { show_ship_details %W}
@@ -136,8 +139,8 @@ pack $cctlfr -fill x
 bind $comp::filter <KeyRelease> { filter_lb %W $comp::clb}
 pack $comp::clb -anchor w -side left -fill y -expand 1
 
-bind $comp::clb <ButtonRelease-1> { show_comp_details %W }
-bind $comp::clb <KeyRelease> { show_comp_details %W}
+bind $comp::clb <ButtonRelease-1> { update_view %W }
+bind $comp::clb <KeyRelease> { update_view %W}
 # resources name space
 namespace eval res {
     set plb {}

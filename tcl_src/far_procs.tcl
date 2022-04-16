@@ -1007,21 +1007,30 @@ proc show_planet_view {wid} {
     
 }
 
-# ###############################################
-proc load_base {} {
-    puts "loading base ..."
+# #######################################
+#  fill the reso listbox with passed list
+proc load_reso_lb {lst} {
     set header ""
     $res::plb delete 0 end
-    foreach ore $far_db::res_lst {
+    $res::plb insert end "All"
+    foreach ore $lst {
         if {[lindex $ore 0] == "0"} {
             set header [lindex $ore 1]
             continue
         }
         set data [lindex $ore 1]
+        # filter off the reso  not discovered.
+        if {[lindex $data end] != "True"} {continue}
         $res::plb insert end [lindex $data 0]
         $res::plb itemconfigure end -background [lindex $data 4]
         $res::plb itemconfigure end -foreground white
     }
+}
+
+# ###############################################
+proc load_base {} {
+    puts "loading base ..."
+    load_reso_lb $far_db::res_lst
     # load blueprints
     load_bp_list $far_db::bp_lst
     # load comps list with default
@@ -1141,8 +1150,9 @@ proc show_comp_details {wid} {
         set mlst [lappend mlst [get_reso $r]]
     }
     
-    $res::plb delete 0 end
-    $res::plb insert end "All"
+    #$res::plb delete 0 end
+    #$res::plb insert end "All"
+    set reso_lst {}
     foreach r $mlst {
         #puts $r
         set mat [lindex [lindex $r 1] 0]
@@ -1158,16 +1168,17 @@ proc show_comp_details {wid} {
             if {$name == $mat} {
                 #puts $name
                 #break
-            
-                set txt [inv_color [lindex $data 4]]
-                $res::plb insert end [lindex $data 0]
-                $res::plb itemconfigure end -background [lindex $data 4]
+                set reso_lst [lappend reso_lst $ore]
+                #set txt [inv_color [lindex $data 4]]
+                #$res::plb insert end [lindex $data 0]
+                #$res::plb itemconfigure end -background [lindex $data 4]
                 #puts $txt
-                $res::plb itemconfigure end -foreground white
+                #$res::plb itemconfigure end -foreground white
                 #puts $ore
             }
         }
     }
+    load_reso_lb $reso_lst
 }
 
 # ##############################################
@@ -1209,6 +1220,7 @@ proc show_bp_details {wid} {
     set rtn [lsort -index 0 -integer $bp_clst]
 
     load_comp_list $rtn
+    set rlst [get_rlst_from_clst $rtn]
     
     #puts $rtn
 }
@@ -1267,6 +1279,7 @@ proc get_bp_from_comp_lst {lst} {
     foreach bp $far_db::bp_lst {
         set bps [lindex $bp 2]
         foreach c $lst {
+            #puts $c
             set cid [lindex $c 0]
             set ison [lsearch $bps $cid]
             if {$ison >= 0} {
@@ -1277,6 +1290,52 @@ proc get_bp_from_comp_lst {lst} {
         }
     }
     return $rtn_lst
+}
+
+# ########################################
+#   get components from BP  id
+proc get_get_comps_from_bp {id} {
+    set rtn {}
+    set bp {}
+    foreach b $far_db::bp_lst {
+        set bid [lindex $b 0]
+        if {$bid == $id} {
+            set bp $b
+            set clst [lindex $b 2]
+        }
+    }
+    foreach c $clst {
+        foreach r $far_db::comps_lst {
+            set rid [lindex $r 0]
+            if {$rid == $c} {
+                set rtn [lappend rtn $r]
+            }
+        }
+    }
+    return $rtn
+}
+
+# ###########################################
+#   get resourse list from component list.
+proc get_rlst_from_clst {clst} {
+    set rtn {}
+    set rlst {}
+    set rqu_lst {}
+    foreach c $clst {
+        set fc [lindex $c 0]
+        foreach i $far_db::compres_lst {
+            set id [lindex $i 0]
+            if {$id == $fc} {
+                set resl [lindex $i 1]
+                set rid  [lindex $resl 0]
+                set is_on [lsearch $rlst $rid]
+                if {$is_on} {
+                }
+                set rid [lappend rid [lindex $resl 1]]
+            }
+        }
+        #puts $c
+    }
 }
 # ################################################
 #  update the whole view of lists based on sorting mode
@@ -1295,12 +1354,32 @@ proc update_view {wid} {
                 load_comp_list $far_db::comps_lst
                 load_bp_list $far_db::bp_lst
             }
-        } elseif {$cmode::srch_mode == "Comp"} {
-        } elseif {$cmode::srch_mode == "Blue"} {
         }
         show_res_details $wid
     } elseif {$wid == $comp::clb} {
+        if {$cmode::srch_mode == "Reso"} {
+            set ssel [split $sel_txt ":"]
+            set cmpid [string trim [lindex $ssel 0]]
+            set bp_lst [get_bp_from_comp_lst $cmpid]
+            load_bp_list $bp_lst
+        } elseif {$cmode::srch_mode == "Comp"} {
+            set ssel [split $sel_txt ":"]
+            set cmpid [string trim [lindex $ssel 0]]
+            set bp_lst [get_bp_from_comp_lst $cmpid]
+            load_bp_list $bp_lst            
+            show_comp_details $wid
+        } elseif {$cmode::srch_mode == "Blue"} {
+            show_comp_details $wid
+        }
+        
     } elseif {$wid == $cmp_dets::bp_lb} {
+        if {$cmode::srch_mode == "Blue"} {
+            set ssel [split $sel_txt ":"]
+            set bpid [string trim [lindex $ssel 0]]
+            set cmplst [get_get_comps_from_bp $bpid]
+            load_comp_list $cmplst
+            set reso_lst [get_rlst_from_clst $cmplst]
+        }
     } else {
         puts "Error update_view unexpected wid def ..."
         return
