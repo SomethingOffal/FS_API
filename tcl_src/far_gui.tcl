@@ -30,6 +30,7 @@ namespace eval sys {
     set cdir ""
     set helpVar ""
     set modeVar "R"
+    set devmode 0
 }
 
 # # get the current location of where I am running from
@@ -39,8 +40,10 @@ set me_path [string range $me 0 [string last "/" $me]]
 set sys::cdir $me_path
 source "$sys::cdir/tcl_db.tcl"
 source "$sys::cdir/name_spaces.tcl"
-set version "Alpha 1.2"
-wm title . "Farsite Workbench $version"
+source "$sys::cdir/popups.tcl"
+
+set version "Alpha 2.0"
+wm title . "Farsite Pre-Alpha Workbench $version"
 # #############################
 bind . <F12> {catch {console show}}
 #console show
@@ -108,8 +111,8 @@ set cmp_cnt [label $bfr.clb1 -textvariable cmp_dets::bp_cnt]
 pack $cmp_dets::bp_filter $cmp_cnt -side left
 pack $bfr -fill x
 pack $cmp_dets::bp_lb -anchor w -side left -fill y -expand 1
-bind $cmp_dets::bp_lb <ButtonRelease-1> { update_view %W }
-bind $cmp_dets::bp_lb <KeyRelease> { update_view %W}
+bind $cmp_dets::bp_lb <ButtonRelease-1> { update_view %W}
+bind $cmp_dets::bp_lb <KeyRelease> { update_view_key %W %k}
 #$cmp_dets::canv configure -scrollregion {0 0 450 3600}
 #bind $cmp_dets::canv <ButtonRelease-1> { show_ship_details %W }
 #bind $cmp_dets::canv <KeyRelease> { show_ship_details %W}
@@ -139,8 +142,8 @@ pack $cctlfr -fill x
 bind $comp::filter <KeyRelease> { filter_lb %W $comp::clb}
 pack $comp::clb -anchor w -side left -fill y -expand 1
 
-bind $comp::clb <ButtonRelease-1> { update_view %W }
-bind $comp::clb <KeyRelease> { update_view %W}
+bind $comp::clb <ButtonRelease-1> { update_view %W}
+bind $comp::clb <KeyRelease> { update_view_key %W %k}
 # resources name space
 namespace eval res {
     set plb {}
@@ -156,8 +159,8 @@ set rfr [frame $w.rfr -borderwidth 4 -relief sunken]
 set res::plb [listbox $rfr.res -width 10 -height 40]
 pack $res::plb -anchor w -side left -fill y -expand 1
 #bind $res::plb <ButtonRelease-1> { show_res_details %W }
-bind $res::plb <ButtonRelease-1> { update_view %W }
-bind $res::plb <KeyRelease> { update_view %W}
+bind $res::plb <ButtonRelease-1> { update_view %W}
+bind $res::plb <KeyRelease> { update_view_key %W %k}
 
 
 # pack main frames
@@ -261,9 +264,12 @@ pack $uzr::univ_frame -anchor w -fill both -expand 1
 source "$sys::cdir/far_procs.tcl"
 source "$sys::cdir/user_procs.tcl"
 source "$sys::cdir/far_costing.tcl"
+source "$sys::cdir/user_cfg.tcl"
 
-
+# load base view
 load_base
+# generate the user costing list
+gen_costing_list
 
 # If the user has loaded accout data before
 if {[file exists "../Account.csv"] == 1} {
@@ -273,19 +279,14 @@ if {[file exists "../Account.csv"] == 1} {
 
 # ##########################################################
 #   load user saved settings and ...
-set is_ini [file exists "~/far_tool/.far_ini"]
+set is_ini [file exists $glbl::uzr_ini]
 if {$is_ini == 1} {
-    source "~/far_tool/.far_ini"
+    source $glbl::uzr_ini
 } else {
     file mkdir "~/far_tool"
-    set th [open "~/far_tool/.far_ini" "w"]
+    set th [open $glbl::uzr_ini "w"]
     puts $th "puts \"Test out ...\""
     close $th
-}
-
-namespace eval glbl  {
-    set uzr_mat_lst {}
-    set uzr_sec_lst {}
 }
 
 
@@ -297,12 +298,44 @@ proc mouse_move {wid x y} {
     set sys::helpVar "x: $x y: $y Win: $wid "
 }
 
+# #################################
+#
+proc update_ini {} {
+    set th [open $glbl::uzr_ini "w"]
+    foreach r $uzrcfg::cost_tbl {
+        set sr [split $r ":"]
+        set wpath [lindex $sr 2]
+        set val [$wpath get]
+        puts $val
+        set ostr "$wpath delete 0 end"
+        puts $th $ostr
+        if {$val != ""} {
+            set ostr "$wpath insert end $val"
+        } else {
+            set ostr "$wpath insert end \"\""
+        }
+        puts $th $ostr
+    }
+    
+    foreach s $glbl::uzr_ini_sliders {
+        set val [$s get]
+        set tstr $s
+        append tstr " set " $val
+        puts $th $tstr
+    }
+    
+    #puts $th $uzrcfg::cost_tbl
+    close $th
+}
+
+
 #  when the user exits deal with ini
 proc user_exit {} {
     if {[tk_messageBox -message "Quit?" -type yesno] eq "yes"} {
-        #if {[tk_messageBox -message "Update ini?" -type yesno] eq "yes"} {
-        #   puts "updating ini ..."
-        #}
+        if {[tk_messageBox -message "Update ini?" -type yesno] eq "yes"} {
+           puts "updating ini ..."
+           update_ini
+        }
        exit
     }
 }
