@@ -218,6 +218,15 @@ proc get_url_data {url {chunk 4096} } {
     
 }
 # set result [exec cmd /c ipconfig]   <<<  cmd shell start up.
+#set my_cmd "|cmd.exe /c DIR C:\\\"Program Files\"\\G* /B"
+#puts "Now executing the command '$my_cmd':\n"
+#set f [open $my_cmd "r"]
+#process command output
+#while {[gets $f line] != -1} {
+#  # print line
+#  puts $line
+#}
+#close $f
 # ###############################################################
 #   dump the url to a file.
 proc httpcopy { url file {chunk 4096} } {

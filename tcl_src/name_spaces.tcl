@@ -16,6 +16,14 @@
 #
 # -------------------------------------------------------------------------------
 
+##  global  name space
+namespace eval glbl  {
+    set uzr_ini "~/far_tool/.far_ini"
+    set uzr_mat_lst {}
+    set uzr_sec_lst {}
+    set uzr_slider {}
+    set uzr_ini_sliders {}
+}
 #   User name spaces.
 # ##############################################
 #   variable for refining costing 
@@ -42,6 +50,13 @@ namespace eval refine {
     set o2m1 1
     set o2m2 1
     set o2s1 1
+    set n1n1 1
+    set n1s1 1
+    set n1s2 1
+    set n2n1 1
+    set n2n2 1
+    set n2s1 1
+    set n2s2 1
     ##  other variables and constants.
     set lsec_cost "1200000"
     set msec_cost "650000"
@@ -58,6 +73,7 @@ namespace eval refine {
     set ammor_refines 0
     set tot_outlay 0
     set inv_value 0
+    set cost_table {}
 }
 
 # ###########################################

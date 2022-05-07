@@ -31,7 +31,7 @@ package require csv
 #   extract the clock value from the
 #    farsite time string passed
 proc get_time_val {tim} {
-    puts $tim
+    #puts $tim
     set stim [split $tim "T"]
     set mdate [lindex $stim 0]
     set mtime [lindex [split [lindex $stim 1] "."] 0]
@@ -277,7 +277,7 @@ proc fill_base_listbox {fr} {
     set sidx [lsearch -exact $sheader "Full_Name"]
     set iidx [lsearch -exact $sheader "id"]
     set cycs [lsearch -exact $sheader "productionCyclesLeft"]
-    puts $cycs
+    #puts $cycs
     set dlst [lrange $ulsts::secd_lst 1 end]
     set idx 0
     foreach s $dlst {
@@ -348,14 +348,14 @@ proc fill_inv_mods_listbox {fr} {
     set IDidx [lsearch -exact $sheader "id"]
     set name_idx [lsearch $sheader "original.name"]
     
-    foreach s $sheader {
-        if {[string first "id" $s] >= 0} {
-            puts $s
-        }
-        if {[string first "ID" $s] >= 0} {
-            puts $s
-        }
-    }
+    #foreach s $sheader {
+    #    if {[string first "id" $s] >= 0} {
+    #        #puts $s
+    #    }
+    #    if {[string first "ID" $s] >= 0} {
+    #        #puts $s
+    #    }
+    #}
     
     # list of module ids on ships.
     set mheader [lindex $ulsts::shipd_lst 0]
@@ -913,7 +913,7 @@ proc generate_view {} {
     # delete everything if it exists.
     if {[winfo exists $uzr::user_note_frame] == 1} {
         set info_cont [winfo children $uzr::user_note_frame]
-        puts $info_cont
+        #puts $info_cont
         foreach w $info_cont {
             destroy $w
         }

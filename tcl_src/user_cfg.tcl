@@ -20,6 +20,10 @@
 #   user info and config tab
 namespace eval uzrcfg {
     set ufr {}
+    set cost_tbl {}
+    set mrcost_tbl {}
+    set value_tbl {}
+    set slide_lst {}
 #    set canv {}
 #    set sys_lst {}
 #    set sys_conn_lst {}
@@ -66,10 +70,75 @@ foreach v $uzr_inv {
     incr w
 }
 #puts get_uzr_mats_inv
+#    amortization
 
+set cost_frm [frame $uzrcfg::ufr.mcf]
 
-pack $ustafr $invstfr -side left -fill y
-pack $uinfr -anchor n -expand 1 -fill x
+#pack $ustafr $invstfr -side left -fill y
+#pack $uinfr -anchor n -expand 1 -fill x
+
+set pur_fr [ttk::labelframe $cost_frm.pcost1 -text "Bought on Market"]
+set rcnt 0
+set ff [frame $pur_fr.f0 -borderwidth 2 -relief sunken]
+foreach r $far_db::res_lst {
+    if {[lindex $r 0] == "0"} {continue}
+    set dat [lindex $r 1]
+    if {[lindex $dat end] == {}} {continue}
+    set id [lindex $r 0]
+    set rfr [frame $ff.$id -borderwidth 2 -relief sunken]
+    set nam $id
+    append nam ":" [lindex $dat 0]
+    set lbcolr [lindex $dat 4]
+    set lb1 [label $rfr.lb1 -text $nam -font font_info_txt -background $lbcolr -foreground white]
+    set en1 [entry $rfr.en1 -width 4]
+    bind $en1 <KeyRelease> {update_cost_table $en1}
+    #$en1 insert end "M"
+    set uzrcfg::cost_tbl [lappend uzrcfg::cost_tbl "$nam:$en1"]
+    pack $lb1 -side left
+    pack $en1 -side right
+    pack $rfr -fill x -expand 1
+    #puts $r
+    incr rcnt
+    if {$rcnt >= 24} {
+        pack $ff -side left
+        set ff [frame $pur_fr.$id -borderwidth 2 -relief sunken]
+        set rcnt 0
+    }
+}
+pack $ff -side left
+#pack $pur_fr -side left
+
+set pur1_fr [ttk::labelframe $cost_frm.mcst1 -text "Mined / Refined"]
+set rcnt 0
+set ff [frame $pur1_fr.f0 -borderwidth 2 -relief sunken]
+
+foreach r $far_db::res_lst {
+    if {[lindex $r 0] == "0"} {continue}
+    set dat [lindex $r 1]
+    if {[lindex $dat end] == {}} {continue}
+    set id [lindex $r 0]
+    set rfr [frame $ff.$id -borderwidth 2 -relief sunken]
+    set lbnam "$id:[lindex $dat 0]"
+    set lbcolr [lindex $dat 4]
+    set nam [lindex $dat 0]
+    
+    set lb1 [label $rfr.lb1 -text $lbnam -width 9 -font font_info_txt -background $lbcolr -foreground white]
+    set lnam [string tolower $nam 0 end]
+    set en1 [scale $rfr.$lnam -orient horizontal -length 96 -sliderlength 22 -variable refine::$nam]
+    set uzrcfg::slide_lst [lappend uzrcfg::slide_lst $en1]
+    bind $en1 <ButtonRelease-1> {update_user_values}
+    pack $lb1 $en1 -side left -fill y -expand 1
+    pack $rfr -fill x -expand 1
+    incr rcnt
+    if {$rcnt >= 14} {
+        pack $ff -side left
+        set ff [frame $pur1_fr.$id -borderwidth 2 -relief sunken]
+        set rcnt 0
+    }
+}
+pack $ff -side left
+pack $pur_fr $pur1_fr -side left
+pack $cost_frm
 
 
 set calofr [ttk::labelframe $uzrcfg::ufr.mcost1 -text "Mining to Refining Cost Allocations"]
@@ -99,7 +168,6 @@ pack $orelbp
 pack $oreenm $oreenm1
 pack $orelbm
 pack $orefr
-pack $oreg1 -side left
 pack $oreg2 -side left
 # oils
 set oreg1 [ttk::labelframe $calofr.o2s -text "Oil 1M 2S" -borderwidth 4 -relief sunken]
@@ -156,5 +224,35 @@ pack $orelbm
 pack $orefr
 pack $oreg2 -side left
 
+set oreg2 [ttk::labelframe $calofr.n2s -text "Natural 1M 2S" -borderwidth 4 -relief sunken]
+set orefr [frame $oreg2.ofr -borderwidth 4 -relief sunken]
+set orelbp [ttk::labelframe $orefr.op -text "Natural"]
+set oreenp [entry $orelbp.en1 -width 10 -textvariable refine::n1n1]
+set orelbm [ttk::labelframe $orefr.op1 -text "Sides"]
+set oreenm [entry $orelbm.en11 -width 10 -textvariable refine::n1s1]
+set oreenm1 [entry $orelbm.en111 -width 10 -textvariable refine::n1s2]
+pack $oreenp
+pack $orelbp
+pack $oreenm $oreenm1
+pack $orelbm
+pack $orefr
+pack $oreg2 -side left
 
-pack $calofr -side left -expand 1
+set oreg2 [ttk::labelframe $calofr.n22s -text "Natural 2M 2S" -borderwidth 4 -relief sunken]
+set orefr [frame $oreg2.ofr -borderwidth 4 -relief sunken]
+set orelbp [ttk::labelframe $orefr.op -text "Naturals"]
+set oreenp [entry $orelbp.en1 -width 10 -textvariable refine::n2n1]
+set oreenp1 [entry $orelbp.en2 -width 10 -textvariable refine::n2n2]
+set orelbm [ttk::labelframe $orefr.op1 -text "Sides"]
+set oreenm [entry $orelbm.en11 -width 10 -textvariable refine::n2s1]
+set oreenm1 [entry $orelbm.en111 -width 10 -textvariable refine::n2s2]
+pack $oreenp
+pack $oreenp1
+pack $orelbp
+pack $oreenm $oreenm1
+pack $orelbm
+pack $orefr
+pack $oreg2 -side left
+
+
+pack $calofr -anchor s -expand 1

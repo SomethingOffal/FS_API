@@ -41,24 +41,24 @@ $mbar.f4 add command -label "Another CMD" -background #ffffff
 proc src_cost {} {
     source "$sys::cdir/far_costing.tcl"
 }
-menu $mbar.f3
-$mbar add cascade -menu $mbar.f3 -label Costing -underline 0
-$mbar.f3 add command -label "Show Refine Costs"   -command {set cmode::mode "refine"} -background #ffffff
-$mbar.f3 add command -label "Show Compnent Costs" -command {set cmode::mode "comp"} -background #ffffff
-$mbar.f3 add command -label "Show Ship Cost"      -command {set cmode::mode "ship"} -background #ffffff
-$mbar.f3 add command -label "Comp from Mat"       -command {set cmode::srch_mode "c_from_m"} -background #ffffff
+if {$sys::devmode == 1} {
+    menu $mbar.f3
+    $mbar add cascade -menu $mbar.f3 -label Costing -underline 0
+    $mbar.f3 add command -label "Show Refine Costs"   -command {set cmode::mode "refine"} -background #ffffff
+    $mbar.f3 add command -label "Show Compnent Costs" -command {set cmode::mode "comp"} -background #ffffff
+    $mbar.f3 add command -label "Show Ship Cost"      -command {set cmode::mode "ship"} -background #ffffff
+    $mbar.f3 add command -label "Comp from Mat"       -command {set cmode::srch_mode "c_from_m"} -background #ffffff
 
-
-#  Dev
-menu $mbar.f2
-$mbar add cascade -menu $mbar.f2 -label Dev -underline 0
-$mbar.f2 add command -label "Source User" -command {source "$sys::cdir/user_procs.tcl"} -background #ffffff
-$mbar.f2 add command -label "Source Far" -command {source "$sys::cdir/far_procs.tcl"} -background #ffffff
-$mbar.f2 add command -label "Source Menue" -command {source "$sys::cdir/far_gui_menu.tcl"} -background #ffffff
-$mbar.f2 add command -label "Source Costing" -command {source "$sys::cdir/far_costing.tcl"} -background #ffffff
-$mbar.f2 add command -label "Source Univ" -command {source "$sys::cdir/get_universe.tcl"} -background #ffffff
-$mbar.f2 add command -label "Test" -command load_market_data -background #ffffff
-
+    #  Dev
+    menu $mbar.f2
+    $mbar add cascade -menu $mbar.f2 -label Dev -underline 0
+    $mbar.f2 add command -label "Source User" -command {source "$sys::cdir/user_procs.tcl"} -background #ffffff
+    $mbar.f2 add command -label "Source Far" -command {source "$sys::cdir/far_procs.tcl"} -background #ffffff
+    $mbar.f2 add command -label "Source Menue" -command {source "$sys::cdir/far_gui_menu.tcl"} -background #ffffff
+    $mbar.f2 add command -label "Source Costing" -command {source "$sys::cdir/far_costing.tcl"} -background #ffffff
+    $mbar.f2 add command -label "Source Univ" -command {source "$sys::cdir/get_universe.tcl"} -background #ffffff
+    $mbar.f2 add command -label "Test" -command gen_costing_list -background #ffffff
+}
 
 #  about
 set contribs "wrongtack: pytyon scripts\nswimlane72: python scritps\nsckoarn: TCL/TK GUI"

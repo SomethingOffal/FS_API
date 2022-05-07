@@ -148,6 +148,43 @@ proc get_mat_code {id} {
    return $rtn
 }
 
+# #####################################
+#  get the mining info for ore info passed
+proc get_mine_info {ore} {
+    set rtn {}
+    set id [lindex $ore 0]
+    foreach r $far_db::mine_lst {
+        set sid [lindex $r 0]
+        #puts "$sid  $id"
+        if {$sid == 0} {set rtn $r; continue}
+        if {$sid == $id} {set rtn [lappend rtn $r]; break}
+    }
+    return $rtn
+}
+
+# ##########################################
+#  get refining info for mineral info passed.
+proc get_refine_info {ore} {
+    set rtn {}
+    set req {}
+    set id [lindex $ore 0]
+    foreach r $far_db::refreq_lst {
+        set sid [lindex $r 0]
+        if {$sid == 0} {set req $r; continue}
+        if {$sid == $id} {set req [lappend req $r]}
+    }
+    
+    set ref_out {}
+    foreach r $far_db::refo_lst {
+        set sid [lindex $r 0]
+        if {$sid == 0} {set ref_out $r; continue}
+        if {$sid == $id} {set ref_out [lappend ref_out $r]}
+    }
+    set rtn $req
+    set rtn [lappend rtn $ref_out]
+    return $rtn
+}
+
 # #########################################
 #  get star by name
 proc get_str_name {n} {
@@ -1341,6 +1378,13 @@ proc get_rlst_from_clst {clst} {
 #  update the whole view of lists based on sorting mode
 #  
 proc update_view {wid} {
+    
+    ##puts $key
+    #if {$key == 67 && $wid == $comp::clb} {
+    #    show_costing $wid
+    #    return
+    #}
+
     set sel_idx [$wid curselection]
     set sel_txt [$wid get $sel_idx]
     if {$wid == $res::plb} {
@@ -1384,4 +1428,17 @@ proc update_view {wid} {
         puts "Error update_view unexpected wid def ..."
         return
     }
+}
+
+proc update_view_key {wid key} {
+    if {$key != 67} {
+        update_view $wid
+        return
+    }
+    
+    if {$key == 67 && $wid == $comp::clb} {
+        show_costing $wid
+        return
+    }
+    
 }
