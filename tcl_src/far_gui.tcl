@@ -30,7 +30,7 @@ namespace eval sys {
     set cdir ""
     set helpVar ""
     set modeVar "R"
-    set devmode 0
+    set devmode 1
 }
 
 # # get the current location of where I am running from
@@ -42,7 +42,7 @@ source "$sys::cdir/tcl_db.tcl"
 source "$sys::cdir/name_spaces.tcl"
 source "$sys::cdir/popups.tcl"
 
-set version "Alpha 2.0"
+set version "Alpha 2.01"
 wm title . "Farsite Pre-Alpha Workbench $version"
 # #############################
 bind . <F12> {catch {console show}}

@@ -94,12 +94,12 @@ foreach r $far_db::res_lst {
     bind $en1 <KeyRelease> {update_cost_table $en1}
     #$en1 insert end "M"
     set uzrcfg::cost_tbl [lappend uzrcfg::cost_tbl "$nam:$en1"]
-    pack $lb1 -side left
+    pack $lb1 -side left -fill x -expand 1
     pack $en1 -side right
     pack $rfr -fill x -expand 1
     #puts $r
     incr rcnt
-    if {$rcnt >= 24} {
+    if {$rcnt >= 20} {
         pack $ff -side left
         set ff [frame $pur_fr.$id -borderwidth 2 -relief sunken]
         set rcnt 0
@@ -108,7 +108,41 @@ foreach r $far_db::res_lst {
 pack $ff -side left
 #pack $pur_fr -side left
 
-set pur1_fr [ttk::labelframe $cost_frm.mcst1 -text "Mined / Refined"]
+set mine_fr [ttk::labelframe $cost_frm.mcstm -text "Mined"]
+set rcnt 0
+set ff [frame $mine_fr.f0 -borderwidth 2 -relief sunken]
+foreach r $far_db::res_lst {
+    if {[lindex $r 0] == "0"} {continue}
+    set dat [lindex $r 1]
+    if {[lindex $dat end] == {}} {continue}
+    set id [lindex $r 0]
+    set rfr [frame $ff.$id -borderwidth 2 -relief sunken]
+    set lbnam "$id:[lindex $dat 0]"
+    set lbcolr [lindex $dat 4]
+    set nam [lindex $dat 0]
+    set ty [lindex $dat 2]
+    if {$ty == "Side" || $ty == "Material"} {continue}
+    set lb1 [label $rfr.lb1 -text $lbnam -width 9 -font font_info_txt -background $lbcolr -foreground white]
+    set lnam [string tolower $nam 0 end]
+    set en1 [scale $rfr.$lnam -orient horizontal -length 96 -sliderlength 22 -variable refine::$nam]
+    set uzrcfg::slide_lst [lappend uzrcfg::slide_lst $en1]
+    bind $en1 <ButtonRelease-1> {update_user_values}
+    pack $lb1 $en1 -side left -fill y -expand 1
+    pack $rfr -fill x -expand 1
+    incr rcnt
+    if {$rcnt >= 12} {
+        pack $ff -side left
+        set ff [frame $mine_fr.$id -borderwidth 2 -relief sunken]
+        set rcnt 0
+    }
+}
+
+pack $ff -side left
+#pack $pur_fr $mine_fr -side left
+pack $pur_fr -side left
+
+#  show sides sliders.
+set pur1_fr [ttk::labelframe $cost_frm.mcst1 -text "Sides"]
 set rcnt 0
 set ff [frame $pur1_fr.f0 -borderwidth 2 -relief sunken]
 
@@ -121,23 +155,64 @@ foreach r $far_db::res_lst {
     set lbnam "$id:[lindex $dat 0]"
     set lbcolr [lindex $dat 4]
     set nam [lindex $dat 0]
-    
-    set lb1 [label $rfr.lb1 -text $lbnam -width 9 -font font_info_txt -background $lbcolr -foreground white]
-    set lnam [string tolower $nam 0 end]
-    set en1 [scale $rfr.$lnam -orient horizontal -length 96 -sliderlength 22 -variable refine::$nam]
-    set uzrcfg::slide_lst [lappend uzrcfg::slide_lst $en1]
-    bind $en1 <ButtonRelease-1> {update_user_values}
-    pack $lb1 $en1 -side left -fill y -expand 1
-    pack $rfr -fill x -expand 1
-    incr rcnt
-    if {$rcnt >= 14} {
-        pack $ff -side left
-        set ff [frame $pur1_fr.$id -borderwidth 2 -relief sunken]
-        set rcnt 0
+    set ty [lindex $dat 2]
+    set kind [lindex $dat 3]
+    #puts $dat
+    if {$ty == "Material" && $kind == "Side"} {
+        set lb1 [label $rfr.lb1 -text $lbnam -width 9 -font font_info_txt -background $lbcolr -foreground white]
+        set lnam [string tolower $nam 0 end]
+        set en1 [scale $rfr.$lnam -orient horizontal -length 96 -sliderlength 22 -variable refine::$nam]
+        set uzrcfg::slide_lst [lappend uzrcfg::slide_lst $en1]
+        bind $en1 <ButtonRelease-1> {update_user_values}
+        pack $lb1 $en1 -side left -fill y -expand 1
+        pack $rfr -fill x -expand 1
+        incr rcnt
+        if {$rcnt >= 7} {
+            pack $ff -side left
+            set ff [frame $pur1_fr.$id -borderwidth 2 -relief sunken]
+            set rcnt 0
+        }
     }
 }
 pack $ff -side left
-pack $pur_fr $pur1_fr -side left
+#pack $pur1_fr -side left
+
+# show refined  sliders
+set pur2_fr [ttk::labelframe $cost_frm.mcst2 -text "Refined"]
+set rcnt 0
+set ff [frame $pur2_fr.f0 -borderwidth 2 -relief sunken]
+
+foreach r $far_db::res_lst {
+    if {[lindex $r 0] == "0"} {continue}
+    set dat [lindex $r 1]
+    if {[lindex $dat end] == {}} {continue}
+    set id [lindex $r 0]
+    set rfr [frame $ff.$id -borderwidth 2 -relief sunken]
+    set lbnam "$id:[lindex $dat 0]"
+    set lbcolr [lindex $dat 4]
+    set nam [lindex $dat 0]
+    set ty [lindex $dat 2]
+    set kind [lindex $dat 3]
+    
+    if {$ty == "Material" && $kind != "Side"} {
+        set lb1 [label $rfr.lb1 -text $lbnam -width 9 -font font_info_txt -background $lbcolr -foreground white]
+        set lnam [string tolower $nam 0 end]
+        set en1 [scale $rfr.$lnam -orient horizontal -length 96 -sliderlength 22 -variable refine::$nam]
+        set uzrcfg::slide_lst [lappend uzrcfg::slide_lst $en1]
+        bind $en1 <ButtonRelease-1> {update_user_values}
+        pack $lb1 $en1 -side left -fill y -expand 1
+        pack $rfr -fill x -expand 1
+        incr rcnt
+        if {$rcnt >= 6} {
+            pack $ff -side left
+            set ff [frame $pur2_fr.$id -borderwidth 2 -relief sunken]
+            set rcnt 0
+        }
+    }
+}
+pack $ff -side left
+#pack $pur2_fr -side left
+
 pack $cost_frm
 
 
@@ -255,4 +330,4 @@ pack $orefr
 pack $oreg2 -side left
 
 
-pack $calofr -anchor s -expand 1
+#pack $calofr -anchor s -expand 1

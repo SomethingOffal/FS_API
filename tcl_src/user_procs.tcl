@@ -848,6 +848,7 @@ proc show_ship_details {wid} {
     set vx 200
     set vy 20
     set found 0
+    set cship_id "xxx"
     foreach i $dlst {
         set si [split $i ","]
         set styp [lindex $si $sidx]
