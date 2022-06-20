@@ -74,6 +74,7 @@ namespace eval refine {
     set tot_outlay 0
     set inv_value 0
     set cost_table {}
+    set sides_cost_lst {}
 }
 
 # ###########################################

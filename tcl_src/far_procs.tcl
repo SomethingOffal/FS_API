@@ -766,7 +766,12 @@ proc show_res_details {wid} {
     
     
 }
-
+# ########################################
+#   show the details of the item built by selected
+#   blueprint
+proc show_built_details {id} {
+    return
+}
 # ##############################################
 proc inv_color {col} {
     set sc [split $col ""]
@@ -1331,7 +1336,7 @@ proc get_bp_from_comp_lst {lst} {
 
 # ########################################
 #   get components from BP  id
-proc get_get_comps_from_bp {id} {
+proc get_comps_from_bp {id} {
     set rtn {}
     set bp {}
     foreach b $far_db::bp_lst {
@@ -1420,9 +1425,10 @@ proc update_view {wid} {
         if {$cmode::srch_mode == "Blue"} {
             set ssel [split $sel_txt ":"]
             set bpid [string trim [lindex $ssel 0]]
-            set cmplst [get_get_comps_from_bp $bpid]
+            set cmplst [get_comps_from_bp $bpid]
             load_comp_list $cmplst
             set reso_lst [get_rlst_from_clst $cmplst]
+            show_built_details $bpid
         }
     } else {
         puts "Error update_view unexpected wid def ..."

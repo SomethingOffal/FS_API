@@ -12,7 +12,7 @@
 #               MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #               3)  You may NOT sell this code, or any part there of.  
 #
-#           Description:  global name spaces
+#           Description:  Costing functions
 #
 # -------------------------------------------------------------------------------
 
@@ -44,6 +44,8 @@ proc get_costing_ratios {rlst} {
     set side 0
     set other 0
     set main ""
+    set side1 ""
+    set side2 ""
     
     #puts $rlst
     foreach r $rlst {
@@ -51,11 +53,20 @@ proc get_costing_ratios {rlst} {
         set ty [lindex $r 1]
         if {$ty == "Side"} {
             incr side
+            set test [lsearch -all -index 0 $refine::sides_cost_lst $id]
+            #puts $test
+            set sidx [lsearch -index 0 $refine::sides_cost_lst $id]
+            if {$side == 1} {
+                set side1 [lindex $refine::sides_cost_lst $sidx]
+            } else {
+                set side2 [lindex $refine::sides_cost_lst $sidx]
+            }
         } else {
             set main $ty
             incr other
         }
     }
+    #puts "side 1:  $side1   and  Side 2:  $side2" 
     ##  get the variables holding the user input ratio
     set ratlst {}
     switch $side {
@@ -137,17 +148,13 @@ proc get_res_cost_list {lst} {
         if {$idx == 0} {incr idx; continue}
         set tmp {}
         set rid [lindex $r 1]
-        set quant [lindex $r end]
-        set reso [get_reso $rid]
-        set name [lindex [lindex $reso 1] 0]
+        #puts $rid
         set val -10.0
         set t {}
-        foreach w $uzrcfg::slide_lst {
-            #puts "$w [string tolower $name]"
-            set t $w
-            set is_wid [string first [string tolower $name] $w]
-            if {$is_wid >= 0} {
-                set val [$w get]
+        foreach w $refine::cost_table {
+            set sid [lindex $w 0]
+            if {$rid == $sid} {
+                set val [lindex $w end]
                 #puts "Got Value $val  for $name  $rid"
                 break
             }
@@ -272,8 +279,8 @@ proc get_material_costs {mlst} {
         #puts "Ratio max for this ID:  $mrat"
         
         #set uzr_rat [lindex [lindex $cost_dist $idx] end]
-        set this_mcost [expr {double($rin1_cost) * $mrat / double($max)}]
-        set this_micost [expr {double($rin1_cost) * $mirat / double($min)}]
+        set this_mcost [string range [expr {double($rin1_cost) * $mrat / double($max)}] 0 7]
+        set this_micost [string range [expr {double($rin1_cost) * $mirat / double($min)}] 0 7]
         
         #puts "This mat cost Max:  $this_mcost  per unit"
         #puts "This mat cost Min:  $this_micost  per unit"
@@ -289,6 +296,170 @@ proc get_material_costs {mlst} {
     #puts $tylst
 }
 
+
+# #############################################
+#   get the min cost of sides
+#     some cost very little and will set the market price
+#     The min price will be subtracted from others and
+#
+#   output  list of  {id cost_min}
+proc get_min_sides {} {
+    set dlst [lrange $far_db::res_lst 1 end]
+    set refine::sides_cost_lst {}
+    set slst {}
+    foreach r $dlst {
+        set idx [lindex $r 0]
+        set info [get_reso $idx]
+        set d [lindex $info 1]
+        #puts $info
+        #puts $d
+        set tlst $idx
+        set minp 50000.0
+        set type [lindex $d 3]
+        if {$type == "Side"} {
+            #puts "Pricing for side :  $idx"
+            set info {}
+            set info [get_reso_chain $idx $info]
+            #puts $info
+            foreach i $info {
+                #puts $i
+                set mclst [get_material_costs $i]
+                foreach m $mclst {
+                    if {[lindex $m 0] == $idx} {
+                        if {$minp > [lindex $m end]} {
+                            set minp [lindex $m 1]
+                            set maxp [lindex $m end]
+                        }
+                    }
+                }
+                #puts $mclst
+            }
+            set tlst [lappend tlst [string range $minp 0 7]]
+            set tlst [lappend tlst [string range $maxp 0 7]]
+            set refine::sides_cost_lst [lappend refine::sides_cost_lst $tlst]
+            set refine::cost_table [lappend refine::cost_table $tlst]
+            #puts "Min price: $minp"
+        }
+    }
+}
+# ##############################################
+#  get / add to the cost_table the single output
+#    materials which are usually the lowest cost
+#
+proc get_single_mats {} {
+    set dlst [lrange $far_db::res_lst 1 end]
+    
+    set smlst {}
+    foreach r $dlst {
+        set idx [lindex $r 0]
+        set info [get_reso $idx]
+        set d [lindex $info 1]
+        if {[lindex $d end] != "True"} {
+            continue
+        }
+        #puts $d
+        set type [lindex $d 2]
+        set group [lindex $d 4]
+        set cinfo {}
+        if {$type == "Ore"} {
+            set cinfo [get_reso_chain $idx $cinfo]
+            set sid 0
+            set man 0
+            set side_min_tot 0
+            set side_max_tot 0
+            foreach c $cinfo {
+                set dat [lindex $c 1]
+                set manid [lindex $c 0]
+                set idat [get_reso [lindex $dat 0]]
+                set mdat [lindex $idat 1]
+                set mid  [lindex $idat 0]
+                if {[lindex $mdat 3] == "Side"} {
+                    incr sid
+                    #puts $mid
+                    set tmp [lindex $refine::sides_cost_lst [lsearch -index 0 $refine::sides_cost_lst $mid]]
+                    set side_min_tot [string range [expr {double($side_min_tot) + double([lindex $tmp 1])}] 0 7]
+                    set side_max_tot [string range [expr {$side_max_tot + double([lindex $tmp 2])}] 0 7]
+                    #puts $side_min_tot
+                } else {
+                    incr man
+                    set omanid  [lindex $idat 0]
+                }
+            }
+            
+            if {$man == 1} {
+                #puts "****************** ****************"
+                #set mclst [get_material_costs $cinfo]
+                #puts $mclst
+                #puts [lindex $cinfo 0]
+                #set 
+                ## get the mining cost and output from main
+                #puts $manid
+                set mat_info {}
+                foreach m $far_db::mine_lst {
+                    set id [lindex $m 0]
+                    #puts $id
+                    if {$id == $manid} {
+                        set mat_info $m
+                        break
+                    }
+                }
+                
+                #puts $mat_info
+                set mine_info [lindex $mat_info 1]
+                #puts $mine_info
+                set mcost [lindex $mine_info 2]
+                set mquant [lindex $mine_info 1]
+                # get refining info
+                set ref_info {}
+                foreach r $far_db::refreq_lst {
+                    set dat [lindex $r 1]
+                    set rid [lindex $dat 0]
+                    if {$rid == $manid} {
+                        set ref_info $dat
+                    }
+                }
+                #puts $ref_info
+                
+                set rcost [lindex $ref_info end]
+                set rinput [lindex $ref_info 1]
+                
+                #puts $mine_info
+                #puts "Cost to mine: $mcost  and  output: $mquant"
+                #puts "Cost to refine:  $rcost   with input:  $rinput"
+                set rin_mout_rat [expr {$rinput / $mquant}]
+                set rin1_cost [expr {$rin_mout_rat * $mcost + $rcost}]
+                #puts "Total cost of refine run:  $rin1_cost"
+                #puts "Sides min:  $side_min_tot   Max:  $side_max_tot"
+                set nlst {}
+                #set alinfo [get_reso_chain $manid $nlst]
+                set alinfo [get_refine_info $manid]
+                set outs [lindex $alinfo 2]
+                set minout 0
+                set maxout 0
+                foreach v $outs {
+                    set vdat [lindex $v end]
+                    if {[lindex $vdat 0] == $omanid} {
+                        set minout [lindex $vdat 1]
+                        set maxout [lindex $vdat 2]
+                        break
+                    }
+                }
+                #puts "Main single out is : $omanid"
+                #puts "refine info: $v"
+                #puts "Min: $minout  Max: $maxout"
+                
+                set mrl_costm [expr {$rin1_cost - $side_min_tot}]
+                #puts $mrl_costm
+                set mrl_min_cost [string range [expr {$mrl_costm / $maxout}] 0 7]
+                set mrl_max_cost [string range [expr {$mrl_costm / $minout}] 0 7]
+                
+                #puts "Main cost min: $mrl_min_cost  max: $mrl_max_cost"
+                set $refine::cost_table [lappend refine::cost_table [list $omanid $mrl_min_cost $mrl_max_cost]]
+            }
+        }
+    }
+}
+
 # #############################################
 #  generate the costing table to reduce overhead
 #   of costing.
@@ -296,6 +467,8 @@ proc get_material_costs {mlst} {
 proc gen_costing_list {} {
     set refine::cost_table {}
     set glbl::uzr_ini_sliders {}
+    get_min_sides
+    get_single_mats
     set clst {}
     set dlst [lrange $far_db::res_lst 1 end]
     foreach r $dlst {
