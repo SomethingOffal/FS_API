@@ -49,7 +49,7 @@ For Python
 
 https://www.python.org/downloads/
 
-choose  3.9.10   download and install.
+choose  3.9.10+   download and install.
 
 During installation there may be some messages that packages are missing and to use "pip" to update Python. These commands are run in your "cmd"  shell as mentioned above.
 
