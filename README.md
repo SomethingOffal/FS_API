@@ -39,7 +39,7 @@ TCL/TK  is used to present Farsite data obtained from various links and user dat
 
 Go to the link to install tcl/tk  on your windows machine.
 I find this installation is quite good and easy.
-Choose the file for your cpu 64 bit.  TCL  3.8
+Choose the file for your cpu 64 bit.  TCL  8.6+
 
 https://sourceforge.net/projects/magicsplat/files/magicsplat-tcl/
 
