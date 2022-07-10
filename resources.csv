@@ -25,17 +25,17 @@ id,code,name,type,group,color,volume,discovered
 24,AP24,Apatite crystals,Mineral,Crystal,#6d2c99,9,
 25,GA25,Garnet crystals,Mineral,Crystal,#6d2c99,5,
 26,FL26,Fluorite crystals,Mineral,Crystal,#6d2c99,7,
-27,SA27,Sand,Mineral,Stone rock,#634220,5,True
-28,CR28,Crystal sand,Mineral,Stone rock,#634220,5,
-29,ON29,Onyx sand,Mineral,Stone rock,#634220,8,
-30,CL30,Clay,Mineral,Stone rock,#634220,3,True
-31,CR31,Crushed stone,Mineral,Stone rock,#634220,4,True
-32,GR32,Granite,Mineral,Stone rock,#634220,4,True
-33,MA33,Marble,Mineral,Stone rock,#634220,4,True
-34,ON34,Onyx,Mineral,Stone rock,#634220,5,
-35,OB35,Obsidian,Mineral,Stone rock,#634220,7,
-36,VO36,Volcanic glass,Mineral,Stone rock,#634220,11,
-37,BA37,Basalt,Mineral,Stone rock,#634220,10,
+27,SA27,Sand,Mineral,Rock,#634220,5,True
+28,CR28,Crystal sand,Mineral,Rock,#634220,5,
+29,ON29,Onyx sand,Mineral,Rock,#634220,8,
+30,CL30,Clay,Mineral,Rock,#634220,3,True
+31,CR31,Crushed stone,Mineral,Rock,#634220,4,True
+32,GR32,Granite,Mineral,Rock,#634220,4,True
+33,MA33,Marble,Mineral,Rock,#634220,4,True
+34,ON34,Onyx,Mineral,Rock,#634220,5,
+35,OB35,Obsidian,Mineral,Rock,#634220,7,
+36,VO36,Volcanic glass,Mineral,Rock,#634220,11,
+37,BA37,Basalt,Mineral,Rock,#634220,10,
 38,PAm38,Paraffins,Material,Oil,#742222,5,True
 39,POm39,Polymers,Material,Oil,#742222,3,True
 40,ALm40,Alkali,Material,Oil,#742222,5,True
@@ -78,11 +78,11 @@ id,code,name,type,group,color,volume,discovered
 77,PLm77,Plutonium,Material,Radioactive metal,#5282ae,13,
 78,TEm78,Technicium,Material,Radioactive metal,#5282ae,12,
 79,PRm79,Promethium,Material,Radioactive metal,#5282ae,12,
-151,LUm80,Lumber,Material,Nature resource,#659c4d,13,True
-81,CAm81,Caoutchouc,Material,Nature resource,#659c4d,7,
-82,SIm82,Silicone,Material,Nature resource,#659c4d,5,
-154,WAm83,Water,Material,Nature resource,#659c4d,24,True
-84,PLm84,Plant,Material,Nature resource,#659c4d,8,
+151,LUm80,Lumber,Material,Natural resource,#659c4d,3,True
+81,CAm81,Caoutchouc,Material,Natural resource,#659c4d,7,
+82,SIm82,Silicone,Material,Natural resource,#659c4d,5,
+154,WAm83,Water,Material,Natural resource,#659c4d,8,True
+84,PLm84,Plant,Material,Natural resource,#659c4d,8,
 85,SUm85,Sulfur,Material,Fossil,#88735a,9,
 86,CLm86,Chloride,Material,Fossil,#88735a,10,
 87,SOm87,Sodium,Material,Fossil,#88735a,11,
@@ -94,14 +94,18 @@ id,code,name,type,group,color,volume,discovered
 93,ACm93,Acetone,Material,Fossil,#88735a,10,
 94,POm94,Polythene,Material,Fossil,#88735a,11,
 95,STm95,Styrofoam,Material,Fossil,#88735a,12,
-96,RmCO2,Regular CO2,Material,Side,#999999,1,True
-97,SmCO2,Solid CO2,Material,Side,#999999,1,True
-98,LmCO2,Liquid CO2,Material,Side,#999999,1,True
-99,PDm1,Planetary Dust,Material,Side,#999999,1,True
-100,SDm1,Star Dust,Material,Side,#999999,1,True
-101,MPm1,Matter particles,Material,Side,#999999,1,True
-102,HE96,Helium-3,,Unique resource,#ff0202,1,
-103,CA97,Californium,,Unique resource,#ff0202,1,
+96,RmCO2,Regular CO2,Material,Side,#999999,4,True
+97,SmCO2,Solid CO2,Material,Side,#999999,6,True
+98,LmCO2,Liquid CO2,Material,Side,#999999,5,True
+99,PDm1,Planetary Dust,Material,Side,#999999,4,True
+100,SDm1,Star Dust,Material,Side,#999999,6,True
+101,MPm1,Matter particles,Material,Side,#999999,5,True
+102,HE96,Helium-3,Mineral,Unique resource,#ff0202,1,
+103,CA97,Californium,Mineral,Unique resource,#ff0202,20,
+157,FE98,Fermium,Mineral,Unique resource,#ff0202,25,
+158,AR99,Americium,Mineral,Unique resource,#ff0202,22,
+159,NB100,Nobelium,Mineral,Unique resource,#ff0202,25,
+160,LW101,Lawrencium,Mineral,Unique resource,#ff0202,27,
 104,POo1,Paraffin oil,Ore,Oil,#742222,14,True
 105,POo2,Polymer oil,Ore,Oil,#742222,13,True
 106,AOo3,Alkali oil,Ore,Oil,#742222,18,True
@@ -149,9 +153,9 @@ id,code,name,type,group,color,volume,discovered
 148,POo45,Plutonium ore,Ore,Radioactive metal,#5282ae,1,
 149,TOo46,Technicium ore,Ore,Radioactive metal,#5282ae,1,
 150,POo47,Promethium ore,Ore,Radioactive metal,#5282ae,1,
-80,LOo48,Lumber organic,Ore,Nature resource,#659c4d,3,True
-152,COo49,Caoutchouc organic,Ore,Nature resource,#659c4d,1,
-153,SOo50,Silicone organic,Ore,Nature resource,#659c4d,1,
-83,WOo51,Water organic,Ore,Nature resource,#659c4d,8,True
-155,POo52,Plant organic,Ore,Nature resource,#659c4d,1,
-156,COo53,Complex organic,Ore,Nature resource,#659c4d,1,
+80,LOo48,Lumber organic,Ore,Natural resource,#659c4d,13,True
+152,COo49,Caoutchouc organic,Ore,Natural resource,#659c4d,1,
+153,SOo50,Silicone organic,Ore,Natural resource,#659c4d,1,
+83,WOo51,Water organic,Ore,Natural resource,#659c4d,24,True
+155,POo52,Plant organic,Ore,Natural resource,#659c4d,1,
+156,COo53,Complex organic,Ore,Natural resource,#659c4d,1,

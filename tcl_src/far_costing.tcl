@@ -84,14 +84,14 @@ proc get_costing_ratios {rlst} {
                 "Metal" {set ratlst [list $refine::m1m1 $refine::m1s1 $refine::m1s2]}
                 "Gas" {set ratlst [list $refine::g1m1 $refine::g1s1 $refine::g1s2]}
                 "Oil" {set ratlst [list $refine::o1m1 $refine::o1s1 $refine::o1s2]}
-                "Nature resource" {
+                "Natural resource" {
                     switch $other {
                         1 {set ratlst [list $refine::n1n1 $refine::n1s1 $refine::n1s2]}
                         2 {set ratlst [list $refine::n2n1 $refine::n2n2 $refine::n2s1 $refine::n2s2]}
-                        default {puts "Error:  Nature resouce count not as expected ..."}
+                        default {puts "Error:  Natural resouce count not as expected ..."}
                     }
                 }
-                default {puts "Error:  type not found matching two side output ..."}
+                default {puts "Error:  type  $main   not found matching two side output ..."}
             }
         }
         default {puts "Error:  Expected side count not in range ... $side"}
@@ -214,7 +214,6 @@ proc get_material_costs {mlst} {
         set maxlst [lappend maxlst [lindex $dat 2]]
         set msum [expr {$msum + double([lindex $dat 2])}]
     }
-    
     set tylst {}
     foreach r $rlst {
         set tmp {}
@@ -278,9 +277,15 @@ proc get_material_costs {mlst} {
         #puts "Ratio min for this ID:  $mirat"
         #puts "Ratio max for this ID:  $mrat"
         
+    #puts "here..  $rin1_cost  x  $mrat  /  $max"
+    #puts "here..  $rin1_cost  x  $mirat  /  $min"
         #set uzr_rat [lindex [lindex $cost_dist $idx] end]
         set this_mcost [string range [expr {double($rin1_cost) * $mrat / double($max)}] 0 7]
-        set this_micost [string range [expr {double($rin1_cost) * $mirat / double($min)}] 0 7]
+        if {$mirat != 0.0} {
+            set this_micost [string range [expr {double($rin1_cost) * $mirat / double($min)}] 0 7]
+        } else {
+            set this_micost $this_mcost
+        }
         
         #puts "This mat cost Max:  $this_mcost  per unit"
         #puts "This mat cost Min:  $this_micost  per unit"
@@ -465,6 +470,9 @@ proc get_single_mats {} {
 #   of costing.
 #  This takes the rations defined on user_config
 proc gen_costing_list {} {
+
+    #return
+
     set refine::cost_table {}
     set glbl::uzr_ini_sliders {}
     get_min_sides
