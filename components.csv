@@ -15,26 +15,23 @@ id,volume,name,code,tier,size,type
 393,65,Drone Amplifier,mc130,1,S,amplifiers
 394,110,Drone Amplifier,mc131,2,M,amplifiers
 395,1,Drone Amplifier,mc132,3,L,amplifiers
+278,1,Weapon Rail Element,mc15,3,L,elements
+408,69,Improved Ballistic Amplifier,mc145,1,S,improvedAmplifiers
+409,106,Improved Ballistic Amplifier,mc146,2,M,improvedAmplifiers
+410,1,Improved Ballistic Amplifier,mc147,3,L,improvedAmplifiers
+411,73,Improved Neutral Amplifier,mc148,1,S,improvedAmplifiers
+412,102,Improved Neutral Amplifier,mc149,2,M,improvedAmplifiers
+413,1,Improved Neutral Amplifier,mc150,3,L,improvedAmplifiers
+414,71,Improved Orbital Amplifier,mc151,1,S,improvedAmplifiers
+415,108,Improved Orbital Amplifier,mc152,2,M,improvedAmplifiers
 38,176,Piezotronic Side Hatch,com3,3,,structures
-280,1,Weapon Nuclear Element,mc17,2,M,elements
-281,1,Weapon Nuclear Element,mc18,3,L,elements
-284,1,Shield Artillery Element,mc21,3,L,elements
-287,1,Shield Missile Element,mc24,3,L,elements
-408,69,Improved Ballistic Amplifier,mc145,1,S,improved amplifiers
-409,106,Improved Ballistic Amplifier,mc146,2,M,improved amplifiers
-410,1,Improved Ballistic Amplifier,mc147,3,L,improved amplifiers
-411,73,Improved Neutral Amplifier,mc148,1,S,improved amplifiers
-412,102,Improved Neutral Amplifier,mc149,2,M,improved amplifiers
-413,1,Improved Neutral Amplifier,mc150,3,L,improved amplifiers
-414,71,Improved Orbital Amplifier,mc151,1,S,improved amplifiers
-415,108,Improved Orbital Amplifier,mc152,2,M,improved amplifiers
-416,1,Improved Orbital Amplifier,mc153,3,L,improved amplifiers
-417,73,Improved Boundless Amplifier,mc154,1,S,improved amplifiers
-418,102,Improved Boundless Amplifier,mc155,2,M,improved amplifiers
-419,1,Improved Boundless Amplifier,mc156,3,L,improved amplifiers
 39,59,Aquadan Oxygen Tank,com4,1,,structures
 40,97,Molecular Oxygen Tank,com5,2,,structures
 41,122,Crystalline Oxygen tank,com6,3,,structures
+416,1,Improved Orbital Amplifier,mc153,3,L,improvedAmplifiers
+417,73,Improved Boundless Amplifier,mc154,1,S,improvedAmplifiers
+418,102,Improved Boundless Amplifier,mc155,2,M,improvedAmplifiers
+419,1,Improved Boundless Amplifier,mc156,3,L,improvedAmplifiers
 42,48,Matrix Shaping Coil,com7,1,,structures
 43,63,Submaterial Field Shaping Coil,com8,2,,structures
 44,129,Hyperplasmic Field Shaping Coil,com9,3,,structures
@@ -50,6 +47,11 @@ id,volume,name,code,tier,size,type
 99,228,Subtransfer Talkback Panel,com64,1,,electronics
 101,740,Temporal Talkback Panel,com66,3,,electronics
 102,240,Electrogenic Transmitter,com67,1,,electronics
+279,1,Weapon Nuclear Element,mc16,1,S,elements
+280,1,Weapon Nuclear Element,mc17,2,M,elements
+281,1,Weapon Nuclear Element,mc18,3,L,elements
+284,1,Shield Artillery Element,mc21,3,L,elements
+287,1,Shield Missile Element,mc24,3,L,elements
 103,641,Dispersive Transmitter,com68,2,,electronics
 104,806,Octogenic Transmitter,com69,3,,electronics
 105,464,Bipolar Additional Electronics,com70,1,,electronics
@@ -61,9 +63,6 @@ id,volume,name,code,tier,size,type
 275,1,Weapon Laser Element,mc12,3,L,elements
 276,1,Weapon Rail Element,mc13,1,S,elements
 277,1,Weapon Rail Element,mc14,2,M,elements
-278,1,Weapon Rail Element,mc15,3,L,elements
-279,1,Weapon Nuclear Element,mc16,1,S,elements
-51,55,Cryogenic Reactor,com16,1,,structures
 52,51,Pneumatic Reactor,com17,2,,structures
 53,95,Tachyon Reactor,com18,3,,structures
 54,389,Cryomeric Spar,com19,1,,structures
@@ -122,8 +121,8 @@ id,volume,name,code,tier,size,type
 112,500,Impulse Communicator,com77,2,,electronics
 113,711,Subtransfer Communicator,com78,3,,electronics
 264,26,Frame,mc1,1,S,units
-50,141,Superplastic Stringer,com15,3,,structures
 270,45,Weapon Missile Element,mc7,1,S,elements
+51,55,Cryogenic Reactor,com16,1,,structures
 271,83,Weapon Missile Element,mc8,2,M,elements
 330,46,Afterburner Element,mc67,1,S,elements
 331,114,Afterburner Element,mc68,2,M,elements
@@ -146,6 +145,7 @@ id,volume,name,code,tier,size,type
 351,36,Afterburner Wiring,mc88,3,U,wiring
 352,39,Hyperjump Wiring,mc89,3,U,wiring
 353,32,Maneuver Wiring,mc90,3,U,wiring
+50,141,Superplastic Stringer,com15,3,,structures
 290,1,Shield Laser Element,mc27,3,L,elements
 291,1,Shield Rail Element,mc28,1,S,elements
 292,1,Shield Rail Element,mc29,2,M,elements
