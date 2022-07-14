@@ -42,7 +42,7 @@ source "$sys::cdir/tcl_db.tcl"
 source "$sys::cdir/name_spaces.tcl"
 source "$sys::cdir/popups.tcl"
 
-set version "Alpha 2.10 June 7 release update"
+set version "Alpha 2.20 June 14 release update"
 wm title . "Farsite Workbench $version"
 # #############################
 bind . <F12> {catch {console show}}

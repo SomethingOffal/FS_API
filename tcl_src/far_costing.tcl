@@ -498,6 +498,7 @@ proc gen_costing_list {} {
         set exists [lindex $c end]
         if {$exists != "True"} {continue}
         set type [lindex $c 3]
+        set kind [lindex $c 4]
         #puts $type
         switch $type {
             "Mineral" {
@@ -509,7 +510,9 @@ proc gen_costing_list {} {
                 set mcost [lindex $ci end]
                 set mqu [lindex $ci 1]
                 set mti [lindex $ci 0]
-                
+                if {$kind == "Unique resource"} {continue}
+                #puts "$c  $mcost  $mqu"
+                #continue
                 set unit_cost [expr {$mcost / $mqu}]
                 set ct $cidx
                 set ct [lappend ct $unit_cost]
