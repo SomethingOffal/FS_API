@@ -101,11 +101,11 @@ id,code,name,type,group,color,volume,discovered
 100,SDm1,Star Dust,Material,Side,#999999,6,True
 101,MPm1,Matter particles,Material,Side,#999999,5,True
 102,HE96,Helium-3,Mineral,Unique resource,#ff0202,1,
-103,CA97,Californium,Mineral,Unique resource,#ff0202,20,
-157,FE98,Fermium,Mineral,Unique resource,#ff0202,25,
-158,AR99,Americium,Mineral,Unique resource,#ff0202,22,
-159,NB100,Nobelium,Mineral,Unique resource,#ff0202,25,
-160,LW101,Lawrencium,Mineral,Unique resource,#ff0202,27,
+103,CA97,Californium,Mineral,Unique resource,#ff0202,20,True
+157,FE98,Fermium,Mineral,Unique resource,#ff0202,25,True
+158,AR99,Americium,Mineral,Unique resource,#ff0202,22,True
+159,NB100,Nobelium,Mineral,Unique resource,#ff0202,25,True
+160,LW101,Lawrencium,Mineral,Unique resource,#ff0202,27,True
 104,POo1,Paraffin oil,Ore,Oil,#742222,14,True
 105,POo2,Polymer oil,Ore,Oil,#742222,13,True
 106,AOo3,Alkali oil,Ore,Oil,#742222,18,True
