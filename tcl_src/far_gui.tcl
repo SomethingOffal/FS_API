@@ -42,7 +42,7 @@ source "$sys::cdir/tcl_db.tcl"
 source "$sys::cdir/name_spaces.tcl"
 source "$sys::cdir/popups.tcl"
 
-set version "Alpha 2.20 June 14 release update"
+set version "Alpha 2.21 Travel Costs"
 wm title . "Farsite Workbench $version"
 # #############################
 bind . <F12> {catch {console show}}
@@ -82,7 +82,7 @@ ttk::style configure TNotebook.Tab -font font_tabs
 ttk::style configure TNotebook.Tab -foreground #222288
 
 # setup the notebook
-set nb [ttk::notebook .note -height 1100]
+set nb [ttk::notebook .note -height 1000]
 pack $nb -anchor n -side top -expand 1 -fill both
 pack .f1 -side bottom -anchor s -fill x
 set mfr $nb.base
@@ -206,7 +206,7 @@ $nb add [ttk::frame .note.univ -borderwidth 4 -relief sunken] -text  "\[ Univers
 $nb add [ttk::frame .note.usr -borderwidth 4 -relief sunken] -text  "\[ User Status \]" -padding {5 5 5 5}
 
 set uzr_work_fr .note.usr
-set uzr::user_note_frame [ttk::frame $uzr_work_fr.uinfo -borderwidth 4 -relief sunken -height 1800]
+set uzr::user_note_frame [ttk::frame $uzr_work_fr.uinfo -borderwidth 4 -relief sunken -height 1000]
 
 set ufr [frame $uzr_work_fr.bts -borderwidth 4 -relief sunken]
 set ubfr [frame $ufr.bfr1 -height 10]
