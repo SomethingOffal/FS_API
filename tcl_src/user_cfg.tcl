@@ -24,6 +24,7 @@ namespace eval uzrcfg {
     set mrcost_tbl {}
     set value_tbl {}
     set slide_lst {}
+    set tr_percent 15
 #    set canv {}
 #    set sys_lst {}
 #    set sys_conn_lst {}
@@ -76,6 +77,13 @@ set cost_frm [frame $uzrcfg::ufr.mcf]
 
 #pack $ustafr $invstfr -side left -fill y
 #pack $uinfr -anchor n -expand 1 -fill x
+# the users input for costing on travel addition to costing calculations.
+set tcost_fr [ttk::labelframe $cost_frm.tcost1 -text "Travel cost % Multiplyer"]
+set tcost_en [entry $tcost_fr.en1 -width 3 -textvariable uzrcfg::tr_percent]
+set tlbl [label $tcost_fr.lb1 -text "Enter % value: 50 = 50% or 0.5 multiplyer"]
+pack $tlbl $tcost_en
+pack $tcost_fr
+
 
 set pur_fr [ttk::labelframe $cost_frm.pcost1 -text "Bought on Market"]
 set rcnt 0
