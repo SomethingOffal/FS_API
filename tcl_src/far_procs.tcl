@@ -162,6 +162,29 @@ proc get_mine_info {ore} {
     return $rtn
 }
 
+# ###########################################
+#  get the component info from the id
+proc get_comp_info {id} {
+    set rtn ""
+    #puts "Looking for : $id"
+    foreach cmp $far_db::comps_lst {
+        if {[lindex $cmp 0] == "0"} {
+            continue
+        }
+        #puts $cmp
+        set cnumb [lindex $cmp 0]
+        set nam [lindex [lindex $cmp 1] 1]
+        set cid [lindex [lindex $cmp 1] 2]
+        #puts $cid
+        #puts $id
+        if {$cnumb != $id} {continue}
+        set rtn $cmp
+        #puts "Found Comp: $cmp"
+        break
+    }
+    return $rtn
+}
+
 # ##########################################
 #  get refining info for mineral info passed.
 proc get_refine_info {ore} {
@@ -1447,4 +1470,8 @@ proc update_view_key {wid key} {
         return
     }
     
+    if {$key == 67 && $wid == $cmp_dets::bp_lb} {
+        show_costing $wid
+        return
+    }
 }

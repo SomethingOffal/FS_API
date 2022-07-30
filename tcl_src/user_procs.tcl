@@ -269,6 +269,7 @@ proc fill_base_listbox {fr} {
     
     $fr delete 0 end
     update
+    set warn_cycs 2
     set header [lindex $ulsts::secd_lst 0]
     set sheader [csv::split -alternate $header]
     #foreach s $sheader {
@@ -293,17 +294,54 @@ proc fill_base_listbox {fr} {
             incr refine::mine_cnt
             # put up in list depending on status.
             set cy [lindex [csv::split -alternate $s] $cycs]
-            $fr insert end $pid
             if {$cy == 0} {
+                $fr insert end $pid
                 $fr itemconfigure end  -background pink1
-            } elseif {$cy < 6} {
+            }
+        }
+    }
+    foreach s $dlst {
+        if {$s == ""} {
+            continue
+        }
+        set pid [lindex [csv::split -alternate $s] $sidx]
+        append pid ":[lindex [csv::split -alternate $s] $iidx]"
+        if {$pid < 0} {
+            continue
+        } else {
+            #  count mining facilities.
+            incr refine::mine_cnt
+            # put up in list depending on status.
+            set cy [lindex [csv::split -alternate $s] $cycs]
+            if {$cy < $warn_cycs} {
+                $fr insert end $pid
                 $fr itemconfigure end -background orange1
-            } else {
-                $fr itemconfigure end -background green3
+            }
+        }
+    }
+    foreach s $dlst {
+        if {$s == ""} {
+            continue
+        }
+        set pid [lindex [csv::split -alternate $s] $sidx]
+        append pid ":[lindex [csv::split -alternate $s] $iidx]"
+        if {$pid < 0} {
+            continue
+        } else {
+            #  count mining facilities.
+            incr refine::mine_cnt
+            # put up in list depending on status.
+            set cy [lindex [csv::split -alternate $s] $cycs]
+            if {$cy >= $warn_cycs} {
+                $fr insert end $pid
+                $fr itemconfigure end -background lightgreen
             }
         }
     }
 }
+
+
+
 
 # ############################################
 #   fill sector list box
@@ -444,20 +482,53 @@ proc show_base_details {wid} {
                 }
                 $uwids::bcanv create text $lx $ly -anchor e -text "$h:"
                 #  if the start time
-                if {[string first "Start" $h] >= 0 } {
+                if {[string first "productionStart" $h] >= 0 } {
+                    set cleft [lindex $si [lsearch $sheader "productionCyclesLeft"]]
+                    if {$cleft == 0} {
+                        #set hidx 0
+                        #foreach h $sheader {
+                        #    puts "$h:  [lindex $si $hidx]"
+                        #    incr hidx
+                        #}
+                        #puts $header
+                        #puts "Says  0 left for $si"
+                        break
+                    }
+                    #puts "cycles left:  $cleft"
+                    #puts "Start production:  [lindex $si $idx]"
                     set stim [get_time_val [lindex $si $idx]]
                     #puts $stim
-                    set cleft [lindex $si [lsearch $sheader "productionCyclesLeft"]]
-                    #puts "cycles left:  $cleft"
                 # if the end time
-                } elseif { [string first "End" $h] >= 0 } {
+                } elseif { [string first "productionEnd" $h] >= 0 } {
+                    set rlst {}
+                    set cinfo {}
+                    #puts "Sending end time value: [lindex $si $idx]"
                     set etim [get_time_val [lindex $si $idx]]
                     set rlst [get_reso [lindex $si [lsearch $sheader "productionData.resourceId"]]]
-                    set rid [lindex $rlst 0]
-                    set ridx [lsearch -index 0 $far_db::mine_lst $rid]
-                    set rinfo [lindex $far_db::mine_lst $ridx]
-                    #puts $rinfo
-                    set cyc_dur [lindex [lindex $rinfo 1] 0]
+                    if {$rlst == {}} {
+                        #puts "Try  comp"
+                        #puts $header
+                        set cinfo [get_comp_info [lindex $si [lsearch $sheader "productionData.componentId"]]]
+                        #puts $cinfo
+                    }
+                    if {$rlst != {}} {
+                        set rid [lindex $rlst 0]
+                        set ridx [lsearch -index 0 $far_db::mine_lst $rid]
+                        set rinfo [lindex $far_db::mine_lst $ridx]
+                        #puts $rinfo
+                        set cyc_dur [lindex [lindex $rinfo 1] 0]
+                    } elseif {$cinfo != {}} {
+                        set cid [lindex $cinfo 0]
+                        set cidx [lsearch -index 0 $far_db::compmain_lst $cid]
+                        set cdets [lindex $far_db::compmain_lst $cidx]
+                        set cyc_dur [lindex [lindex $cdets 1] 0]
+                        #puts "The component details: $cdets"
+                        #puts ""
+                        #far_db::compmain_lst
+                    } else {
+                        puts "Error:  info not matching expected"
+                        return
+                    }
                     set tim_left [expr {$cyc_dur * $cleft}]
                     #puts "seconds left: $tim_left"
                     #puts $etim
@@ -505,17 +576,21 @@ proc show_base_details {wid} {
         
     incr vy 20
     set tf black
+    #puts $cleft
     if {$cleft == 0} {
         set tf red
         $uwids::bcanv create text $vx $vy -anchor c -text "Finished Production :" -font font_info_res -fill red
     } elseif {$cleft < 2} {
         $uwids::bcanv create text $vx $vy -anchor c -text "Close to Production End :" -font font_info_res
         set tf orange
+        incr vy 20
+        $uwids::bcanv create text $vx $vy -anchor c -text $done_time -font font_info_res -fill $tf
     } else {
         $uwids::bcanv create text $vx $vy -anchor c -text "Current production ends on :" -font font_info_res
+        incr vy 20
+        $uwids::bcanv create text $vx $vy -anchor c -text $done_time -font font_info_res -fill $tf
     }
     incr vy 20
-    $uwids::bcanv create text $vx $vy -anchor c -text $done_time -font font_info_res -fill $tf
 }
 
 # #############################################
