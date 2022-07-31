@@ -16,6 +16,15 @@
 #
 # -------------------------------------------------------------------------------
 
+proc qua_val {wid str k} {
+    set rtn 0
+    if {[string is integer $k] == 1} {
+        #update_comp_cost $wid
+        set rtn 1
+    }
+    return $rtn
+}
+
 # ###############################################
 #   get the current setting of value scale wids
 #     write to uzrcfg::value_tbl
@@ -33,11 +42,70 @@ proc update_user_values {} {
     
 }
 
+# ####################################################
+#  update the component costing due to key press in entries.
+#    wid  is the input frame
+proc update_comp_cost {wid} {
+    #puts $wid  
+    set pcnt [$wid get]
+    #puts "entry has:  $pcnt"
+    #puts "About to type in a:  $char"
+    #if {[string is integer $char ] == 0} {
+    #    $wid delete 0 end
+    #    $wid insert 0 [string range $pcnt 0 end-1]
+    #    return
+    #}
+    set swid [split $wid "."]
+    set twid ".[lindex $swid 1].[lindex $swid 2].[lindex $swid 3]"
+    #puts [winfo children $twid]
+    set raw_tot 0
+    foreach w [winfo children $twid] {
+        #puts $w
+        foreach b [winfo children $w] {
+            set is_blbl [string first "blbl" $b]
+            if {$is_blbl < 0} {continue}
+            set bcost [string trim [lindex [split [$b cget -text] :":"] 1]]
+            #puts $bcost
+            
+            #set cquant [$w.qua get]
+            
+            set cquant 1
+            foreach b [winfo children $w] {
+                set is_qua [string first "qua" $b]
+                if {$is_qua < 0} {continue}
+                set cquant [$b get]
+                if {$cquant == ""} {return}
+                #puts $cquant
+                
+                
+                foreach b [winfo children $w] {
+                    set is_tot [string first "ctot" $b]
+                    if {$is_tot < 0} {continue}
+                    set this_tot [expr {double($cquant) * double($bcost)}]
+                    set this_int [string first "." $this_tot]
+                    set this_int [string range $this_tot 0 $this_int-1]
+                    set raw_tot [expr {$raw_tot + int($this_int)}]
+                    $b configure -text $this_int
+                    #puts $tot_lbl
+                }
+            }
+        }
+    }
+    $twid.tot configure -text "Total raw cost: $raw_tot"
+    set ival [$twid.enfr.icst get]
+    if {$ival == ""} {
+        $twid.atot configure -text "Total cost:  $raw_tot]"
+    } else {
+        $twid.atot configure -text "Total cost:  [expr {$ival + $raw_tot}]"
+    }
+    #puts "Updating cost fields."
+}
 # #################################################
 #  get the costing ratio for the type / refine list passed.
 #    the return is a list of fractions / doubles
 #    the user input is the field of entries
 #       User Config >>>  Mining to Refining Cost Allocations
+
 proc get_costing_ratios {rlst} {
     set rtn {}
     
@@ -773,12 +841,96 @@ proc show_cmp_costing {wid spec} {
     pack $oth_fr -side right
     
 }
+
+# #####################################################
+#   show the blue print costing
+#  wid is the window to display
+#  spec is the  
+proc show_bp_costing {wid spec} {
+    set rmc_fr [ttk::labelframe $wid.rmc1 -text "Blue Print Costing" -borderwidth 4 -relief raised]
+    set bp_dets [lindex $spec 0]
+    set bp_id [lindex $bp_dets 0]
+    #puts "Blue print:  $bp_dets"
+    set comp_lst [lrange $spec 1 end]
+    set rtot 0.0
+    set idx 0
+    foreach s $comp_lst {
+        #puts $s
+        set mqant  [lindex $s 0]
+        #puts "mat quanity: $mqant"
+        set mcost [lindex $s 1]
+        #puts "mcost: $mcost"
+        set ress [lindex $s 2]
+        #puts "manue costs:  $ress"
+        #puts $s
+        set mqant [lrange $mqant 1 end]
+        set comp_id [lindex [lindex $mqant 0] 0]
+        #puts "Comp id:  $comp_id"
+        set comp_info [get_comp_info $comp_id]
+        set comp_name [lindex [lindex $comp_info 1] 1]
+        #puts $comp_info
+        foreach m $mqant {
+            #puts $m
+            set rid [lindex $m 1]
+            #puts $rid
+            set rquant [lindex $m 2]
+            set rcost 0.0
+            foreach mc $mcost {
+                set cid [lindex $mc 0]
+                if {$cid != $rid} {
+                    continue
+                }
+                set rcost [lindex $mc 1]
+                #puts "One unit cost:  $rcost"
+                set rcost [expr {$rcost * $rquant}]
+                #puts "Cost of:  $rquant  x   $rcost"
+            }
+            set rtot [expr {$rtot + $rcost}]
+            #puts "New cost : $rcost  and total: $rtot"
+            
+        }
+        set mcost [lindex [lindex $ress 1] end]
+        set rtot [expr {$rtot + $mcost}]
+        set didx [string first "." $rtot]
+        set rtot [string range $rtot 0 $didx+2]
+        set cpfr [ttk::labelframe $rmc_fr.$comp_id -text $comp_name]
+        set rlbl [label $cpfr.blbl -text "Base cost per unit:  $rtot"]
+        set nent [entry $cpfr.qua -width 3 -validate key -vcmd {qua_val %W %s %S}]
+        $nent insert 0 "1"
+        bind $nent <KeyRelease> {update_comp_cost  %W}
+        set tlbl [label $cpfr.ctot -text "00000.00"]
+        pack $rlbl $nent -side left -padx 20
+        pack $tlbl -side right -padx 20
+        pack $cpfr -fill x -expand 1
+        incr idx
+        
+        #set rtot [expr {$rtot + $rcost}]
+    }
+    #  add in the transport % cost
+    set  rtot [expr {$rtot + ($rtot * $uzrcfg::tr_percent / 100.0)}]
+    #puts "BP base resource cost:  $bp_dets    $rtot"
+    set tlbl [label $rmc_fr.tot -text "Total raw cost:  00000.00"]
+    pack $tlbl
+    set icf [ttk::labelframe $rmc_fr.enfr -text "Installation run cost"]
+    set icost [entry $icf.icst -width 8 -validate key -vcmd {qua_val %W %s %S}]
+    bind $icost <KeyRelease> {update_comp_cost  %W}
+    set atot [label $rmc_fr.atot -text "Total cost:   000000.00"]
+    pack $icost
+    pack $icf
+    pack $atot
+    pack $rmc_fr -fill x -expand 1
+    ## fake out the call to update
+    #$nent delete 0 end
+    update_comp_cost $nent
+}
+
 # #######################################################
 #   Refining costing dump.
 proc show_costing {wid} {
 
     set swid [split $wid "."]
     set lb [lindex $swid end]
+    #puts $lb
     if {$lb == "res"} {
         set res_info [get_reso_id $wid]
         set rd1  [lindex $res_info 1]
@@ -797,6 +949,7 @@ proc show_costing {wid} {
     } elseif {$lb == "cmp"} {
         #set cspec {}
         set item [$wid get [$wid curselection]]
+        #puts $item
         set cspec [get_comp_spec $item]
         if {[llength $cspec] <= 1} {
             return
@@ -809,7 +962,7 @@ proc show_costing {wid} {
         wm minsize .$item 600 300
         wm title .$item "Costing for $item"
         set rlst [lrange $cspec 1 end]
-        set rfrm [frame .$item.cmp]
+        set rfrm [frame .$item.cmp -borderwidth 4 -relief raised]
         # get the purchase costs.
         #   get_pur overwrites get_res where purchases are indicated.
         set cspec [lappend cspec [get_pur_cost_list [get_res_cost_list $cspec]]]        
@@ -821,7 +974,43 @@ proc show_costing {wid} {
         show_cmp_costing $rfrm $cspec
         pack $rfrm
         
-    } elseif {$lb == "bplp"} {
+    } elseif {$lb == "bplb"} {
+        #puts "Costing Blue print ..."
+        set item [$wid get [$wid curselection]]
+        set id [string trim [lindex [split $item ":"] 0]]
+        set iname [string tolower [string trim [lindex [split $item ":"] end]]]
+        ## create main  window
+        if {[winfo exists .$iname] >= 0} {
+            destroy .$iname
+        }
+        toplevel .$iname
+        wm minsize .$iname 400 550
+        wm title .$iname "Blue Print $iname"
+        set rfrm [frame .$iname.cmps]
+        #puts $id
+        set bcomps [get_comps_from_bp  $id]
+        set comp_lst [lappend comp_lst [list $id $iname]]
+        foreach b $bcomps {
+            set cmpid [lindex $b 0]
+            set cmp [lindex $b 0]
+            append cmp " : " [lindex [lindex $b 1] 1]
+            #puts $cmp
+            set tspec [get_comp_spec $cmp]
+            set cspec [list [get_comp_spec $cmp]]
+            #puts $cspec
+            set cspec [lappend cspec [get_pur_cost_list [get_res_cost_list $tspec]]]
+            #puts $cspec
+            set cspec [lappend cspec [get_manuf_cost $cmpid]]
+            #puts $cspec
+            if {[llength $cspec] <= 1} {
+                continue
+            }
+            set cid [lindex [lindex $b 1] 0]
+            set comp_lst [lappend comp_lst $cspec]
+            #puts $b
+        }
+        show_bp_costing $rfrm $comp_lst
+        pack $rfrm -anchor n -fill x -expand 1
     } else {
     }
     #puts $lb

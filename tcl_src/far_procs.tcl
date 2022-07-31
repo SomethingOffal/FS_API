@@ -1460,6 +1460,9 @@ proc update_view {wid} {
 }
 
 proc update_view_key {wid key} {
+
+    #puts $key
+    
     if {$key != 67} {
         update_view $wid
         return
@@ -1474,4 +1477,14 @@ proc update_view_key {wid key} {
         show_costing $wid
         return
     }
+}
+
+bind . <Control-c> {
+    set sys::modeVar "C"; set cmode::srch_mode "Comp"
+}
+bind . <Control-r> {
+    set sys::modeVar "R"; set cmode::srch_mode "Reso"
+}
+bind . <Control-b> {
+    set sys::modeVar "B"; set cmode::srch_mode "Blue"
 }
