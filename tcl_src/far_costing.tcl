@@ -869,6 +869,7 @@ proc show_bp_costing {wid spec} {
         set comp_info [get_comp_info $comp_id]
         set comp_name [lindex [lindex $comp_info 1] 1]
         #puts $comp_info
+        set rtot 0.0
         foreach m $mqant {
             #puts $m
             set rid [lindex $m 1]
