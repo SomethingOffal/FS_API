@@ -42,7 +42,7 @@ source "$sys::cdir/tcl_db.tcl"
 source "$sys::cdir/name_spaces.tcl"
 source "$sys::cdir/popups.tcl"
 
-set version "Alpha 2.3 BP Costing"
+set version "Alpha 2.31 BP Costing"
 wm title . "Farsite Workbench $version"
 # #############################
 bind . <F12> {catch {console show}}

@@ -94,9 +94,10 @@ proc update_comp_cost {wid} {
     $twid.tot configure -text "Total raw cost: $raw_tot"
     set ival [$twid.enfr.icst get]
     if {$ival == ""} {
-        $twid.atot configure -text "Total cost:  $raw_tot]"
+        $twid.atot configure -text "Total cost:  $raw_tot"
     } else {
-        $twid.atot configure -text "Total cost:  [expr {$ival + $raw_tot}]"
+        set ntot [expr {$ival + $raw_tot}]
+        $twid.atot configure -text "Total cost:  $ntot"
     }
     #puts "Updating cost fields."
 }
@@ -867,6 +868,9 @@ proc show_bp_costing {wid spec} {
         set comp_id [lindex [lindex $mqant 0] 0]
         #puts "Comp id:  $comp_id"
         set comp_info [get_comp_info $comp_id]
+        set manu_dets [get_manuf_cost $comp_id]
+        #puts $manu_dets
+        set manu_cost [lindex [lindex $manu_dets 1] 1]
         set comp_name [lindex [lindex $comp_info 1] 1]
         #puts $comp_info
         set rtot 0.0
@@ -890,8 +894,10 @@ proc show_bp_costing {wid spec} {
             #puts "New cost : $rcost  and total: $rtot"
             
         }
+#        set mcost [expr {[lindex [lindex $ress 1] end] + $manu_cost}]
         set mcost [lindex [lindex $ress 1] end]
         set rtot [expr {$rtot + $mcost}]
+        set rtot [expr { $rtot + ($rtot * $uzrcfg::tr_percent / 100.0)}]
         set didx [string first "." $rtot]
         set rtot [string range $rtot 0 $didx+2]
         set cpfr [ttk::labelframe $rmc_fr.$comp_id -text $comp_name]
