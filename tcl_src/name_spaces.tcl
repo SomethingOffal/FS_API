@@ -82,6 +82,7 @@ namespace eval refine {
 namespace eval cmode {
     set mode "None"
     set srch_mode "Reso"
+    set zero_sides 1
 }
 
 # ############################

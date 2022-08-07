@@ -25,6 +25,56 @@ proc qua_val {wid str k} {
     return $rtn
 }
 
+# #############################################
+#  to the list passed add the mat count to the
+#    mat referred to by adds  comp list.
+#  cnt is how many of these there are
+#  return:  list of list {mid qu}
+proc sum_mats {lst adds {cnt 1}} {
+    #puts "Adding: $adds   With count:  $cnt"
+    set nlst $lst
+    set lmat ""
+    foreach a $adds {
+        set mid [lindex $a 1]
+        set qu  [lindex $a end]
+        set qu [expr {$qu * $cnt}]
+        if {$nlst == {}} {
+            lappend nlst [list $mid $qu]
+        } else {
+            set mdet {}
+            foreach n $nlst {
+                set id [lindex $n 0]
+                if {$id != $mid} {incr idx; continue}
+                set mdet $n
+            }
+            if {$mdet != {}} {
+                #puts $nlst
+                set lidx 0
+                foreach n $nlst {
+                    set id [lindex $n 0]
+                    if {$id == $mid} {
+                        set aqu [lindex $n 1]
+                        #puts "Adding: $qu to  mat idx: $id"
+                        set odat [lindex $nlst $lidx]
+                        set oqu [lindex $odat 1]
+                        set nqu [expr {$oqu + $qu}]
+                        set odat [lreplace $odat 1 1 $nqu]
+                        set nlst [lreplace $nlst $lidx $lidx $odat]
+                        break
+                    }
+                    incr lidx
+                }
+            } else {
+                set nlst [lappend nlst [list $mid $qu]]
+            }
+            #puts $nlst
+        }
+        #puts $lmat
+        #puts $on_lst
+    }
+    #puts "Returning:  $nlst"
+    return $nlst
+}
 # ###############################################
 #   get the current setting of value scale wids
 #     write to uzrcfg::value_tbl
@@ -58,6 +108,7 @@ proc update_comp_cost {wid} {
     set swid [split $wid "."]
     set twid ".[lindex $swid 1].[lindex $swid 2].[lindex $swid 3]"
     #puts [winfo children $twid]
+    set mat_qlst {}
     set raw_tot 0
     foreach w [winfo children $twid] {
         #puts $w
@@ -90,16 +141,78 @@ proc update_comp_cost {wid} {
                 }
             }
         }
+        
+        set is_dets [string first "dets" $w]
+        #  get base counts of each component
+        if {$is_dets >= 0} {
+            set cnts [$w cget -text]
+            #puts $cnts
+            set bpid [lindex $cnts 0]
+            #puts [winfo children $twid]
+            set tlst {}
+            foreach w [winfo children $twid] {
+                #puts "looking at this win:  $w"
+                set is_cmp [string first "[lindex $swid 3].$bpid" $w]
+                if {$is_cmp < 0} {continue}
+                #puts "Found :  $w"
+                foreach b [winfo children $w] {
+                    if {$b == ""} {continue}
+                    if {[string first "qua" $b] < 0} {continue}
+                    set comp_numb [$b get]
+                }
+                lappend tlst $comp_numb
+                ##  build up the list for a sum_mats call
+                foreach i $cnts {
+                    set tlst [lappend tlst "$comp_numb $i"]
+                }
+                #puts $tlst
+            }
+            set mat_qlst [lappend mat_qlst $tlst]
+        }
     }
+    #puts $mat_qlst
+    #  get the total mats counts.
+    set tots_lst {}
+    foreach m $mat_qlst {
+        #puts $m
+        set tots_lst [sum_mats $tots_lst [lrange $m 2 end] [lindex $m 0]]
+    }
+    set tots_lst [lsort -index 0 -integer $tots_lst]
+    #puts $tots_lst
+    
+    set run_cnt [$twid.qen.rq get]
+    ## if backspace and now empty
+    if {$run_cnt == "" } {
+        return
+    }
+    
     $twid.tot configure -text "Total raw cost: $raw_tot"
     set ival [$twid.enfr.icst get]
     if {$ival == ""} {
         $twid.atot configure -text "Total cost:  $raw_tot"
     } else {
-        set ntot [expr {$ival + $raw_tot}]
+        set ntot [expr {$ival + ($raw_tot * $run_cnt)}]
         $twid.atot configure -text "Total cost:  $ntot"
     }
+    
+    #puts $run_cnt
+    #puts [winfo children $twid.qmats]
+    foreach fr [winfo children $twid.qmats] {
+        foreach mfr [winfo children $fr] {
+            set smfr [split $mfr "."]
+            set fr_mid [lindex $smfr end]
+            set mat_qua [lindex $tots_lst [lsearch -index 0 $tots_lst $fr_mid]]
+            set new_sum [lindex $mat_qua 1]
+            #puts $mfr
+            #puts $new_sum
+            $mfr.va$fr_mid configure -text [expr {$new_sum * $run_cnt}]
+        }
+    }
+    #.rq.qen
     #puts "Updating cost fields."
+    #set ival [$twid.enfr.icst get]
+    #puts "Updating material counts ..."
+    #.dets$comp_id
 }
 # #################################################
 #  get the costing ratio for the type / refine list passed.
@@ -378,6 +491,7 @@ proc get_material_costs {mlst} {
 #
 #   output  list of  {id cost_min}
 proc get_min_sides {} {
+    
     set dlst [lrange $far_db::res_lst 1 end]
     set refine::sides_cost_lst {}
     set slst {}
@@ -408,8 +522,13 @@ proc get_min_sides {} {
                 }
                 #puts $mclst
             }
-            set tlst [lappend tlst [string range $minp 0 7]]
-            set tlst [lappend tlst [string range $maxp 0 7]]
+#            if {$zero_sides == 0} {
+#                set tlst [lappend tlst [string range $minp 0 7]]
+#                set tlst [lappend tlst [string range $maxp 0 7]]
+#            } else {
+                set tlst [lappend tlst 0.0]
+                set tlst [lappend tlst 0.0]
+#            }
             set refine::sides_cost_lst [lappend refine::sides_cost_lst $tlst]
             set refine::cost_table [lappend refine::cost_table $tlst]
             #puts "Min price: $minp"
@@ -541,7 +660,7 @@ proc get_single_mats {} {
 proc gen_costing_list {} {
 
     #return
-
+    puts "Generate costing list ..."
     set refine::cost_table {}
     set glbl::uzr_ini_sliders {}
     get_min_sides
@@ -855,8 +974,10 @@ proc show_bp_costing {wid spec} {
     set comp_lst [lrange $spec 1 end]
     set rtot 0.0
     set idx 0
+    set bp_mat_lst {}
     foreach s $comp_lst {
         #puts $s
+        set cmp_mat_lst {}
         set mqant  [lindex $s 0]
         #puts "mat quanity: $mqant"
         set mcost [lindex $s 1]
@@ -865,7 +986,12 @@ proc show_bp_costing {wid spec} {
         #puts "manue costs:  $ress"
         #puts $s
         set mqant [lrange $mqant 1 end]
+        set bp_mat_lst [sum_mats $bp_mat_lst $mqant]
         set comp_id [lindex [lindex $mqant 0] 0]
+        set cmp_mats [sum_mats "" $mqant]
+        set cmp_lbl  [label $rmc_fr.dets$comp_id -text "$comp_id $cmp_mats"]
+        #pack $cmp_lbl
+        #puts $cmp_mats
         #puts "Comp id:  $comp_id"
         set comp_info [get_comp_info $comp_id]
         set manu_dets [get_manuf_cost $comp_id]
@@ -921,10 +1047,51 @@ proc show_bp_costing {wid spec} {
     set icf [ttk::labelframe $rmc_fr.enfr -text "Installation run cost"]
     set icost [entry $icf.icst -width 8 -validate key -vcmd {qua_val %W %s %S}]
     bind $icost <KeyRelease> {update_comp_cost  %W}
+    set qcf [ttk::labelframe $rmc_fr.qen -text "Run Count"]
+    set unitqu [entry $qcf.rq -width 4 -validate key -vcmd {qua_val %W %s %S}]
+    $unitqu insert end "1"
+    bind $unitqu <KeyRelease> {update_comp_cost  %W}
     set atot [label $rmc_fr.atot -text "Total cost:   000000.00"]
     pack $icost
+    pack $unitqu
     pack $icf
+    pack $qcf
     pack $atot
+    
+    ## now pack the resources
+    set quafr [ttk::labelframe $rmc_fr.qmats -text "Total Resource Quantities"]
+    
+    set lst_len [llength $bp_mat_lst]
+    set colsz [expr {int($lst_len / 8)}]
+    set bp_mat_lst [lsort -index 0 -integer $bp_mat_lst ]
+    
+    set colcnt 0
+    set fid [lindex [lindex $bp_mat_lst 0] 0]
+    set dfr [frame $quafr.fr$fid]
+    foreach q $bp_mat_lst {
+        set id [lindex $q 0]
+        set qu [lindex $q 1]
+        set res_det [get_reso $id]
+        #puts "Res: $id  quant $qu"
+        #puts $res_det
+        set rname [lindex [lindex $res_det 1] 0]
+        set rcol [lindex [lindex $res_det 1] 4]
+        
+        set rfrm [frame $dfr.$id]
+        set idlb [label $rfrm.lb$id -text $rname -width 8 -background $rcol -foreground white]
+        set valb [label $rfrm.va$id -text $qu -anchor e -width 6 -background white]
+        pack $idlb -side left -padx 6
+        pack $valb -side right -padx 6
+        pack $rfrm
+        incr colcnt
+        if {$colcnt >= 8} {
+            pack $dfr -side left
+            set dfr [frame $quafr.fr$id]
+            set colcnt 0
+        }
+    }
+    pack $dfr -side left
+    pack $quafr -fill x -expand 1
     pack $rmc_fr -fill x -expand 1
     ## fake out the call to update
     #$nent delete 0 end

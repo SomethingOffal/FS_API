@@ -42,7 +42,7 @@ source "$sys::cdir/tcl_db.tcl"
 source "$sys::cdir/name_spaces.tcl"
 source "$sys::cdir/popups.tcl"
 
-set version "Alpha 2.31 BP Costing"
+set version "Alpha 2.4 BP Costing Mat Quantities"
 wm title . "Farsite Workbench $version"
 # #############################
 bind . <F12> {catch {console show}}
@@ -295,7 +295,9 @@ bind . <Motion> "+mouse_move %W %x %y"
 # #  the zone and action for mouse movement
 proc mouse_move {wid x y} {
     #global helpVar
-    set sys::helpVar "x: $x y: $y Win: $wid "
+    if {$sys::devmode == 1 } {
+        set sys::helpVar "x: $x y: $y Win: $wid "
+    }
 }
 
 # #################################
@@ -332,7 +334,7 @@ proc update_ini {} {
 #  when the user exits deal with ini
 proc user_exit {} {
     if {[tk_messageBox -message "Quit?" -type yesno] eq "yes"} {
-        if {[tk_messageBox -message "Update ini?" -type yesno] eq "yes"} {
+        if {[tk_messageBox -message "Update ini?" -default "no" -type yesno] eq "no"} {
            puts "updating ini ..."
            update_ini
         }

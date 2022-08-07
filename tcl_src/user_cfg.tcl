@@ -32,6 +32,7 @@ namespace eval uzrcfg {
 #    set origin {0.0,0.0,0.0}
 }
 
+
 $nb add [frame .note.tst -borderwidth 4 -relief sunken] -text  "\[ User Config \]" -padding {5 5 5 5}
 set uzrcfg::ufr .note.tst
 
@@ -80,8 +81,10 @@ set cost_frm [frame $uzrcfg::ufr.mcf]
 # the users input for costing on travel addition to costing calculations.
 set tcost_fr [ttk::labelframe $cost_frm.tcost1 -text "Travel cost % Multiplyer"]
 set tcost_en [entry $tcost_fr.en1 -width 3 -textvariable uzrcfg::tr_percent]
-set tlbl [label $tcost_fr.lb1 -text "Enter % value: 50 = 50% or 0.5 multiplyer"]
+set tlbl [label $tcost_fr.lb1 -text "Travel Cost:  50 = 50% or 0.5 multiplyer"]
+#set zsids [checkbutton $tcost_fr.zs1 -text " :Zero Side Cost" -command update_zcost $zsids]
 pack $tlbl $tcost_en
+#pack $zsids
 pack $tcost_fr
 
 
