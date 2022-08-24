@@ -22,6 +22,7 @@ source get_universe.tcl
 gen_planet_db
 gen_gate_db
 gen_star_db
+gen_station_db
 
 set univers {}
 foreach s $spg::sdb {
@@ -37,7 +38,7 @@ foreach s $spg::sdb {
     }
     set slst [lappend slst $nlst]
     set sid [lindex $s 0]
-    
+    # planets
     set plst {}
     set plst [lappend plst $spg::pfields]
     foreach p $spg::pdb {
@@ -53,6 +54,7 @@ foreach s $spg::sdb {
             set plst [lappend plst $nlst]
         }
     }
+    # gates
     set glst {}
     set glst [lappend glst $spg::gfields]
     foreach p $spg::gdb {
@@ -73,8 +75,31 @@ foreach s $spg::sdb {
             set glst [lappend glst $nlst]
         }
     }
+    # stations
+    set stlst {}
+    set stlst [lappend stlst $spg::stfields]
+    foreach s $spg::stdb {
+        if {[lindex $s 0] == $sid} {
+            set nlst {}
+            foreach f $s {
+                puts $f
+                set s [string trimleft $f "{"]
+                set s [string trimright $s "}"]
+                set s [string trim $s "\""]
+                #set ss [split $s " "]
+                if {[llength $ss] > 1} {
+                    set nlst [lappend nlst [lindex $ss 1]]
+                } else {
+                    set nlst [lappend nlst $s]
+                }
+            }
+            set stlst [lappend stlst $nlst]
+        }
+    }
+    
     set slst [lappend slst $plst]
     set slst [lappend slst $glst]
+    set slst [lappend slst $stlst]
     set univers [lappend univers $slst]
 }
 

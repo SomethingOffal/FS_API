@@ -293,6 +293,14 @@ proc get_planets_gates {data} {
         httpcopy $gurl $filo
     
         after 250
+        
+        set surl "https://farsite.online/api/1.0/universe/star/$id/stations"
+    
+        set filo  "unv_dump/station_html$id"
+        puts $filo
+        httpcopy $surl $filo
+    
+        after 250
     }
 }
 
@@ -316,10 +324,12 @@ proc two_csv {lst} {
 namespace eval spg {
     set sfields {id x y z size color textureId name}
     set sdb {}
-    set pfields {starId id x y z name type size status}
+    set pfields {starId id x y z name type size status resources}
     set pdb {}
     set gfields {starId id x y z name toStarId available type fuel defaultTime}
     set gdb {}
+    set stdb {}
+    set stfields {starId id x y z name}
 }
 # #####################################
 #   get the planets and gates ...
@@ -356,16 +366,28 @@ proc extract_fields {lst flds} {
         set tline $flds
         set is_reso 0
         set star_plst {}
+        set is_open 0
         foreach s $sp {
             set ss [split $s ":"]
             #puts [lindex $ss 0]
             set field [string trim [lindex $ss 0] "\{\""]
-            #puts $field
+            set val [lindex $ss 1]
+            #puts "Field:  $field  Value: $val"
             set idx [lsearch $fields $field]
             #puts $idx
             if {$idx < 0} {
                 break
             }
+            set preslst {}
+            if {$val == "\"opened\""} {
+                puts "found open"
+                set is_open 1
+            }
+            if {$field == "\"resource\""} {
+                set is_open 0
+                puts "Found Resource on planet."
+            }
+            
             set tline [lreplace $tline $idx $idx [lindex $ss 1]]
             set star_plst [lappend star_plst $tline]
         }
@@ -377,6 +399,126 @@ proc extract_fields {lst flds} {
     #foreach p $planet_list {
     #    puts [lindex $p 0]
     #}
+}
+# #####################################
+#   get the stars
+#    NOT complete
+proc extract_stars {lst flds} {
+    set rtn {}
+    set fields $flds
+    set idx 1
+    set len [string length $lst]
+    set tstr ""
+    set plst {}
+    set tstr [string trim $lst "\]\["]
+    set idx [string first "\},\{" $tstr]
+    #puts $idx
+    while {$idx >= 0} {
+        set plst [lappend plst [string range $tstr 0 $idx]]
+        set tstr [string range $tstr $idx+2 end]
+        #puts $tstr
+        set idx [string first "\},\{" $tstr]
+    }
+    # get the last planet.
+    if {$tstr != ""} {
+        set plst [lappend plst [string range $tstr 0 end]]
+    }
+    # if nothing return nul
+    if {[llength $plst] == 0} {
+        return {}
+    }
+    
+    #set planet_list [lappend planet_list $fields]
+    set planet_list {}
+    set plst [lrange $plst 1 end]
+    foreach p $plst {
+        set sp [split $p ","]
+        set tline $flds
+        set is_reso 0
+        set star_plst {}
+        set is_open 0
+        foreach s $sp {
+            set ss [split $s ":"]
+            #puts [lindex $ss 0]
+            set field [string trim [lindex $ss 0] "\{\""]
+            set val [lindex $ss 1]
+            #puts "Field:  $field  Value: $val"
+            set idx [lsearch $fields $field]
+            #puts $idx
+            if {$idx < 0} {
+                break
+            }
+            set preslst {}
+            if {$val == "\"opened\""} {
+                puts "found open"
+                set is_open 1
+            }
+            if {$field == "\"resource\""} {
+                set is_open 0
+                puts "Found Resource on planet."
+            }
+            
+            set tline [lreplace $tline $idx $idx [lindex $ss 1]]
+            set star_plst [lappend star_plst $tline]
+        }
+        
+        set planet_list [lappend planet_list $tline]
+    }
+    
+    return $planet_list
+    #foreach p $planet_list {
+    #    puts [lindex $p 0]
+    #}
+}
+
+
+proc extract_stations {lst flds} {
+    set fields $flds
+    set idx 1
+    set len [string length $lst]
+    set tstr ""
+    set plst {}
+    set tstr [string trim $lst "\]\["]
+    set idx [string first "\},\{" $tstr]
+    set rtn [list $flds]
+    #puts $idx
+    while {$idx >= 0} {
+        set plst [lappend plst [string range $tstr 0 $idx]]
+        set tstr [string range $tstr $idx+2 end]
+        #puts $tstr
+        set idx [string first "\},\{" $tstr]
+    }
+    # get the last planet.
+    if {$tstr != ""} {
+        set plst [lappend plst [string range $tstr 0 end]]
+    }
+    # if nothing return nul
+    if {[llength $plst] == 0} {
+        return {}
+    }
+    
+    foreach st $plst {
+        set sta_vals {}
+        #foreach i $fields {
+        #    set sta_vals [lappend sta_vals {}]
+        #}
+        set st [string trim $st "\{\}"]
+        set ssst [split $st ","]
+        foreach s $ssst {
+            set ss [split $s ":"]
+            set field [string trim [lindex $ss 0] "\"\{"]
+            #puts $field
+            set idx [lsearch $fields $field]
+            #puts $idx
+            set val [string trim [lindex $ss 1] "\"\}"]
+            set sta_vals [lreplace $sta_vals $idx $idx $val]
+        }
+        if {$sta_vals != {}} {
+            set rtn [lappend rtn $sta_vals]
+        }
+    }
+    #puts $rtn
+    return $rtn
 }
 
 # ####################################################
@@ -425,7 +567,21 @@ proc gen_star_db {} {
         set hdat [gets $fh]
         close $fh
         
-        set spg::sdb [extract_fields $hdat $spg::sfields]
+        set spg::sdb [extract_stars $hdat $spg::sfields]
+        
+        #puts $f
+    }
+}
+
+proc gen_station_db {} {
+    set sflst [glob -type file unv_dump/station_html* ]
+    foreach f $sflst {
+        set fh [open $f "r"]
+        set hdat [gets $fh]
+        close $fh
+        #puts $hdat
+        set hdat "\},[string range $hdat 1 end]"
+        set spg::stdb [extract_stations $hdat $spg::stfields]
         
         #puts $f
     }

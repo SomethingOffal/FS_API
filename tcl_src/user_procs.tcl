@@ -27,6 +27,8 @@
 
 package require csv
 
+# #####################################
+#
 # #######################################
 #   extract the clock value from the
 #    farsite time string passed
@@ -272,69 +274,62 @@ proc fill_base_listbox {fr} {
     set warn_cycs 2
     set header [lindex $ulsts::secd_lst 0]
     set sheader [csv::split -alternate $header]
+    set time [clock seconds]
+    set time [clock format $time -format {%Y-%m-%dh%Hm%Ms%S} -timezone :America/New_York]
+    
+
     #foreach s $sheader {
     #    puts $s
     #}
+    
     set sidx [lsearch -exact $sheader "Full_Name"]
     set iidx [lsearch -exact $sheader "id"]
     set cycs [lsearch -exact $sheader "productionCyclesLeft"]
+    set etim_idx [lsearch -exact $sheader "productionEnd"]
+    set type_idx [lsearch -exact $sheader "type"]
+    set matid_idx [lsearch -exact $sheader "productionData.resourceId"]
+    set compid_idx [lsearch -exact $sheader "productionData.componentId"]
     #puts $cycs
     set dlst [lrange $ulsts::secd_lst 1 end]
-    set idx 0
-    foreach s $dlst {
+    set nlst {}
+    foreach d $dlst  {
+        lappend nlst [csv::split -alternate $d]
+    }
+    #set cycs_idx [string trim $cycs "\""]
+    set sort_lst [lsort -index $cycs -real -increasing $nlst]
+    #foreach s $sort_lst {
+    #    puts $s
+    #}
+    
+    foreach s $sort_lst {
         if {$s == ""} {
             continue
         }
-        set pid [lindex [csv::split -alternate $s] $sidx]
-        append pid ":[lindex [csv::split -alternate $s] $iidx]"
+        
+        #puts "Resource ID: [lindex $s $matid_idx]"
+        #puts "Component ID: [lindex $s $compid_idx]"
+        set type [lindex $s $type_idx]
+        set maid [lindex $s $compid_idx]
+        set miid [lindex $s $matid_idx]
+        set cyc_time [get_cycle_time $maid $miid $type]
+        #puts "Return cycle time:  $cyc_time"
+        set time_left [expr {$cyc_time * $cycs}]
+        set pid [lindex $s $sidx]
+        append pid ":[lindex $s $iidx]"
         if {$pid < 0} {
             continue
         } else {
             #  count mining facilities.
             incr refine::mine_cnt
             # put up in list depending on status.
-            set cy [lindex [csv::split -alternate $s] $cycs]
+            set cy [lindex $s $cycs]
+            $fr insert end $pid
             if {$cy == 0} {
-                $fr insert end $pid
                 $fr itemconfigure end  -background pink1
-            }
-        }
-    }
-    foreach s $dlst {
-        if {$s == ""} {
-            continue
-        }
-        set pid [lindex [csv::split -alternate $s] $sidx]
-        append pid ":[lindex [csv::split -alternate $s] $iidx]"
-        if {$pid < 0} {
-            continue
-        } else {
-            #  count mining facilities.
-            incr refine::mine_cnt
-            # put up in list depending on status.
-            set cy [lindex [csv::split -alternate $s] $cycs]
-            if {$cy < $warn_cycs} {
-                $fr insert end $pid
-                $fr itemconfigure end -background orange1
-            }
-        }
-    }
-    foreach s $dlst {
-        if {$s == ""} {
-            continue
-        }
-        set pid [lindex [csv::split -alternate $s] $sidx]
-        append pid ":[lindex [csv::split -alternate $s] $iidx]"
-        if {$pid < 0} {
-            continue
-        } else {
-            #  count mining facilities.
-            incr refine::mine_cnt
-            # put up in list depending on status.
-            set cy [lindex [csv::split -alternate $s] $cycs]
-            if {$cy >= $warn_cycs} {
-                $fr insert end $pid
-                $fr itemconfigure end -background lightgreen
+            } elseif {[expr {$time_left / 3600}] <= 24} {
+                $fr itemconfigure end  -background orange1
+            } else {
+                $fr itemconfigure end  -background lightgreen
             }
         }
     }
@@ -455,6 +450,7 @@ proc show_base_details {wid} {
     #puts $base
     set sbase [split $base ":"]
     set bid [lindex $sbase 1]
+    puts $bid
     set base [lindex $sbase 0]
     #  Clean up.
     $uwids::bcanv delete all
@@ -463,6 +459,9 @@ proc show_base_details {wid} {
     set sheader [csv::split -alternate $header]
     #puts $sheader
     set pidx [lsearch $sheader "name"]
+    set tidx [lsearch $sheader "type"]
+    set ididx [lsearch $sheader "id"]
+    #puts $tidx
     set dlst [lrange $ulsts::secd_lst 1 end]
     
     set lx 180
@@ -472,6 +471,33 @@ proc show_base_details {wid} {
     set found 0
     foreach i $dlst {
         set si [csv::split -alternate $i]
+        set this_type [lindex $si $tidx]
+        set this_id [lindex $si $ididx]
+        if {$bid != $this_id} {continue}
+        
+        set type_name ""
+        #  mine
+        if {$this_type == 1} {
+            set type_name "Mine"
+        # else if refine
+        } elseif {$this_type == 2} {
+            set type_name "Refinery"
+        # else mod fact
+        } elseif {$this_type == 4} {
+            set type_name "Module Factory"
+        # else comp fact
+        } elseif {$this_type == 5} {
+            set type_name "Component Factory"
+        }
+        
+        puts $type_name
+        set pidx 0
+        #foreach h $sheader {
+        #    puts "$h  with:  [lindex $si $pidx]"
+        #    incr pidx
+        #}
+        
+        #puts "This type is:  [lindex $si $tidx]"
         if {[lsearch $si $base] >= 0 && [lsearch $si $bid] >= 0 &&$found == 0} {
             set idx 0
             set found 1
@@ -480,18 +506,10 @@ proc show_base_details {wid} {
                     incr idx
                     continue
                 }
-                $uwids::bcanv create text $lx $ly -anchor e -text "$h:"
                 #  if the start time
                 if {[string first "productionStart" $h] >= 0 } {
                     set cleft [lindex $si [lsearch $sheader "productionCyclesLeft"]]
                     if {$cleft == 0} {
-                        #set hidx 0
-                        #foreach h $sheader {
-                        #    puts "$h:  [lindex $si $hidx]"
-                        #    incr hidx
-                        #}
-                        #puts $header
-                        #puts "Says  0 left for $si"
                         break
                     }
                     #puts "cycles left:  $cleft"
@@ -504,12 +522,15 @@ proc show_base_details {wid} {
                     set cinfo {}
                     #puts "Sending end time value: [lindex $si $idx]"
                     set etim [get_time_val [lindex $si $idx]]
+                    
+                    
+                    
                     set rlst [get_reso [lindex $si [lsearch $sheader "productionData.resourceId"]]]
                     if {$rlst == {}} {
                         #puts "Try  comp"
                         #puts $header
                         set cinfo [get_comp_info [lindex $si [lsearch $sheader "productionData.componentId"]]]
-                        #puts $cinfo
+                        #puts "Comp info: $cinfo"
                     }
                     if {$rlst != {}} {
                         set rid [lindex $rlst 0]
@@ -529,41 +550,56 @@ proc show_base_details {wid} {
                         puts "Error:  info not matching expected"
                         return
                     }
-                    set tim_left [expr {$cyc_dur * $cleft}]
+                    set tim_left [clock add [expr {int($cyc_dur * $cleft)}]]
                     #puts "seconds left: $tim_left"
                     #puts $etim
                     set ddone [expr {int($etim + $tim_left)}]
+                    #set done_time [clock format $tim_left -format {%Y-%m-%d %H:%M:%S} -timezone :America/New_York]
                     set done_time [clock format $ddone -format {%Y-%m-%d %H:%M:%S} -timezone :America/New_York]
                     #puts "Date done :  $done_time"
                 }
-                if {[string first "\]" [lindex $si $idx]] >= 0 || $h == "productionData.resourceId"} {
-                    set lstr [string trim [lindex $si $idx] "\[\]"]
-                    set slstr [split $lstr ","]
-                    set rcnt 0
-                    foreach r $slstr {
-                        set rids [lsearch -index 0 $far_db::res_lst [string trim $r]]
-                        if {$rids >= 1} {
-                            set res [lindex [lindex $far_db::res_lst $rids] 1]
-                            set rcol [lindex $res 4];  ##  the color
-                            set rnm [lindex $res 0];   ## the name
-                            $uwids::bcanv create rectangle $vx [expr {$vy-7}] [expr {$vx+60}] [expr {$vy+10}]  -fill $rcol
-                            $uwids::bcanv create text [expr {$vx+6}] [expr {$vy+2}] -anchor w -text $rnm -fill white -font font_info_txt
-                            if {$rcnt < 2} {
-                                incr vx 64
-                                incr rcnt
-                            } else {
-                                set vx 200
-                                incr vy 20
-                                incr ly 20
-                                set rcnt 0
-                            }
-                        }
-                    }
+                
+                if {[string first "type" $h] >= 0} {
+                    $uwids::bcanv create text $lx $ly -anchor e -text "$h:"
+                    $uwids::bcanv create text $vx $vy -anchor w -text $type_name
                     incr idx
                     incr ly 20
                     incr vy 20
                     set vx 200
+                    continue
+                }
+                
+                if {$h == "productionData.resourceId"} {
+                    puts "Found resourceId ...  \"[lindex $si $idx]\""
+                    if {[lindex $si $idx] == ""} {incr idx; continue}
+                    $uwids::bcanv create text $lx $ly -anchor e -text "$h:"
+                    set rids [lindex [split [lindex $si $idx] "."] 0]
+                    set res [lindex [lindex $far_db::res_lst $rids] 1]
+                    set rcol [lindex $res 4];  ##  the color
+                    set rnm [lindex $res 0];   ## the name
+                    $uwids::bcanv create rectangle $vx [expr {$vy-7}] [expr {$vx+60}] [expr {$vy+10}]  -fill $rcol
+                    $uwids::bcanv create text [expr {$vx+6}] [expr {$vy+2}] -anchor w -text $rnm -fill white -font font_info_txt
+                    incr idx
+                    incr ly 20
+                    incr vy 20
+                    set vx 200
+                    break
+                } elseif {$h == "productionData.componentId"} {
+                    puts "Found componentId ...  \"[lindex $si $idx]\""
+                    if {[lindex $si $idx] == ""} {incr idx; continue}
+                    $uwids::bcanv create text $lx $ly -anchor e -text "$h:"
+                    set cinfo [lindex [lindex [get_comp_info [lindex $si $idx]] 1] 1]
+                    puts $cinfo
+                    $uwids::bcanv create rectangle $vx [expr {$vy-7}] [expr {$vx+60}] [expr {$vy+10}]  -fill white
+                    $uwids::bcanv create text [expr {$vx+6}] [expr {$vy+2}] -anchor w -text [lindex $si $idx] -font font_info_txt
+                    $uwids::bcanv create text [expr {$vx+65}] [expr {$vy+2}] -anchor w -text $cinfo -font font_info_txt
+                    incr idx
+                    incr ly 20
+                    incr vy 20
+                    set vx 200
+                    break
                 } else {
+                    $uwids::bcanv create text $lx $ly -anchor e -text "$h:"
                     $uwids::bcanv create text $vx $vy -anchor w -text [lindex $si $idx]
                     incr idx
                     incr ly 20
@@ -1043,6 +1079,7 @@ proc generate_view {} {
     bind $uwids::base_lsb <KeyRelease> { show_base_details %W}
     
     fill_base_listbox $uwids::base_lsb
+    $uwids::bcanv configure -width 500
     
     ##########################################################
     ##  Ship info

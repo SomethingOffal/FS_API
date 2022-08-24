@@ -100,6 +100,38 @@ You will have to invoke the python inventory_scrape.py script in a "cmd"  shell.
 
 When you want to see your current account status, you will have to run the python script again.
 
+###  Usage Instructions  ###
+
+At the top of the main window are 4 tabs.  These tabs are for different funcitons of the tool
+
+The `Farsite DB` tab is the first thing seen.  This is a main window for the tool.  The column on the left is the list of known Blue Prints and as of v2.4 of the tool, there are some to be added and some details of the data base that could be availble.  BPs are scraped from user accounts...  The middle column is the components list.  The column on the right, with all the colors, is the resource list of known resources.  Clicking on a resource always brings up the resource breakdown and costing window on the far right.  This shows you the resource tree for the selection, since some items have more than one source.  By default when a resource is clicked the component and blue print columns are updated with items that will use that resourse.
+
+"From Resource" is the default searching / sorting of the other two columns.  The sorting "source" can be changed to be "From Compoent" or "From BluePrint" by selecting the sorting from the view drop down top menu.
+
+The sorting schem can quickly be switched with control sequences.
+
+<CTL-r> Sort from resourse selection
+
+<CTL-c> Sort from Component selection
+
+<CTL-b> Sort from Blue Print selection.
+
+When switching modes, it is best to hit the "All" selection in the resource column and then select a resource.  Then issue the control sequence to change the sorting to the desired method.  This sequence is because the "c" button is also used for bringing up the selected component or blue print costing information.
+
+#### Universe Tab  ####
+
+The Universe tab provides a primitive mapping of the systems and gates.  It will also show a view of the planetery system.
+
+#### User Status Tab ####
+
+This view shows the user data as extracted from the user scrape.  The installations column on the right shows installations.  When selected the current progress and output are displayed.
+
+#### User Config Tab ####
+
+This enables the user to set the purchase price of a material they purchased in the left group.  The two groups to the right are tool calculated values of mined and refined materials.  If a number is stated in the "Bought" group, it will be used in cost calculations.  Otherwise the tool calculated costs will be used.  The calculations of refined costing is done with the value of "sides" set to zero.
+
+The top center box holds the user setting for travel cost multiplier.  This enables the user to add the cost of transport of goods to the cost of manufacture.  This is a percent of the base cost or  purchase cost.  The default is 15%.
+
 ###  Dev Instructions  ###
 
 This tool will support custom development.  TBD when this will be enabled and documented.

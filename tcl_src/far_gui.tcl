@@ -30,7 +30,7 @@ namespace eval sys {
     set cdir ""
     set helpVar ""
     set modeVar "R"
-    set devmode 0
+    set devmode 1
 }
 
 # # get the current location of where I am running from
@@ -42,7 +42,7 @@ source "$sys::cdir/tcl_db.tcl"
 source "$sys::cdir/name_spaces.tcl"
 source "$sys::cdir/popups.tcl"
 
-set version "Alpha 2.4 BP Costing Mat Quantities"
+set version "Alpha 2.5 Installation Indications"
 wm title . "Farsite Workbench $version"
 # #############################
 bind . <F12> {catch {console show}}
@@ -264,12 +264,13 @@ pack $uzr::univ_frame -anchor w -fill both -expand 1
 source "$sys::cdir/far_procs.tcl"
 source "$sys::cdir/user_procs.tcl"
 source "$sys::cdir/far_costing.tcl"
-source "$sys::cdir/user_cfg.tcl"
+#source "$sys::cdir/user_cfg.tcl"
 
 # load base view
 load_base
 # generate the user costing list
 gen_costing_list
+source "$sys::cdir/user_cfg.tcl"
 
 # If the user has loaded accout data before
 if {[file exists "../Account.csv"] == 1} {

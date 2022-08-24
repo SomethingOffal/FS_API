@@ -88,7 +88,7 @@ pack $tlbl $tcost_en
 pack $tcost_fr
 
 
-set pur_fr [ttk::labelframe $cost_frm.pcost1 -text "Bought on Market"]
+set pur_fr [ttk::labelframe $cost_frm.pcost1 -text "Bought on Market" -padding 10]
 set rcnt 0
 set ff [frame $pur_fr.f0 -borderwidth 2 -relief sunken]
 foreach r $far_db::res_lst {
@@ -119,7 +119,7 @@ foreach r $far_db::res_lst {
 pack $ff -side left
 #pack $pur_fr -side left
 
-set mine_fr [ttk::labelframe $cost_frm.mcstm -text "Mined"]
+set mine_fr [ttk::labelframe $cost_frm.mcstm -text "Mined" -padding 10]
 set rcnt 0
 set ff [frame $mine_fr.f0 -borderwidth 2 -relief sunken]
 foreach r $far_db::res_lst {
@@ -135,9 +135,16 @@ foreach r $far_db::res_lst {
     if {$ty == "Side" || $ty == "Material"} {continue}
     set lb1 [label $rfr.lb1 -text $lbnam -width 9 -font font_info_txt -background $lbcolr -foreground white]
     set lnam [string tolower $nam 0 end]
-    set en1 [scale $rfr.$lnam -orient horizontal -length 96 -sliderlength 22 -variable refine::$nam]
-    set uzrcfg::slide_lst [lappend uzrcfg::slide_lst $en1]
-    bind $en1 <ButtonRelease-1> {update_user_values}
+    set en1 [entry $rfr.$lnam -width 5 -textvariable refine::$nam]
+    set info [lindex $far_db::mine_lst [lsearch -index 0 $far_db::mine_lst $id]]
+    set odets [lindex $info 1]
+    if {$odets == ""} {continue}
+    set cpi [expr {[lindex $odets 2] / [lindex $odets 1]}]
+    $en1 insert end $cpi
+    $en1 configure -state readonly
+    #puts $cpi
+    #set uzrcfg::slide_lst [lappend uzrcfg::slide_lst $en1]
+    #bind $en1 <ButtonRelease-1> {update_user_values}
     pack $lb1 $en1 -side left -fill y -expand 1
     pack $rfr -fill x -expand 1
     incr rcnt
@@ -149,8 +156,8 @@ foreach r $far_db::res_lst {
 }
 
 pack $ff -side left
-#pack $pur_fr $mine_fr -side left
-pack $pur_fr -side left
+pack $pur_fr $mine_fr -side left
+#pack $pur_fr -side left
 
 #  show sides sliders.
 set pur1_fr [ttk::labelframe $cost_frm.mcst1 -text "Sides"]
@@ -189,7 +196,7 @@ pack $ff -side left
 #pack $pur1_fr -side left
 
 # show refined  sliders
-set pur2_fr [ttk::labelframe $cost_frm.mcst2 -text "Refined"]
+set pur2_fr [ttk::labelframe $cost_frm.mcst2 -text "Refined" -padding 10]
 set rcnt 0
 set ff [frame $pur2_fr.f0 -borderwidth 2 -relief sunken]
 
@@ -208,13 +215,17 @@ foreach r $far_db::res_lst {
     if {$ty == "Material" && $kind != "Side"} {
         set lb1 [label $rfr.lb1 -text $lbnam -width 9 -font font_info_txt -background $lbcolr -foreground white]
         set lnam [string tolower $nam 0 end]
-        set en1 [scale $rfr.$lnam -orient horizontal -length 96 -sliderlength 22 -variable refine::$nam]
-        set uzrcfg::slide_lst [lappend uzrcfg::slide_lst $en1]
-        bind $en1 <ButtonRelease-1> {update_user_values}
+        set en1 [entry $rfr.$lnam -width 6]
+        #puts "Loking for id:  $id"
+        #puts $refine::cost_table
+        set rcost [lindex [lindex $refine::cost_table [lsearch -index 0 $refine::cost_table $id]] end]
+        $en1 insert 0 [string range $rcost 0 5]
+        $en1 configure -state readonly
+        #puts "Got cost:  $rcost"
         pack $lb1 $en1 -side left -fill y -expand 1
         pack $rfr -fill x -expand 1
         incr rcnt
-        if {$rcnt >= 6} {
+        if {$rcnt >= 9} {
             pack $ff -side left
             set ff [frame $pur2_fr.$id -borderwidth 2 -relief sunken]
             set rcnt 0
@@ -222,7 +233,7 @@ foreach r $far_db::res_lst {
     }
 }
 pack $ff -side left
-#pack $pur2_fr -side left
+pack $pur2_fr -side left
 
 pack $cost_frm
 

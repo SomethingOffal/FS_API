@@ -706,18 +706,18 @@ proc gen_costing_list {} {
                 set ct [lappend ct $unit_cost]
                 set refine::cost_table [lappend refine::cost_table $ct]
                 #puts $info
-                set this [get_reso $cidx]
-                set name [lindex [lindex $this 1] 0]
-                foreach w $uzrcfg::slide_lst {
-                    set is_wid [string first [string tolower $name] $w]
-                    if {$is_wid >= 0} {
-                        set wid $w
-                        break
-                    }
-                }
-                #puts $wid
-                $wid configure -to $unit_cost
-                $wid configure -from $unit_cost
+                #set this [get_reso $cidx]
+                #set name [lindex [lindex $this 1] 0]
+                #foreach w $uzrcfg::slide_lst {
+                #    set is_wid [string first [string tolower $name] $w]
+                #    if {$is_wid >= 0} {
+                #        set wid $w
+                #        break
+                #    }
+                #}
+                ##puts $wid
+                #$wid configure -to $unit_cost
+                #$wid configure -from $unit_cost
             }
             "Material" {
                 #puts $c
@@ -744,18 +744,18 @@ proc gen_costing_list {} {
                         set this [get_reso $tid]
                         set name [lindex [lindex $this 1] 0]
                         ## get the slider for this mat  set it for the range.
-                        foreach w $uzrcfg::slide_lst {
-                            set is_wid [string first [string tolower $name] $w]
-                            if {$is_wid >= 0} {
-                                set wid $w
-                                break
-                            }
-                        }
+                        #foreach w $uzrcfg::slide_lst {
+                        #    set is_wid [string first [string tolower $name] $w]
+                        #    if {$is_wid >= 0} {
+                        #        set wid $w
+                        #        break
+                        #    }
+                        #}
                         
-                        $wid configure -to [expr {int($micost + 2.0)}]
-                        $wid configure -from [expr {int($mcost - 2.0)}]
-                        $wid set [expr int($micost)]
-                        set glbl::uzr_ini_sliders [lappend glbl::uzr_ini_sliders $wid]
+                        #$wid configure -to [expr {int($micost + 2.0)}]
+                        #$wid configure -from [expr {int($mcost - 2.0)}]
+                        #$wid set [expr int($micost)]
+                        #set glbl::uzr_ini_sliders [lappend glbl::uzr_ini_sliders $wid]
                         #update
                         #puts $mcost
                     }
@@ -778,24 +778,24 @@ proc gen_costing_list {} {
                 set ct [lappend ct $unit_cost]
                 set refine::cost_table [lappend refine::cost_table $ct]
                 
-                set this [get_reso $cidx]
-                set name [lindex [lindex $this 1] 0]
-                foreach w $uzrcfg::slide_lst {
-                    set is_wid [string first [string tolower $name] $w]
-                    if {$is_wid >= 0} {
-                        set wid $w
-                        break
-                    }
-                }
+                #set this [get_reso $cidx]
+                #set name [lindex [lindex $this 1] 0]
+                #foreach w $uzrcfg::slide_lst {
+                #    set is_wid [string first [string tolower $name] $w]
+                #    if {$is_wid >= 0} {
+                #        set wid $w
+                #        break
+                #    }
+                #}
                 #puts $wid
-                $wid configure -to $unit_cost
-                $wid configure -from $unit_cost
+                #$wid configure -to $unit_cost
+                #$wid configure -from $unit_cost
             }
             default {puts "Error:  unknown resource type"}
         }
     }
     set refine::cost_table [lsort -integer -index 0 $refine::cost_table ]
-    update_user_values
+    ##update_user_values
 }
 
 # ##############################################

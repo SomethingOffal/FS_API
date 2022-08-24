@@ -208,6 +208,70 @@ proc get_refine_info {ore} {
     return $rtn
 }
 
+
+# #########################################
+#  get the time to mine, refine or manufacture
+#   maid   component ID  BP  ID
+#   miid   material id  mine, refein
+# return cycle time in seconds.
+proc get_cycle_time {maid miid type} {
+    set cyc_time 0.0
+    switch $type {
+        1.0 {
+            #puts [get_mine_info [get_reso $miid]]
+            set minfo [get_mine_info [get_reso $miid]]
+            set cyc_time [lindex [lindex [lindex $minfo 2] 1] 0]
+            #puts "Mine time:  $cyc_time"
+        }
+        2.0 {
+            #puts [get_refine_info [get_reso $miid]]
+            #set this_id [lindex $s $miid]
+            #set ref_time 0.0
+            foreach r $far_db::refreq_lst {
+                #puts "$r    :::  [lindex $r 1]"
+                set id [lindex [lindex $r 1] 0]
+                if {$miid == $id} {
+                    set cyc_time [lindex [lindex $r 1] 2]
+                    break
+                }
+            }
+            #puts "Refine time: $cyc_time"
+        }
+        5.0 {
+            #puts [get_comp_info $maid]
+            #puts [get_comp_info [lindex $s $compid_idx]]
+            #set cid [lindex $s $compid_idx]
+            #puts $cid
+            set manu_time 0.0
+            foreach c $far_db::compmain_lst {
+                set db_id "[lindex $c 0].0"
+                #puts $db_id
+                if {$db_id == $maid} {
+                    #puts $c
+                    set cyc_time [lindex [lindex $c 1] 0]
+                    break
+                }
+            }
+            #puts "Comp Manufacture time:  $cyc_time"
+        }
+        4.0 {
+            #puts [get_comp_info $maid]
+            #set cid [lindex $s $compid_idx]
+            set manu_time 0.0
+            foreach c $far_db::compmain_lst {
+                if{[lindex $c 0] == $maid} {
+                    set manu_time [lindex [lindex $c 0]]
+                    break
+                }
+            }
+            #puts "Mod Manufacture time:  $cyc_time"
+        }
+        default {puts "Error unknown type:  $type"}
+    }
+    #puts "Type:  $type"
+    return $cyc_time
+}
+
 # #########################################
 #  get star by name
 proc get_str_name {n} {
@@ -993,9 +1057,14 @@ proc show_planet_view {wid} {
     set pname [$wid get $sel_idx]
     #puts $uzr::canv_prev_star
     set sdat [get_star $uzr::canv_prev_star]
+    set slen [llength $sdat]
     set star [lindex $sdat 1]
     set planets [lindex $sdat 2]
     set gates [lindex $sdat 3]
+    set stations {}
+    if {$slen > 4} {
+        set stations [lindex $sdat 4]
+    }
     
     set pdat [lrange $planets 1 end]
     foreach p $pdat {
@@ -1048,13 +1117,38 @@ proc show_planet_view {wid} {
         set xb [expr {$x + 10}]
         set yb [expr {$z + 10}]
         if {$pname == $gn} {
-            $uzr::univ_canv create rectangle [expr {$xt - 10}] [expr {$yt-10}] $xb $yb -fill #40ff40
+            $uzr::univ_canv create line $x $z $x [expr {$z -12}] -arrowshape {18 24 12} -arrow first -fill #ff00c0
+            #$uzr::univ_canv create rectangle [expr {$xt - 10}] [expr {$yt-10}] $xb $yb -fill #40ff40
         } else {
-            $uzr::univ_canv create rectangle $xt $yt $xb $yb -fill #fff080
+            $uzr::univ_canv create line $x $z $x [expr {$z -12}] -arrowshape {18 20 12} -arrow first -fill #ff80c0
+            #$uzr::univ_canv create rectangle $xt $yt $xb $yb -fill #fff080
         }
         $uzr::univ_canv create text $xb [expr {$yb + 20}] -text $gn -fill #ffffff
         set gc_lst [lappend gc_lst [list $x $z]]
     }
+    
+    if {$stations != {}} {
+        set stheader [lindex $stations 0]
+        set stdat [lrange $stations 1 end]
+        puts $stations
+        foreach s $stdat {
+            set x [lindex $s 2]
+            set y [lindex $s 3]
+            set z [lindex $s 4]
+            set name [lindex $s 5]
+            set x [expr {int($x / $scale_down) + $cx}]
+            set z [expr {int($z / $scale_down) + $cy}]
+            set xt [expr {$x - 10}]
+            set yt [expr {$z - 10}]
+            set xb [expr {$x + 10}]
+            set yb [expr {$z + 10}]
+            $uzr::univ_canv create rectangle $xt $yt $xb $yb -fill #40ff40
+            #$uzr::univ_canv create line $x $z $x [expr {$z -12}] -arrowshape {18 20 12} -arrow first -fill #ff00c0
+            $uzr::univ_canv create text $x [expr {$z - 28}] -text $name -fill #ffffff
+        }
+    }
+    
+    
     set sid [lindex $star 0]
     set s [expr {srand($sid)}]
     set nstars [expr {int(rand() * 200.0 + 100.0)}]
