@@ -86,7 +86,7 @@ foreach s $spg::sdb {
                 set s [string trimleft $f "{"]
                 set s [string trimright $s "}"]
                 set s [string trim $s "\""]
-                #set ss [split $s " "]
+                set ss [split $s " "]
                 if {[llength $ss] > 1} {
                     set nlst [lappend nlst [lindex $ss 1]]
                 } else {

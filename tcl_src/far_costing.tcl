@@ -946,7 +946,7 @@ proc show_cmp_costing {wid spec} {
     set fr1 [frame $oth_fr.rfr1]
     set lfr1 [label $fr1.lb1 -text "Transport Costs: "]
     set efr1 [entry $fr1.en1 -width 6]
-    $efr1 insert end [expr {double($uzrcfg::tr_percent) / 100.0 * double($mtot)}]
+    $efr1 insert end [string range [expr {double($uzrcfg::tr_percent) / 100.0 * double($mtot)}] 0 5]
     $efr1 configure -state disabled
     pack $lfr1 $efr1 -side left
     pack $fr1

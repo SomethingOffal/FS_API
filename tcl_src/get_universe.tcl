@@ -278,21 +278,22 @@ proc get_universe {} {
 #    input  :  csv list of stars  
 proc get_planets_gates {data} {
     foreach p $data {
-        set id [lindex [split $p ","] 0]
+#        set id [lindex [split $p ","] 0]
+        set id [lindex $p 0]
         puts $id
-        set filo  "unv_dump/planet_html$id"
-        set purl "https://farsite.online/api/1.0/universe/star/$id/planets"
-        httpcopy $purl $filo
-        
-        after 250
-        
-        set gurl "https://farsite.online/api/1.0/universe/star/$id/gates"
-    
-        set filo  "unv_dump/gate_html$id"
-        puts $filo
-        httpcopy $gurl $filo
-    
-        after 250
+        #set filo  "unv_dump/planet_html$id"
+        #set purl "https://farsite.online/api/1.0/universe/star/$id/planets"
+        #httpcopy $purl $filo
+        #
+        #after 250
+        #
+        #set gurl "https://farsite.online/api/1.0/universe/star/$id/gates"
+        #
+        #set filo  "unv_dump/gate_html$id"
+        #puts $filo
+        #httpcopy $gurl $filo
+        #
+        #after 250
         
         set surl "https://farsite.online/api/1.0/universe/star/$id/stations"
     
