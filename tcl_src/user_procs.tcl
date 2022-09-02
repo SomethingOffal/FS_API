@@ -311,9 +311,18 @@ proc fill_base_listbox {fr} {
         set type [lindex $s $type_idx]
         set maid [lindex $s $compid_idx]
         set miid [lindex $s $matid_idx]
+        set tleft [lindex $s $etim_idx]
+        puts $tleft
+        if {$tleft == ""} {set tleft 0.0} else {
+            set tleft [get_time_val [lindex $s $etim_idx]]
+            #set tleft [clock format $tleft -format {%Y-%m-%dh%Hm%Ms%S} -timezone :America/New_York]
+        }
+        puts $tleft
+        #set cyc_time 36000
         set cyc_time [get_cycle_time $maid $miid $type]
         #puts "Return cycle time:  $cyc_time"
         set time_left [expr {$cyc_time * $cycs}]
+        puts $time_left
         set pid [lindex $s $sidx]
         append pid ":[lindex $s $iidx]"
         if {$pid < 0} {
@@ -326,7 +335,7 @@ proc fill_base_listbox {fr} {
             $fr insert end $pid
             if {$cy == 0} {
                 $fr itemconfigure end  -background pink1
-            } elseif {[expr {$time_left / 3600}] <= 24} {
+            } elseif {$cy <= 4} {
                 $fr itemconfigure end  -background orange1
             } else {
                 $fr itemconfigure end  -background lightgreen
@@ -334,9 +343,6 @@ proc fill_base_listbox {fr} {
         }
     }
 }
-
-
-
 
 # ############################################
 #   fill sector list box
@@ -450,7 +456,7 @@ proc show_base_details {wid} {
     #puts $base
     set sbase [split $base ":"]
     set bid [lindex $sbase 1]
-    puts $bid
+    #puts $bid
     set base [lindex $sbase 0]
     #  Clean up.
     $uwids::bcanv delete all
