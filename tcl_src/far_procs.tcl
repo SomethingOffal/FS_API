@@ -215,7 +215,7 @@ proc get_refine_info {ore} {
 #   miid   material id  mine, refein
 # return cycle time in seconds.
 proc get_cycle_time {maid miid type} {
-    set cyc_time 0.0
+    set cyc_time 700.0
     switch $type {
         1.0 {
             #puts [get_mine_info [get_reso $miid]]
@@ -255,15 +255,16 @@ proc get_cycle_time {maid miid type} {
             #puts "Comp Manufacture time:  $cyc_time"
         }
         4.0 {
+        #  To update once  production times are in the db
             #puts [get_comp_info $maid]
             #set cid [lindex $s $compid_idx]
-            set manu_time 0.0
-            foreach c $far_db::compmain_lst {
-                if{[lindex $c 0] == $maid} {
-                    set manu_time [lindex [lindex $c 0]]
-                    break
-                }
-            }
+            #set manu_time 0.0
+            #foreach c $far_db::compmain_lst {
+            #    if{[lindex $c 0] == $maid} {
+            #        set manu_time 700
+            #        break
+            #    }
+            #}
             #puts "Mod Manufacture time:  $cyc_time"
         }
         default {puts "Error unknown type:  $type"}
