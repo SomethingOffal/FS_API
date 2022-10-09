@@ -42,7 +42,7 @@ source "$sys::cdir/tcl_db.tcl"
 source "$sys::cdir/name_spaces.tcl"
 source "$sys::cdir/popups.tcl"
 
-set version "Alpha 2.6a Compoent req update fix"
+set version "Alpha 2.6b Fix Water pricing issue"
 wm title . "Farsite Workbench $version"
 # #############################
 bind . <F12> {catch {console show}}

@@ -438,7 +438,7 @@ proc get_material_costs {mlst} {
     set rinput [lindex $ref_info 1]
     
     #puts $mine_info
-    #puts "Cost to mine: $mcost  and  output: $mquant"
+    #puts "Cost to mine ID $mlst: $mcost  and  output: $mquant"
     #puts "Cost to refine:  $rcost   with input:  $rinput"
     set rin_mout_rat [expr {$rinput / $mquant}]
     set rin1_cost [expr {$rin_mout_rat * $mcost + $rcost}]
@@ -455,15 +455,20 @@ proc get_material_costs {mlst} {
         #ratios of min max of this mat
         set mrat [expr {$max / $msum}]
         set mirat [expr {$min / $misum}]
+        if {$id == 83 || $id == 154} {
         #puts "Produces:  $id  with min,max:  $min,$max   of type $ty"
         #puts "Ratio min for this ID:  $mirat"
         #puts "Ratio max for this ID:  $mrat"
+        }
         
     #puts "here..  $rin1_cost  x  $mrat  /  $max"
     #puts "here..  $rin1_cost  x  $mirat  /  $min"
         #set uzr_rat [lindex [lindex $cost_dist $idx] end]
         set this_mcost [string range [expr {double($rin1_cost) * $mrat / double($max)}] 0 7]
-        if {$mirat != 0.0} {
+        if {$id == 154} {
+            #puts "$rin1_cost"
+            set this_micost $rin1_cost
+        } elseif {$mirat != 0.0} {
             set this_micost [string range [expr {double($rin1_cost) * $mirat / double($min)}] 0 7]
         } else {
             set this_micost $this_mcost
