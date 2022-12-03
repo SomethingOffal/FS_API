@@ -150,6 +150,47 @@ refinery_outputs_df['input_resource_id'] = refinery_outputs_df['input_resource_i
 refinery_outputs_df['output_resource_id'] = refinery_outputs_df['output_resource_id'].astype(int)
 refinery_outputs_df = refinery_outputs_df.set_index('input_resource_id')
 
+blueprints_requirements_df = pd.DataFrame()
+##  ship yard data scrape and compile
+ship_main_requirements_df = pd.DataFrame()
+
+for ship_bp_key, bp_value in overall_data_dict['schemes']['Bases']['Actions']['3']['1'].items():
+    line_item = {'ship_id' : ship_bp_key, 
+                'duration' : bp_value['Duration'],
+                'credits' : bp_value['Requirements']['Credits']}
+    ship_main_requirements_df = ship_main_requirements_df.append(line_item, ignore_index = True)
+
+#ship_main_requirements_df.info()
+ship_input_comps_df = pd.DataFrame()
+for ship_bp_key, bp_value in overall_data_dict['schemes']['Bases']['Actions']['3']['1'].items():
+    if len(bp_value['Requirements']['Components']) > 0:
+        for key, value in bp_value['Requirements']['Components'].items():
+            line_item = {'ship_id' : ship_bp_key, 
+                        'comp_id' : key,
+                        'min' : value['min'], 
+                        'max' : value['max']}
+            ship_input_comps_df = ship_input_comps_df.append(line_item, ignore_index = True)
+
+
+##  Modules data scrape
+modules_main_requirements_df = pd.DataFrame()
+for mod_key, mod_value in overall_data_dict['schemes']['Bases']['Actions']['4']['1'].items():
+    line_item = {'module_id' : mod_key, 
+                'duration' : mod_value['Duration'],
+                'credits' : mod_value['Requirements']['Credits']}
+    modules_main_requirements_df = modules_main_requirements_df.append(line_item, ignore_index = True)
+
+modules_input_reqs_df = pd.DataFrame()
+for mod_key, mod_value in overall_data_dict['schemes']['Bases']['Actions']['4']['1'].items():
+    if len(mod_value['Requirements']['Components']) > 0:
+        for key, value in mod_value['Requirements']['Components'].items():
+            line_item = {'ship_id' : mod_key, 
+                        'comp_id' : key,
+                        'min' : value['min'], 
+                        'max' : value['max']}
+            modules_input_reqs_df = modules_input_reqs_df.append(line_item, ignore_index = True)
+
+
 # Sample Usage:
 # What happens if I refine Scandium ore?
 #
@@ -175,3 +216,8 @@ component_main_requirements_df.to_csv('component_main_requirements.csv')
 mining_requirements_df.to_csv('mining_requirements.csv')
 refinery_main_requirements_df.to_csv('refinery_main_requirements.csv')
 refinery_outputs_df.to_csv('refinery_outputs.csv')
+
+ship_main_requirements_df.to_csv('ship_main_reqs.csv')
+ship_input_comps_df.to_csv('ship_comp_reqs.csv')
+modules_main_requirements_df.to_csv('module_main_reqs.csv')
+modules_input_reqs_df.to_csv('module_input_reqs.csv')

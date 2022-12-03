@@ -215,11 +215,66 @@ proc update_comp_cost {wid} {
     #.dets$comp_id
 }
 # #################################################
+#  when a slider is slid  this function is called
+#    val is the new value of the slider
+#    walk the focus and find / update entries
+#    call update_comp_cost
+proc update_comp_quant {val} {
+    set f [focus]
+    focus $f
+    set f1  [winfo children $f]
+    foreach c $f1 {
+        set f2 [winfo children $c]
+        foreach w $f2 {
+            set cfrm [winfo children $w]
+            foreach cf $cfrm {
+                set clst [winfo children $cf]
+                set val 0
+                foreach sc $clst {
+                    set is_scal [string first "scl1" $sc]
+                    if {$is_scal >= 0} {
+                        set val [$sc cget -value]
+                    }
+
+                    set is_qua [string first "qua" $sc]
+                    if {$is_qua >= 0} {
+                        ##  entry is qualified only takes int
+                        set sval [split $val "."]
+                        $sc configure -state normal
+                        $sc delete 0 end
+                        $sc insert 0 [lindex $sval 0]
+                        $sc configure -state disabled
+                        update_comp_cost $sc
+                    }
+                    
+                    set is_rcnt [string first "scl2" $sc]
+                    if {$is_rcnt >= 0} {
+                        set rval [$sc cget -value]
+                        
+                    }
+                    set is_rqua [string first "rq" $sc]
+                    if {$is_rqua >= 0} {
+                        #puts $sc
+                        ##  entry is qualified only takes int
+                        set sval [split $rval "."]
+                        $sc configure -state normal
+                        $sc delete 0 end
+                        $sc insert 0 [lindex $sval 0]
+                        $sc configure -state disabled
+                        update_comp_cost $sc
+                    }
+                }
+            }
+        }
+    }
+    
+}
+
+# #################################################
 #  get the costing ratio for the type / refine list passed.
 #    the return is a list of fractions / doubles
 #    the user input is the field of entries
 #       User Config >>>  Mining to Refining Cost Allocations
-
 proc get_costing_ratios {rlst} {
     set rtn {}
     
@@ -975,6 +1030,8 @@ proc show_bp_costing {wid spec} {
     set rmc_fr [ttk::labelframe $wid.rmc1 -text "Blue Print Costing" -borderwidth 4 -relief raised]
     set bp_dets [lindex $spec 0]
     set bp_id [lindex $bp_dets 0]
+    set bp_info_lst [get_bp_info $bp_id]
+    set bp_quant_lst [lindex $bp_info_lst 1]
     #puts "Blue print:  $bp_dets"
     set comp_lst [lrange $spec 1 end]
     set rtot 0.0
@@ -998,6 +1055,19 @@ proc show_bp_costing {wid spec} {
         #pack $cmp_lbl
         #puts $cmp_mats
         #puts "Comp id:  $comp_id"
+        
+        set mc_max -1
+        set mc_min -1
+        foreach c $bp_quant_lst {
+            set sc [split $c]
+            #puts $sc
+            if {[lindex $sc 1] == $comp_id} {
+                set mc_max [lindex $sc 3]
+                set mc_min [lindex $sc 2]
+                #puts $c
+            }
+        }
+        
         set comp_info [get_comp_info $comp_id]
         set manu_dets [get_manuf_cost $comp_id]
         #puts $manu_dets
@@ -1032,12 +1102,18 @@ proc show_bp_costing {wid spec} {
         set didx [string first "." $rtot]
         set rtot [string range $rtot 0 $didx+2]
         set cpfr [ttk::labelframe $rmc_fr.$comp_id -text $comp_name]
-        set rlbl [label $cpfr.blbl -text "Base cost per unit:  $rtot"]
-        set nent [entry $cpfr.qua -width 3 -validate key -vcmd {qua_val %W %s %S}]
-        $nent insert 0 "1"
-        bind $nent <KeyRelease> {update_comp_cost  %W}
+        set rlbl [label $cpfr.blbl -text "Unit Cost: $rtot"]
+        set ascal [ttk::scale $cpfr.scl1 -from $mc_min -to $mc_max -orient horizontal \
+                  -length 60 -command {update_comp_quant}]
+        $ascal set $mc_min
+        set nent [entry $cpfr.qua -width 4 -bg lightgreen -disabledforeground black]
+        $nent insert 0 $mc_min
+        $nent configure -state disabled
+        set min_lbl [label $cpfr.slmin -text "$mc_min" -bg lightblue]
+        set max_lbl [label $cpfr.slmax -text "$mc_max" -bg lightblue]
         set tlbl [label $cpfr.ctot -text "00000.00"]
-        pack $rlbl $nent -side left -padx 20
+        pack $rlbl $min_lbl $ascal $max_lbl $nent -side left -padx 5
+        #pack $rlbl $ascal $nent -side left -padx 20
         pack $tlbl -side right -padx 20
         pack $cpfr -fill x -expand 1
         incr idx
@@ -1050,15 +1126,26 @@ proc show_bp_costing {wid spec} {
     set tlbl [label $rmc_fr.tot -text "Total raw cost:  00000.00"]
     pack $tlbl
     set icf [ttk::labelframe $rmc_fr.enfr -text "Installation run cost"]
-    set icost [entry $icf.icst -width 8 -validate key -vcmd {qua_val %W %s %S}]
-    bind $icost <KeyRelease> {update_comp_cost  %W}
+    set icost [entry $icf.icst -width 8 -disabledforeground black]
+    set bpinfo [split [lindex $bp_info_lst 0]]
+    #puts $bpinfo
+    set mfactcost [lindex $bpinfo end]
+    puts $mfactcost
+    set smfactcost [split $mfactcost "."]
+    puts $smfactcost
+    set mf [lindex $smfactcost 0]
+    $icost insert 0 $mf
+    $icost configure -state disabled
     set qcf [ttk::labelframe $rmc_fr.qen -text "Run Count"]
-    set unitqu [entry $qcf.rq -width 4 -validate key -vcmd {qua_val %W %s %S}]
+    set qslider [ttk::scale $qcf.scl2 -from 1 -to 50 -orient horizontal -length 80 -command {update_comp_quant}]
+    $qslider set 1
+    set unitqu [entry $qcf.rq -width 4 -disabledforeground black]
     $unitqu insert end "1"
+    $unitqu configure -state disabled
     bind $unitqu <KeyRelease> {update_comp_cost  %W}
     set atot [label $rmc_fr.atot -text "Total cost:   000000.00"]
     pack $icost
-    pack $unitqu
+    pack $qslider $unitqu -side left -padx 5
     pack $icf
     pack $qcf
     pack $atot
@@ -1188,6 +1275,7 @@ proc show_costing {wid} {
             set comp_lst [lappend comp_lst $cspec]
             #puts $b
         }
+        
         show_bp_costing $rfrm $comp_lst
         pack $rfrm -anchor n -fill x -expand 1
     } else {

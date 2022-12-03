@@ -163,6 +163,20 @@ set fh [open "C:/work/Farsite/FS_API/components.csv" "r"]
 set comps_lst [csv2tlst $fh]
 close $fh
 
+set fh [open "C:/work/Farsite/FS_API/module_main_reqs.csv" "r"]
+set modules_lst [csv2tlst $fh]
+close $fh
+set fh [open "C:/work/Farsite/FS_API/module_input_reqs.csv" "r"]
+set modules_input_lst [csv2tlst $fh]
+close $fh
+set fh [open "C:/work/Farsite/FS_API/ship_main_reqs.csv" "r"]
+set ships_lst [csv2tlst $fh]
+close $fh
+set fh [open "C:/work/Farsite/FS_API/ship_comp_reqs.csv" "r"]
+set ship_input_lst [csv2tlst $fh]
+close $fh
+
+
 set blueprints [get_bp_lst]
 
 puts $fo "#! /usr/bin/env wish"
@@ -192,6 +206,10 @@ puts $fo "    set compmain_lst \{\}"
 puts $fo "    set comps_lst \{\}"
 puts $fo "    set bp_lst \{\}"
 puts $fo "    set star_lst \{\}"
+puts $fo "    set ship_lst \{\}"
+puts $fo "    set ship_input_lst \{\}"
+puts $fo "    set modules_lst \{\}"
+puts $fo "    set modules_input_lst \{\}"
 puts $fo "\}"
 puts $fo ""
 
@@ -211,8 +229,16 @@ puts $fo "set far_db::comps_lst \{ $comps_lst \}"
 puts $fo ""
 puts $fo "set far_db::bp_lst \{$blueprints \}"
 puts $fo ""
+puts $fo "set far_db::ship_lst \{$ships_lst \}"
+puts $fo ""
+puts $fo "set far_db::ship_input_lst \{$ship_input_lst \}"
+puts $fo ""
+puts $fo "set far_db::modules_lst \{$modules_lst \}"
+puts $fo ""
+puts $fo "set far_db::modules_input_lst \{$modules_input_lst \}"
+puts $fo ""
 puts $fo "set far_db::star_lst \{$univers \}"
 
 close $fo
 
-#exit
+exit

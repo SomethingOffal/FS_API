@@ -275,7 +275,7 @@ proc get_universe {} {
 
 # ###################################################
 #  get all the info about planets and gates.
-#    input  :  csv list of stars  
+#    input  :  
 proc get_planets_gates {data} {
     foreach p $data {
 #        set id [lindex [split $p ","] 0]
@@ -322,6 +322,33 @@ proc two_csv {lst} {
     return $rtn
 }
 
+# #############################################################
+#   ships
+proc get_ships {} {
+    set id 429530
+    #for {set id 410000} {$id < 450000} {incr id} {
+        set surl "https://farsite.online/api/1.0/ships/list"
+    
+        set filo  "ships/ship_list.txt"
+        #puts $filo
+        httpcopy $surl $filo
+    #    after 250
+    #}
+}
+
+proc extract_ships {} {
+    set slst [glob "ships/ship*"]
+    foreach f $slst {
+        set fh [open $f "r"]
+        set t [gets $fh]
+        set ori [string first "\"original\"" $t]
+        puts $ori
+        set nidx [string first "name" $t $ori]
+        puts [string range $t $nidx $nidx+20]
+        
+    }
+}
+# ##########################################################
 namespace eval spg {
     set sfields {id x y z size color textureId name}
     set sdb {}
@@ -588,6 +615,63 @@ proc gen_station_db {} {
     }
 }
 
+
+proc extract_schemes {} {
+    set sdat [gets [open "../master_schem.txt" "r"]]
+    set oh [open "master_out" "w"]
+    
+    set sdat [string range $sdat 1 end]
+    set sdend [string length $sdat]
+    set level 0
+    set part ""
+    set headers {}
+    set fields {}
+    
+    set ssdat [split $sdat ","]
+    foreach s $ssdat {
+        puts $oh $s
+    }
+    
+    close $oh
+    return
+    for {set i 0} {$i < $sdend} {incr i} {
+       set c [string index $sdat $i]
+       if {$c == "\{"} {
+           incr level
+           puts $oh $part
+           set part ""
+           for {set k 0} {$k < $level} {incr k} {
+               append part " "
+           }
+       } elseif {$c == "\}"} {
+           incr level -1
+       } elseif {$c == ","} {
+           set spart [split $part ":"]
+           set headers [lappend headers [lindex $spart 0]]
+           if {[lindex $spart 1] == ""} {
+               set fields [lappend fields ""]
+           } else {
+               set fields [lappend fields [lindex $spart 1]]
+           }
+           #puts $oh $part
+           #incr level
+           set part ""
+           for {set k 0} {$k < $level} {incr k} {
+               append part " "
+           }
+       } else {
+           append part $c
+       }
+    }
+    
+    set idx 0
+    foreach h $headers {
+        puts $oh "$h : [lindex $fields $idx]"
+        incr idx
+    }
+    close $oh
+    #puts $sdat
+}
 
 
 proc gen_sql {} {

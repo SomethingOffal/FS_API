@@ -162,6 +162,44 @@ proc get_mine_info {ore} {
     return $rtn
 }
 
+
+
+# ####
+proc get_bp_info {id} {
+    set rtn {}
+    # if this is a ship bp
+    if {$id < 22 || $id > 61} {
+        set sl [lrange $far_db::ship_lst 1 end]
+        set sq [lrange $far_db::ship_input_lst 1 end]
+    #  eles is a module bp
+    } else {
+        set sl [lrange $far_db::modules_lst 1 end]
+        set sq [lrange $far_db::modules_input_lst 1 end]
+    }
+    
+    foreach bp $sl {
+        set tinfo [lindex $bp 1]
+        set stinfo [split $tinfo]
+        if {[lindex $stinfo 0] == $id} {
+            #puts $tinfo
+            break
+        }
+    }
+    set ilst {}
+    foreach q $sq {
+        set qinfo [lindex $q 1]
+        set sqinfo [split $qinfo]
+        if {[lindex $sqinfo 0] == $id} {
+            #puts $qinfo
+            set ilst [lappend ilst $qinfo]
+        }
+    }
+    set rtn [lappend rtn $tinfo]
+    set rtn [lappend rtn $ilst]
+    #puts $rtn
+    return $rtn
+}
+
 # ###########################################
 #  get the component info from the id
 proc get_comp_info {id} {
