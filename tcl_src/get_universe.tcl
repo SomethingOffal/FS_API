@@ -28,6 +28,51 @@ namespace eval bp {
     set bp_lst {}
 }
 
+proc dump_bp_cmps {} {
+    #set fh [open $bp::src "r"]
+    
+    set sl [lrange $far_db::ship_input_lst 1 end]
+    
+    set last_bp ""
+    set cmp_lst {}
+    set lname ""
+    
+    foreach b $sl {
+        set sp [lindex $b 1]
+        set ssp [split $sp]
+        set id [lindex $ssp 0]
+        set cmp [lindex $ssp 1]
+        
+        set name ""
+        switch $id {
+            "62" {set name "T-47"}
+            "63" {set name "A-60"}
+            "64" {set name "T-75"}
+            "65" {set name "A-300"}
+            "66" {set name "T-350"}
+            "67" {set name "U-320"}
+        }
+#63;A-60;96;
+#64;T-75;96;
+#65;A-300;96;
+#66;T-350;96;
+#67;U-320;96;
+        
+        if {$last_bp == ""} {
+            set last_bp $id
+            set cmp_lst $cmp
+        } elseif {$last_bp != $id} {
+            puts "$last_bp $lname $cmp_lst"
+            set last_bp $id
+            set cmp_lst $cmp
+        } else {
+            set cmp_lst [lappend cmp_lst $cmp]
+        }
+        set lname $name
+    }
+    puts "$last_bp $lname $cmp_lst"
+    
+}
 # ####################################################
 #   extract BP  from  swimlane dump.
 proc get_bp_lst {} {
@@ -41,10 +86,10 @@ proc get_bp_lst {} {
     set bid [lsearch $sheader "blue_id"]
     set bn [lsearch $sheader "blue_name"]
     set bcid [lsearch $sheader "component_id"]
-    set cname [lsearch $sheader "component_name"]
-    set ccode [lsearch $sheader "component_code"]
+#    set cname [lsearch $sheader "component_name"]
+#    set ccode [lsearch $sheader "component_code"]
 #    set ccode [lsearch $sheader "planet_names"]matres_input_name
-    set mater [lsearch $sheader "matres_input_name"]
+    #set mater [lsearch $sheader "matres_input_name"]
     set fdat [lrange $fdat 1 end]
     set bp_lst {}
     set last_bp ""

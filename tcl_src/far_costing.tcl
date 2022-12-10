@@ -1118,7 +1118,7 @@ proc show_bp_costing {wid spec} {
         pack $cpfr -fill x -expand 1
         incr idx
         
-        #set rtot [expr {$rtot + $rcost}]
+         #set rtot [expr {$rtot + $rcost}]
     }
     #  add in the transport % cost
     set  rtot [expr {$rtot + ($rtot * $uzrcfg::tr_percent / 100.0)}]
