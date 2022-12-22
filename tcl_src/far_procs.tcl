@@ -410,14 +410,14 @@ proc draw_arrows_r {canv x yt yb} {
 
 # ###########################################
 #  draw a circle
-proc draw_cir {canv center sz fil} {
+proc draw_cir {canv center sz fil {outl ""}} {
     set cx [lindex $center 0]
     set cy [lindex $center 1]
     set xt [expr {$cx - ($sz / 2)}]
     set xb [expr {$cx + ($sz / 2)}]
     set yt [expr {$cy - ($sz / 2)}]
     set yb [expr {$cy + ($sz / 2)}]
-    $canv create oval $xt $yt $xb $yb -fill $fil
+    $canv create oval $xt $yt $xb $yb -fill $fil -outline $outl
 }
 
 # ###########################################
@@ -1086,16 +1086,20 @@ proc load_planet_lst {star} {
     
 }
 
+# #############################################
+#  get selection call draw
 proc show_planet_view {wid} {
+    set sel_idx [$wid curselection]
+    set pname [$wid get $sel_idx]
+    draw_planet_view $uzr::canv_prev_star $pname
+}
+# Draw the planet view of the start id passed.
+proc draw_planet_view {id {pname ""}} {
     set cx [lindex $uzr::canv_cent 0]
     set cy [lindex $uzr::canv_cent 1]
     set scale_down 26
     $uzr::univ_canv delete all
-    set sel_idx [$wid curselection]
-    #puts $sel_idx
-    set pname [$wid get $sel_idx]
-    #puts $uzr::canv_prev_star
-    set sdat [get_star $uzr::canv_prev_star]
+    set sdat [get_star $id]
     set slen [llength $sdat]
     set star [lindex $sdat 1]
     set planets [lindex $sdat 2]
@@ -1129,10 +1133,11 @@ proc show_planet_view {wid} {
         $uzr::univ_canv create oval $xt $yt $xb $yb -dash 20 -outline #203020
         if {$pname == $pn} {
             draw_cir $uzr::univ_canv $c 25 #80ff80
-            $uzr::univ_canv create text $x [expr {$z - 20}] -text $pn -font font_info_cou -fill #ffffff
+            #$uzr::univ_canv create text $x [expr {$z - 20}] -text $pn -font font_info_cou -fill #ffffff
         } else {
-            draw_cir $uzr::univ_canv $c 15 #a0a0a0
+            draw_cir $uzr::univ_canv $c 15 #40a0f0
         }
+        $uzr::univ_canv create text $x [expr {$z - 20}] -text $pn -font font_info_cou -fill #ffffff
     }
     draw_star $uzr::univ_canv $sdat [list $cx $cy]
     
@@ -1169,7 +1174,7 @@ proc show_planet_view {wid} {
     if {$stations != {}} {
         set stheader [lindex $stations 0]
         set stdat [lrange $stations 1 end]
-        puts $stations
+        #puts $stations
         foreach s $stdat {
             set x [lindex $s 2]
             set y [lindex $s 3]
@@ -1188,8 +1193,8 @@ proc show_planet_view {wid} {
     }
     
     
-    set sid [lindex $star 0]
-    set s [expr {srand($sid)}]
+    #set sid [lindex $star 0]
+    set s [expr {srand($id)}]
     set nstars [expr {int(rand() * 200.0 + 100.0)}]
     for {set i 1} {$i < $nstars} {incr i} {
         set loc [expr {int(rand() * 1300)}]

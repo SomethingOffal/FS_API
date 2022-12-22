@@ -2702,6 +2702,7 @@ blue_id;blue_name;component_id;component_qty;component_volume;component_name;com
 21;T-250;139;0;438;Molecular Cooling System;com104;2;;mechanisms;50;27;KRm50;Krypton;Material;Gas;#a89a73;6;2;3;117;10;30000;800;KGo14;Krypton gas;Ore;Gas;#a89a73;17;26400;10;300;CETO-2
 21;T-250;139;0;438;Molecular Cooling System;com104;2;;mechanisms;49;27;NIm49;Nitrogen;Material;Gas;#a89a73;5;2;3;116;10;30000;750;NGo13;Nitrogen gas;Ore;Gas;#a89a73;14;26400;10;300;CETO-2
 21;T-250;139;0;438;Molecular Cooling System;com104;2;;mechanisms;3;16;SA3;Sapphires;Mineral;Gem;#cc41cc;7;;;;;;;;;;;;;14400;1;500;HOM-14, HAS-15, NYX-1
+22;Artillery S;264;
 23;Missile S;264;0;26;Frame;mc1;1;S;units;58;2;STm58;Scandium;Material;Metal;#85a1bb;3;4;5;126;10;18000;380;SOo23;Scandium ore;Ore;Metal;#85a1bb;13;27600;20;200;GAEA-22, HAS-15, HEBO-12, TIHO-1, CETO-2, MEB-2
 23;Missile S;264;0;26;Frame;mc1;1;S;units;58;2;STm58;Scandium;Material;Metal;#85a1bb;3;2;3;131;10;36000;1050;TOo28;Titanium ore;Ore;Metal;#85a1bb;14;25200;10;300;HOM-11, GAEA-21, GAEA-22
 23;Missile S;264;0;26;Frame;mc1;1;S;units;96;4;RmCO2;Regular CO2;Material;Side;#999999;1;1;1;104;10;18000;500;POo1;Paraffin oil;Ore;Oil;#742222;14;14400;10;160;HOM-11, GAEA-21, MEB-2, NYX-1
@@ -4547,3 +4548,9 @@ blue_id;blue_name;component_id;component_qty;component_volume;component_name;com
 61;Maneuver M;415;0;108;Improved Orbital Amplifier;mc152;2;M;improved amplifiers;16;4;HA16;Harp crystals;Mineral;Crystal;#6d2c99;9;;;;;;;;;;;;;16800;1;600;GAEA-22, CETO-2
 61;Maneuver M;415;0;108;Improved Orbital Amplifier;mc152;2;M;improved amplifiers;1;6;RU1;Rubies;Mineral;Gem;#cc41cc;6;;;;;;;;;;;;;14400;1;500;HOM-11, GAEA-21, NYX-1
 61;Maneuver M;415;0;108;Improved Orbital Amplifier;mc152;2;M;improved amplifiers;61;4;ZIm61;Zinc;Material;Metal;#85a1bb;5;2;3;129;10;43200;900;ZOo26;Zinc ore;Ore;Metal;#85a1bb;16;25200;10;300;TIHO-1, CETO-2, MEB-2
+62;T-47;96;
+63;A-60;96;
+64;T-75;96;
+65;A-300;96;
+66;T-350;96;
+67;U-320;96;

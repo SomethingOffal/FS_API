@@ -78,7 +78,7 @@ foreach s $spg::sdb {
     # stations
     set stlst {}
     set stlst [lappend stlst $spg::stfields]
-    foreach s $spg::stdb {
+    foreach s [lrange $spg::stdb 1 end] {
         if {[lindex $s 0] == $sid} {
             set nlst {}
             foreach f $s {
@@ -103,7 +103,7 @@ foreach s $spg::sdb {
     set univers [lappend univers $slst]
 }
 
-
+set univers [lsort -index {1 0} -integer $univers]
 
 proc csv2tlst {fh} {
     # get the header of the csv file

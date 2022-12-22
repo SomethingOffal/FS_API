@@ -135,3 +135,21 @@ namespace eval uwids {
     set bluep_lsb {}
 }
 
+namespace eval floc {
+    set scale_down 26
+    set s_ent ""
+    set reps_en ""
+    set rep_lst {}
+    set g1_en 1
+    set g2_en 1
+    set g3_en 1
+    set g1 [expr {int(6000 / $floc::scale_down)}]
+    set g2 [expr {int(8000 / $floc::scale_down)}]
+    set g3 [expr {int(10000 / $floc::scale_down)}]
+    set in_flight 0
+    set was_flight 0
+    set last_sys 0
+    set trak 0
+    set tr_inter 5000
+    set trak_btn {}
+}

@@ -22,7 +22,6 @@
 package require Ttk
 package require Tk
 
-#package require sqlite3
 
 #  use name spaces everywhere.
 #   name spaces are used for most items in this file.
@@ -31,6 +30,7 @@ namespace eval sys {
     set helpVar ""
     set modeVar "R"
     set devmode 0
+    set altmode 0
 }
 
 # # get the current location of where I am running from
@@ -41,8 +41,9 @@ set sys::cdir $me_path
 source "$sys::cdir/tcl_db.tcl"
 source "$sys::cdir/name_spaces.tcl"
 source "$sys::cdir/popups.tcl"
+source "$sys::cdir/far_events.tcl"
 
-set version "Alpha 3.0  Full Blue Prints"
+set version "Alpha 3.1  Xmas 22"
 wm title . "Farsite Workbench $version"
 # #############################
 bind . <F12> {catch {console show}}
@@ -59,14 +60,6 @@ proc usr_msg { msg } {
 # This is the menu
 #   menue  TBD
 source "$sys::cdir/far_gui_menu.tcl"
-
-#  command buttons and options frame
-#set cmdf [frame .fc -borderwidth 4 -relief sunken]
-#pack $mbar -side top -fill x -expand 1
-#set cmdb [button $cmdf.bt1 -text "Reload" -command {source "$sys::cdir/user_procs.tcl"}]
-#set cmdb [button $cmdf.bt1 -text "Reload"]
-#pack $cmdb
-#pack $cmdf -side top -anchor n -fill x -expand 1
 
 # This is the message and command line frame
 set c [ttk::frame .f1 -borderwidth 4 -relief sunken]
@@ -113,9 +106,7 @@ pack $bfr -fill x
 pack $cmp_dets::bp_lb -anchor w -side left -fill y -expand 1
 bind $cmp_dets::bp_lb <ButtonRelease-1> { update_view %W}
 bind $cmp_dets::bp_lb <KeyRelease> { update_view_key %W %k}
-#$cmp_dets::canv configure -scrollregion {0 0 450 3600}
-#bind $cmp_dets::canv <ButtonRelease-1> { show_ship_details %W }
-#bind $cmp_dets::canv <KeyRelease> { show_ship_details %W}
+
 # components name space
 namespace eval comp {
     set clb {}
@@ -158,7 +149,6 @@ namespace eval res {
 set rfr [frame $w.rfr -borderwidth 4 -relief sunken]
 set res::plb [listbox $rfr.res -width 10 -height 40]
 pack $res::plb -anchor w -side left -fill y -expand 1
-#bind $res::plb <ButtonRelease-1> { show_res_details %W }
 bind $res::plb <ButtonRelease-1> { update_view %W}
 bind $res::plb <KeyRelease> { update_view_key %W %k}
 
@@ -218,25 +208,12 @@ set plb [label $pfr.lb2 -text "PassWord: "]
 set pnen [entry $pfr.en2 -width 14 -show "#" -textvariable uzr::pw]
 set gbtn [button $pfr.bt1 -text "Login" -command get_uzr_info]
 set lbtn [button $pfr.bt2 -text "Load Status" -command {load_uzr_info; generate_view}]
-#set bucb [checkbutton $pfr.cb1 -text "Backup Enable " -variable uzr::bkup_en -anchor w]
-#pack $plb $pnen -side left
 pack $nfr $pfr -side left
-#pack $lbtn $elb $enen $plb $pnen $gbtn -side left
 pack $lbtn -side left
-#pack $bucb
 pack $ubfr -side top -anchor n -expand 1 -fill x
 pack $ufr -side top -anchor n -expand 1 -fill x
 
-#pack $uzr::user_note_frame -side top -anchor n -expand 1 -fill both
 pack $uzr::user_note_frame -anchor w -fill both -expand 1
-
-#pack $uzr::user_note_frame  -side left -expand 1 -fill both
-#set cfgs [ttk::style configure style]
-#puts $cfgs
-#?-option ?value option value...? ?
-#ttk::notebook::enableTraversal $nb
-
-#source "$sys::cdir/test_procs.tcl"
 
 # ##########################
 #   set perm  universe items and pack.
@@ -253,18 +230,25 @@ set cafr [frame $uzr::univ_frame.rfr]
 set uzr::univ_canv [canvas $cafr.canv -width 1300 -height 1000 -borderwidth 4 -relief sunken]
 $uzr::univ_canv configure -background #000000
 
+set srch_fr [frame $univ_fr.srh -borderwidth 4 -relief sunken]
+set floc::s_ent [entry $srch_fr.ens -width 20]
+if {$sys::altmode == 1} {
+    if {[file exists "$sys::cdir/add_on1.tcl"]} {
+        source "$sys::cdir/add_on1.tcl"
+    }
+}
+
 pack $uzr::univ_strlb
 pack $uzr::univ_pltlb
 pack $slfr -side left -fill y -expand 1
 pack $uzr::univ_canv -fill both -expand 1
 pack $cafr -side right -fill both -expand 1
-pack $uzr::univ_frame -anchor w -fill both -expand 1
+pack $uzr::univ_frame -fill both -expand 1
 
 
 source "$sys::cdir/far_procs.tcl"
 source "$sys::cdir/user_procs.tcl"
 source "$sys::cdir/far_costing.tcl"
-#source "$sys::cdir/user_cfg.tcl"
 
 # load base view
 load_base
@@ -289,7 +273,6 @@ if {$is_ini == 1} {
     puts $th "puts \"Test out ...\""
     close $th
 }
-
 
 bind . <Motion> "+mouse_move %W %x %y"
 # ###########
@@ -327,6 +310,13 @@ proc update_ini {} {
         puts $th $tstr
     }
     
+    if {$sys::devmode == 1} {
+        #puts [winfo exists $floc::s_ent]
+        if {[winfo exists $floc::s_ent] == 1} {
+            set numb [$floc::s_ent get]
+            puts $th "\$floc::s_ent insert 0 $numb"
+        }
+    }
     #puts $th $uzrcfg::cost_tbl
     close $th
 }
@@ -335,11 +325,15 @@ proc update_ini {} {
 #  when the user exits deal with ini
 proc user_exit {} {
     if {[tk_messageBox -message "Quit?" -type yesno] eq "yes"} {
-        if {[tk_messageBox -message "Update ini?" -default "no" -type yesno] eq "no"} {
+        if {[tk_messageBox -message "Update ini?" -default "no" -type yesno] eq "yes"} {
            puts "updating ini ..."
            update_ini
         }
-       exit
+        #if {$sys::devmode == 1} {
+        #    tk_messageBox -message "Dev Pause ..." -default "no" -type yesno
+        #}
+        
+        exit
     }
 }
 

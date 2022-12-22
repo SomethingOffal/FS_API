@@ -57,6 +57,7 @@ if {$sys::devmode == 1} {
     $mbar.f2 add command -label "Source Menue" -command {source "$sys::cdir/far_gui_menu.tcl"} -background #ffffff
     $mbar.f2 add command -label "Source Costing" -command {source "$sys::cdir/far_costing.tcl"} -background #ffffff
     $mbar.f2 add command -label "Source Univ" -command {source "$sys::cdir/get_universe.tcl"} -background #ffffff
+    $mbar.f2 add command -label "Source fine" -command {source "$sys::cdir/far_loc.tcl"} -background #ffffff
     $mbar.f2 add command -label "Test" -command gen_costing_list -background #ffffff
 }
 

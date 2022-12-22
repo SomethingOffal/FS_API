@@ -369,29 +369,160 @@ proc two_csv {lst} {
 
 # #############################################################
 #   ships
+#  600 1600
+#  70000  -  74000 x
+#  80000  -  81000 x
+#  87000  -  92000
+#  420000 -  438000
 proc get_ships {} {
-    set id 429530
-    #for {set id 410000} {$id < 450000} {incr id} {
-        set surl "https://farsite.online/api/1.0/ships/list"
-    
-        set filo  "ships/ship_list.txt"
+    #set id 429530
+    for {set id 437001} {$id < 438000} {incr id} {
+        set surl "https://farsite.online/api/1.0/ships/$id"
+        set filo  "ships/ship_$id.txt"
         #puts $filo
         httpcopy $surl $filo
-    #    after 250
-    #}
+        
+        
+        set fh [open $filo "r"]
+        set ln [gets $fh]
+        #puts $ln
+        close $fh
+        
+        set sln [split $ln ","]
+        foreach e $sln {
+            set is_user [string first "userId" $e]
+            if {$is_user >= 0} {
+                set is_nul [string first "null" $e]
+                if {$is_nul >= 0} {
+                    file delete $filo
+                    break
+                }
+            }
+            set is_moon [string first "Moon A" $e]
+            #puts $is_moon
+            if {$is_moon >= 0} {
+                file delete $filo
+                break
+            }
+            
+            set is_not [string first "Ship not found" $e]
+            if {$is_not >= 0} {
+                file delete $filo
+                break
+            }
+        }
+        after 750
+    }
 }
 
 proc extract_ships {} {
+
+    set lst0 {id}
+    set lst1 {owner username}
+    set lst2 {id type name size}
+    set lst4 {starId flightType x y z newX newY newZ flightStart flightEnd}
+    set of [open "ship_owners.txt" "w"]
+    puts $of "$lst0 $lst1 $lst2 $lst4"
     set slst [glob "ships/ship*"]
     foreach f $slst {
+        set sstr ""
         set fh [open $f "r"]
         set t [gets $fh]
-        set ori [string first "\"original\"" $t]
-        puts $ori
-        set nidx [string first "name" $t $ori]
-        puts [string range $t $nidx $nidx+20]
+        close $fh
+        
+        set is_non [string first "Ship not found" $t]
+        if {$is_non >= 0} {
+            file delete -force $f
+            continue
+        }
+        
+        set cat_lst [split $t "\}"]
+        
+        set tlst ""
+        #foreach c $cat_lst {
+        #    #puts $of $c
+        #    set t [split $c "\{"]
+        #    #foreach p [lrange $t 1 end] {
+        #    append tlst [lrange $t 1 end]
+        #    #}
+        #}
+        
+        #set cat_lst $tlst
+        #foreach c $cat_lst {
+        #    puts $of $c
+        #}
+        
+        set slst0 [split [lindex $cat_lst 0] ","]
+        foreach i $slst0 {
+            set si [split $i ":"]
+            set skey [string trim [lindex $si 0] "\""]
+            foreach k $lst0 {
+                if {$skey == $k} {
+                    set s1 [lindex $si end]
+                    set val [string trim $s1 "\""]
+                    append sstr " $val"
+                    break
+                }
+            }
+        }
+        
+        set slst1 [split [lindex $cat_lst 1] ","]
+        foreach i $slst1 {
+            set si [split $i ":"]
+            set skey [string trim [lindex $si 0] "\""]
+            foreach k $lst1 {
+                if {$skey == $k} {
+                    set s1 [lindex $si end]
+                    set val [string trim $s1 "\""]
+                    append sstr " $val"
+                    break
+                }
+            }
+        }
+        
+        set slst2 [split [lindex $cat_lst 3] ","]
+        foreach i $slst2 {
+            set si [split $i ":"]
+            set skey [string trim [lindex $si 0] "\""]
+            foreach k $lst2 {
+                if {$skey == $k} {
+                    set s1 [lindex $si end]
+                    set val [string trim $s1 "\""]
+                    append sstr " $val"
+                    break
+                }
+            }
+        }
+        
+        set slst4 [split [lindex $cat_lst 4] ","]
+        foreach i $slst4 {
+            set si [split $i ":"]
+#            puts $of $si
+            if {[llength $si] > 2} {
+                set si [lrange $si 1 end]
+            #puts $of $si
+            }
+            set skey [string trim [lindex $si 0] "\{\""]
+            foreach k $lst4 {
+                if {$skey == $k} {
+                    set s1 [lindex $si end]
+                    set val [string trim $s1 "\""]
+                    append sstr " $val"
+                    break
+                }
+            }
+        }
+        
+        if {$sstr != ""} {
+            puts $of $sstr
+        }
+        #set ori [string first "\"original\"" $t]
+        #puts $ori
+        #set nidx [string first "name" $t $ori]
+        #puts [string range $t $nidx $nidx+20]
         
     }
+    close $of
 }
 # ##########################################################
 namespace eval spg {
@@ -545,51 +676,25 @@ proc extract_stars {lst flds} {
 }
 
 
-proc extract_stations {lst flds} {
-    set fields $flds
-    set idx 1
-    set len [string length $lst]
-    set tstr ""
-    set plst {}
-    set tstr [string trim $lst "\]\["]
-    set idx [string first "\},\{" $tstr]
-    set rtn [list $flds]
-    #puts $idx
-    while {$idx >= 0} {
-        set plst [lappend plst [string range $tstr 0 $idx]]
-        set tstr [string range $tstr $idx+2 end]
-        #puts $tstr
-        set idx [string first "\},\{" $tstr]
-    }
-    # get the last planet.
-    if {$tstr != ""} {
-        set plst [lappend plst [string range $tstr 0 end]]
-    }
-    # if nothing return nul
-    if {[llength $plst] == 0} {
-        return {}
-    }
+proc extract_station {flds} {
+    set rtn {}
     
-    foreach st $plst {
-        set sta_vals {}
-        #foreach i $fields {
-        #    set sta_vals [lappend sta_vals {}]
-        #}
-        set st [string trim $st "\{\}"]
-        set ssst [split $st ","]
-        foreach s $ssst {
-            set ss [split $s ":"]
-            set field [string trim [lindex $ss 0] "\"\{"]
-            #puts $field
-            set idx [lsearch $fields $field]
-            #puts $idx
-            set val [string trim [lindex $ss 1] "\"\}"]
-            set sta_vals [lreplace $sta_vals $idx $idx $val]
-        }
-        if {$sta_vals != {}} {
-            set rtn [lappend rtn $sta_vals]
-        }
+    set flds [string trim $flds "\]\["]
+    set flds [string trim $flds "\}\{"]
+    
+    set sflds [split $flds ","]
+    set tstr ""
+    foreach f $sflds {
+        set tlst {}
+        set sf [split $f ":"]
+        #set fn [string trim [lindex $sf 0]
+        set fv [string trim [lindex $sf 1]]
+        #puts $fv
+        append tstr "[string trim [lindex $sf 0] "\""] "
+        set tlst [lappend tlst [string trim [lindex $sf 1] "\""]]
+        set rtn [lappend rtn $tlst]
     }
+    set rtn [linsert $rtn 0 $tstr]
     #puts $rtn
     return $rtn
 }
@@ -652,12 +757,11 @@ proc gen_station_db {} {
         set fh [open $f "r"]
         set hdat [gets $fh]
         close $fh
-        #puts $hdat
-        set hdat "\},[string range $hdat 1 end]"
-        set spg::stdb [extract_stations $hdat $spg::stfields]
+        set sta_dat [extract_station $hdat]
+        set spg::stdb [lappend spg::stdb [lrange $sta_dat 1 end]]
         
-        #puts $f
     }
+    set spg::stdb [linsert $spg::stdb 0 [lindex $sta_dat 0]]
 }
 
 
@@ -961,3 +1065,34 @@ proc load_market_data {} {
 }
 
 #exit
+#
+# proc encrypt {passphrase cleartext} {
+#    set r {}
+#    binary scan $passphrase c* l
+#    binary scan $cleartext c* d
+#    set pmax [llength $l]
+#    set cn 0
+#    foreach {c} $d {
+#        set cp [lindex $l $cn]
+#        append r [format %c [expr {($c & 0xff) + ($cp & 0xff)}]]
+#        incr cn
+#        if {$cn >= $pmax} { set cn 0 }
+#    }
+#    return $r
+# }
+# 
+#proc decrypt {passphrase cleartext} {
+#    set r {}
+#    binary scan $passphrase c* l
+#    binary scan $cleartext c* d
+#    set pmax [llength $l]
+#    set cn 0
+#    foreach {c} $d {
+#        set cp [lindex $l $cn]
+#        append r [format %c [expr {($c & 0xff) - ($cp & 0xff)}]]
+#        incr cn
+#        if {$cn >= $pmax} { set cn 0 }
+#    }
+#    return $r
+# }
+# 
