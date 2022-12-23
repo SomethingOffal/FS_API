@@ -52,6 +52,12 @@ proc get_ship_dat {ln} {
     set cat_lst [split $ln "\}"]
     set sstr ""
     
+    set of [open "stit.txt" "w"]
+    foreach c $cat_lst {
+        puts $of $c
+    }
+    close $of
+    
     #set slst0 [split [lindex $cat_lst 0] ","]
     #foreach i $slst0 {
     #    set si [split $i ":"]
@@ -66,8 +72,9 @@ proc get_ship_dat {ln} {
     #    }
     #}
     #
-    set slst1 [split [lindex $cat_lst 1] ","]
+    set slst1 [split [lindex $cat_lst 2] ","]
     foreach i $slst1 {
+        #puts $i
         set si [split $i ":"]
         set skey [string trim [lindex $si 0] "\""]
         foreach k $lst1 {
@@ -79,8 +86,9 @@ proc get_ship_dat {ln} {
             }
         }
     }
+    #puts $sstr
     #
-    #set slst2 [split [lindex $cat_lst 3] ","]
+    #set slst2 [split [lindex $cat_lst 4] ","]
     #foreach i $slst2 {
     #    set si [split $i ":"]
     #    set skey [string trim [lindex $si 0] "\""]
@@ -94,7 +102,7 @@ proc get_ship_dat {ln} {
     #    }
     #}
     
-    set slst4 [split [lindex $cat_lst 4] ","]
+    set slst4 [split [lindex $cat_lst 5] ","]
     foreach i $slst4 {
         set si [split $i ":"]
         #puts $of $si
@@ -230,6 +238,45 @@ proc draw_location {sr} {
     
 }
 
+
+# -------------------------------------------------------------------------
+# Fetch the target page and cope with HTTP problems. This
+# deals with server errors and proxy authentication failure
+# and handles HTTP redirection.
+#
+proc fetchurl {url} {
+    set html ""
+    set err ""
+    http::register https 443 [list ::tls::socket -autoservername true]
+    set tok [http::geturl $url -timeout 30000]
+    if {[string equal [http::status $tok] "ok"]} {
+        if {[http::ncode $tok] >= 500} {
+            set err "server error: [http::code $tok]"
+        } elseif {[http::ncode $tok] >= 400} {
+            set err "authentication error: [http::code $tok]"
+        } elseif {[http::ncode $tok] >= 300} {
+            upvar \#0 $tok state
+            array set meta $state(meta)
+            if {[info exists meta(Location)]} {
+                return [fetchurl $meta(Location)]
+            } else {
+                set err [http::code $tok]
+            }
+        } else {
+            set html [http::data $tok]
+        }
+    } else {
+        set err [http::error $tok]
+    }
+    http::cleanup $tok
+
+    if {[string length $err] > 0} {
+        Error $err
+    }
+    return $html
+}
+
+
 # ###############################################################
 #   dump the url to a file.
 proc httpship { url file {chunk 4096} } {
@@ -273,14 +320,8 @@ proc locate_ship {} {
     set sid [$floc::s_ent get]
     #puts $sid
     set surl "https://farsite.online/api/1.0/ships/$sid"
-    set filo  "current_ship.txt"
-    #puts $filo
-    httpship $surl $filo
-    
-    set sf [open "current_ship.txt" "r"]
-    set ln [gets $sf]
-    close $sf
-    
+    set ln [fetchurl $surl]
+    #puts $ln
     set sstr [get_ship_dat $ln]
     #puts "'$sstr'"
     set sr [string trim [split $sstr] " "]
