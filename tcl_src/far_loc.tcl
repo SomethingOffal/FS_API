@@ -29,13 +29,9 @@ package require json 1.3.4
 package require sqlite3
 
 proc percent2rgb {r g b} {
-    # map 0..100 to a red-yellow-green sequence
     set red [expr {int($r * 2.55)}]
     set green [expr {int($g * 2.55)}]
     set blue [expr {int($b * 2.55)}]
-    #set n     [expr {$n < 0? 0: $n > 100? 100: $n}]
-    #set red   [expr {$n > 75? 60 - ($n * 15 / 25) : 15}]
-    #set green [expr {$n < 50? $n * 15 / 50 : 15}]
     return [format "#%2x%2x%2x" $red $green $blue]
  } ;
 
@@ -173,11 +169,6 @@ proc draw_location {sr} {
         set dlst [lappend dlst $sr]
     }
     
-    #puts [llength $floc::rep_lst]
-    #foreach d $dlst {
-    #    puts $d
-    #}
-    
     set dlst [lappend dlst $sr]
     
     set cx [lindex $uzr::canv_cent 0]
@@ -239,6 +230,15 @@ proc draw_location {sr} {
 }
 
 
+proc Error {msg} {
+    if {[string length [package provide Tk]] > 0} {
+        tk_messageBox -title "Locater error" -icon error -message $msg
+    } else {
+        puts stderr $msg
+    }
+    return ""
+}
+
 # -------------------------------------------------------------------------
 # Fetch the target page and cope with HTTP problems. This
 # deals with server errors and proxy authentication failure
@@ -272,55 +272,21 @@ proc fetchurl {url} {
 
     if {[string length $err] > 0} {
         Error $err
+        return ""
+    } else {
+        return $html
     }
-    return $html
 }
 
-
-# ###############################################################
-#   dump the url to a file.
-proc httpship { url file {chunk 4096} } {
-    http::register https 443 [list ::tls::socket -autoservername true]
-    set out [open $file w]
-    set token [::http::geturl $url -channel $out \
-            -progress httpCopyShip -blocksize $chunk]
-    close $out
-
-    # This ends the line started by httpCopyProgress
-    puts stderr ""
-
-    upvar #0 $token state
-    set max 0
-    puts $token
-    foreach {name value} $state(meta) {
-        if {[string length $name] > $max} {
-            set max [string length $name]
-        }
-        if {[regexp -nocase ^location$ $name]} {
-            # Handle URL redirects
-            puts stderr "Location:$value"
-            return [httpship [string trim $value] $file $chunk]
-        }
-    }
-    incr max
-    #foreach {name value} $state(meta) {
-    #    puts [format "%-*s %s" $max $name: $value]
-    #}
-
-    return $token
-}
-
-proc httpCopyShip {args} {
-    puts -nonewline stderr .
-    flush stderr
-}
-
-
+# get the location of the ship in entry field.
 proc locate_ship {} {
     set sid [$floc::s_ent get]
     #puts $sid
     set surl "https://farsite.online/api/1.0/ships/$sid"
     set ln [fetchurl $surl]
+    if {$ln == ""} {
+        return
+    }
     #puts $ln
     set sstr [get_ship_dat $ln]
     #puts "'$sstr'"
@@ -332,7 +298,7 @@ proc locate_ship {} {
         set floc::last_sys $sid
     }
     
-    draw_planet_view $sid
+    draw_planet_view $sid $uzr::univ_canv
     ## draw the ship location and scan range
     draw_location $sr
 

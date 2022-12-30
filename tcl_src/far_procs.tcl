@@ -444,7 +444,7 @@ proc draw_star {canv star center} {
     #}
 
 
-    draw_cir $uzr::univ_canv $center 20 [lindex $dat $color_idx]
+    draw_cir $canv $center 20 [lindex $dat $color_idx]
     $canv create text $tx $ty -text [lindex $dat $name_idx] -font font_info_res -fill #80ff80
     #  add some text
     set tx [expr {$tx + 26}]
@@ -1091,14 +1091,14 @@ proc load_planet_lst {star} {
 proc show_planet_view {wid} {
     set sel_idx [$wid curselection]
     set pname [$wid get $sel_idx]
-    draw_planet_view $uzr::canv_prev_star $pname
+    draw_planet_view $uzr::canv_prev_star $uzr::univ_canv $pname
 }
 # Draw the planet view of the start id passed.
-proc draw_planet_view {id {pname ""}} {
+proc draw_planet_view {id canv {pname ""}} {
     set cx [lindex $uzr::canv_cent 0]
     set cy [lindex $uzr::canv_cent 1]
     set scale_down 26
-    $uzr::univ_canv delete all
+    $canv delete all
     set sdat [get_star $id]
     set slen [llength $sdat]
     set star [lindex $sdat 1]
@@ -1130,16 +1130,16 @@ proc draw_planet_view {id {pname ""}} {
         set yt [expr {$cy - $rad}]
         set xb [expr {$cx + $rad}]
         set yb [expr {$cy + $rad}]
-        $uzr::univ_canv create oval $xt $yt $xb $yb -dash 20 -outline #203020
+        $canv create oval $xt $yt $xb $yb -dash 20 -outline #203020
         if {$pname == $pn} {
-            draw_cir $uzr::univ_canv $c 25 #80ff80
+            draw_cir $canv $c 25 #80ff80
             #$uzr::univ_canv create text $x [expr {$z - 20}] -text $pn -font font_info_cou -fill #ffffff
         } else {
-            draw_cir $uzr::univ_canv $c 15 #40a0f0
+            draw_cir $canv $c 15 #40a0f0
         }
-        $uzr::univ_canv create text $x [expr {$z - 20}] -text $pn -font font_info_cou -fill #ffffff
+        $canv create text $x [expr {$z - 20}] -text $pn -font font_info_cou -fill #ffffff
     }
-    draw_star $uzr::univ_canv $sdat [list $cx $cy]
+    draw_star $canv $sdat [list $cx $cy]
     
     set gheader [lindex $gates 0]
     set gdat [lrange $gates 1 end]
@@ -1161,13 +1161,13 @@ proc draw_planet_view {id {pname ""}} {
         set xb [expr {$x + 10}]
         set yb [expr {$z + 10}]
         if {$pname == $gn} {
-            $uzr::univ_canv create line $x $z $x [expr {$z -12}] -arrowshape {18 24 12} -arrow first -fill #ff00c0
+            $canv create line $x $z $x [expr {$z -12}] -arrowshape {18 24 12} -arrow first -fill #ff00c0
             #$uzr::univ_canv create rectangle [expr {$xt - 10}] [expr {$yt-10}] $xb $yb -fill #40ff40
         } else {
-            $uzr::univ_canv create line $x $z $x [expr {$z -12}] -arrowshape {18 20 12} -arrow first -fill #ff80c0
+            $canv create line $x $z $x [expr {$z -12}] -arrowshape {18 20 12} -arrow first -fill #ff80c0
             #$uzr::univ_canv create rectangle $xt $yt $xb $yb -fill #fff080
         }
-        $uzr::univ_canv create text $xb [expr {$yb + 20}] -text $gn -fill #ffffff
+        $canv create text $xb [expr {$yb + 20}] -text $gn -fill #ffffff
         set gc_lst [lappend gc_lst [list $x $z]]
     }
     
@@ -1186,9 +1186,9 @@ proc draw_planet_view {id {pname ""}} {
             set yt [expr {$z - 10}]
             set xb [expr {$x + 10}]
             set yb [expr {$z + 10}]
-            $uzr::univ_canv create rectangle $xt $yt $xb $yb -fill #40ff40
+            $canv create rectangle $xt $yt $xb $yb -fill #40ff40
             #$uzr::univ_canv create line $x $z $x [expr {$z -12}] -arrowshape {18 20 12} -arrow first -fill #ff00c0
-            $uzr::univ_canv create text $x [expr {$z - 28}] -text $name -fill #ffffff
+            $canv create text $x [expr {$z - 28}] -text $name -fill #ffffff
         }
     }
     
@@ -1204,7 +1204,7 @@ proc draw_planet_view {id {pname ""}} {
         set b [expr {int(rand() * 127)}]
         #puts $num
         set color [format "#%02X%02X%02X" $r $g $b]
-        draw_cir $uzr::univ_canv $loc 4 $color
+        draw_cir $canv $loc 4 $color
 
     }
     
@@ -1319,7 +1319,7 @@ proc filter_lb {wid lb} {
             }
         }
     } else {
-        puts "Error unknown list box ..."
+        puts "Programming Error unknown list box ..."
         return
     }
     #$cmp_dets::bp_lb

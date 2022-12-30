@@ -29,13 +29,12 @@ if {[file exists "$sys::cdir/far_loc.tcl"]} {
     set g1en [checkbutton $srch_fr.cb1 -text "G1 en" -variable floc::g1_en ]
     set g2en [checkbutton $srch_fr.cb2 -text "G2 en" -variable floc::g2_en ]
     set g3en [checkbutton $srch_fr.cb3 -text "G3 en" -variable floc::g3_en ]
-#    set trak [button $srch_fr.bt2 -text "Track" -textvariable floc::trak -command tracking]
     set floc::trak_btn [button $srch_fr.bt2 -text "Track" -bg #a04040 -command tracking]
     set sld1 [scale $srch_fr.scl1 -from 3 -to 20 -orient horizontal -length 100 \
               -variable floc::tr_inter]
     $sld1 set 5
     set tlb  [label $srch_fr.lbt -text "Sample time in seconds"]
     pack $srch_fr -fill x -expand 1
-    #pack $srch_bt $floc::s_ent $rep_lbl $floc::reps_en $g1en $g2en $g3en -side left -padx 6
+    #pack $srch_bt $floc::s_ent $rep_lbl $floc::reps_en $g1en $g2en $g3en $floc::trak_btn $sld1 $tlb -side left -padx 6
     pack $srch_bt $rep_lbl $floc::reps_en $g1en $g2en $g3en $floc::trak_btn $sld1 $tlb -side left -padx 6
 }

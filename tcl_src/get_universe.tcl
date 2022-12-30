@@ -311,6 +311,43 @@ proc httpCopyProgress {args} {
 }
 
 #source "array.txt"
+# -------------------------------------------------------------------------
+# Fetch the target page and cope with HTTP problems. This
+# deals with server errors and proxy authentication failure
+# and handles HTTP redirection.
+#
+proc get_url {url} {
+    set html ""
+    set err ""
+    http::register https 443 [list ::tls::socket -autoservername true]
+    set tok [http::geturl $url -timeout 30000]
+    if {[string equal [http::status $tok] "ok"]} {
+        if {[http::ncode $tok] >= 500} {
+            set err "server error: [http::code $tok]"
+        } elseif {[http::ncode $tok] >= 400} {
+            set err "authentication error: [http::code $tok]"
+        } elseif {[http::ncode $tok] >= 300} {
+            upvar \#0 $tok state
+            array set meta $state(meta)
+            if {[info exists meta(Location)]} {
+                return [fetchurl $meta(Location)]
+            } else {
+                set err [http::code $tok]
+            }
+        } else {
+            set html [http::data $tok]
+        }
+    } else {
+        set err [http::error $tok]
+    }
+    http::cleanup $tok
+
+    if {[string length $err] > 0} {
+        Error $err
+    }
+    return $html
+}
+
 
 proc get_universe {} {
     set url "https://farsite.online/api/1.0/universe"
@@ -373,10 +410,11 @@ proc two_csv {lst} {
 #  70000  -  74000 x
 #  80000  -  81000 x
 #  87000  -  92000
-#  420000 -  438000
+#  420000 -  438000 x
+#  410000 -  411000
 proc get_ships {} {
     #set id 429530
-    for {set id 437001} {$id < 438000} {incr id} {
+    for {set id 410000} {$id < 411000} {incr id} {
         set surl "https://farsite.online/api/1.0/ships/$id"
         set filo  "ships/ship_$id.txt"
         #puts $filo
@@ -524,6 +562,46 @@ proc extract_ships {} {
     }
     close $of
 }
+proc make_ship_db {} {
+    set fh [open "ship_owners.txt" "r"]
+    set of [open "ship_db.tcl" "w"]
+    
+    set plst ""
+    set slst {}
+    
+    while {![eof $fh]} {
+        set ln [string trim [gets $fh]]
+        if {$ln == ""} {
+            continue
+        }
+        set sln [split $ln " "]
+        #puts $of $sln
+        set pname [lindex $sln 2]
+        set is_on [lsearch -index 0 $plst $pname]
+        if {$is_on >= 0} {
+            set sl [lindex $plst $is_on]
+            set ships [lindex $sl 1]
+            set ships [lappend ships [lindex $sln 0]]
+            set sl [lreplace $sl 1 1 $ships]
+            set plst [lreplace $plst $is_on $is_on $sl]
+        } else {
+            set tmp $pname
+            set ship [lindex $sln 0]
+            set tmp [lappend tmp $ship]
+            set plst [lappend plst $tmp]
+        }
+    }
+    
+    close $fh
+    
+    set plst [lsort -index 0 -nocase $plst]
+    puts $of "set cmdr::ship_db \{ $plst \}"
+    #foreach s $plst {
+    #    puts $of $s
+    #}
+    close $of
+}
+
 # ##########################################################
 namespace eval spg {
     set sfields {id x y z size color textureId name}
