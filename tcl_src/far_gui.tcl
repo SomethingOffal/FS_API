@@ -43,7 +43,7 @@ source "$sys::cdir/name_spaces.tcl"
 source "$sys::cdir/popups.tcl"
 source "$sys::cdir/far_events.tcl"
 
-set version "Alpha 3.1  Xmas 22"
+set version "Alpha 3.2  Xmas 22"
 wm title . "Farsite Workbench $version"
 # #############################
 bind . <F12> {catch {console show}}
